@@ -18,10 +18,13 @@ USO:
     python backtest_ema_xauusd.py
 """
 
+import sys
 import MetaTrader5 as mt5
 import pandas as pd
 import numpy as np
 from datetime import datetime
+
+sys.stdout.reconfigure(encoding="utf-8")
 
 # ============================================================
 # CONFIGURACIÓN - andá ajustando estos valores
