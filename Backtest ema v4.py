@@ -94,6 +94,12 @@ def generar_senales(df):
         df["senal_compra"] = df["senal_compra"] & en_sesion
         df["senal_venta"] = df["senal_venta"] & en_sesion
 
+    # EMA_TREND recién es representativa (no sesgada hacia el primer precio
+    # de la serie) después de su propio período de warm-up.
+    warmup = df.index < EMA_TREND
+    df.loc[warmup, "senal_compra"] = False
+    df.loc[warmup, "senal_venta"] = False
+
     return df
 
 
@@ -500,6 +506,63 @@ def resumen_neto_vs_bruto(df, rr_ratio=2.5):
     print("\nDetalle guardado en resultados_neto_spread.csv")
 
 
+def diagnostico_gap_entrada(df):
+    """
+    Cuantifica el sesgo de ejecución de backtest(): las entradas se simulan
+    al close de la vela de señal, pero en real solo se puede operar recién
+    en la vela siguiente (open + slippage). Mide, en unidades de R (riesgo =
+    ATR * SL_ATR_MULT), cuánto se movió el precio entre ese close "de mentira"
+    y el open real disponible al momento de poder operar.
+    """
+    print("\n" + "#" * 60)
+    print("DIAGNÓSTICO: magnitud del gap close(señal) -> open(vela siguiente)")
+    print("#" * 60)
+
+    señal = df["senal_compra"] | df["senal_venta"]
+    riesgo = df["atr"] * SL_ATR_MULT
+    open_siguiente = df["open"].shift(-1)
+    gap_R = ((open_siguiente - df["close"]).abs() / riesgo)[señal].dropna()
+
+    if gap_R.empty:
+        print("Sin señales para medir.")
+        return
+
+    print(f"Señales medidas: {len(gap_R)}")
+    print(f"Gap medio:    {gap_R.mean():.3f}R")
+    print(f"Gap mediana:  {gap_R.median():.3f}R")
+    print(f"Gap p90:      {gap_R.quantile(0.90):.3f}R")
+    print(f"Gap máximo:   {gap_R.max():.3f}R")
+    print("#" * 60)
+    print("Comparar esto contra el R promedio por trade reportado arriba: si el gap")
+    print("típico es del mismo orden (o mayor) que el R promedio, el resultado del")
+    print("backtest depende del fill imposible al close de la vela de señal.")
+
+
+def sensibilidad_spread(df, rr_ratio=2.5, spreads=(30, 50, 80)):
+    """Repite resumen_neto_vs_bruto para varios spreads, para ver qué tan
+    sensible es la rentabilidad neta a un spread real más ancho que el
+    configurado (SPREAD_PUNTOS), o a comisión/slippage no modelados."""
+    print("\n" + "#" * 60)
+    print(f"SENSIBILIDAD AL SPREAD (TP fijo 1:{rr_ratio})")
+    print("#" * 60)
+
+    td = backtest_con_rr(df, rr_ratio)
+    if td.empty:
+        print("Sin operaciones.")
+        return
+    n = len(td)
+    r_bruto = td["resultado_R"].sum()
+    print(f"Trades: {n} | BRUTO (sin spread): {r_bruto:+7.2f}R")
+
+    for spread in spreads:
+        tdn = descontar_spread(td, spread_puntos=spread)
+        r_neto = tdn["resultado_R_neto"].sum()
+        estado = "✅ RENTABLE" if r_neto > 0 else "❌ pierde"
+        print(f"Spread {spread:>3} puntos | NETO: {r_neto:+7.2f}R  {estado}")
+
+    print("#" * 60)
+
+
 def comparar_con_sin_filtro_sesion(df_base):
     """Compara el resultado con y sin filtro de sesión horaria, mismo TP fijo 1:2.5."""
     global USE_SESSION_FILTER
@@ -537,11 +600,13 @@ def main():
         print("\nDetalle de operaciones guardado en resultados_backtest.csv")
 
     diagnostico_entrada_vs_salida(df)
+    diagnostico_gap_entrada(df)
     comparar_salida_fija_vs_combinada(df)
     optimizar_trailing(df)
     comparar_con_sin_filtro_sesion(df)
     validacion_train_test(df, rr_ratio=2.5)
     resumen_neto_vs_bruto(df, rr_ratio=2.5)
+    sensibilidad_spread(df, rr_ratio=2.5)
 
     mt5.shutdown()
 
