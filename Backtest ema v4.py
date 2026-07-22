@@ -399,7 +399,23 @@ def optimizar_trailing(df):
 
     print("#" * 60)
     if mejor:
-        print(f"\n🏆 Mejor combinación: Parcial 1:{mejor[0]} + Trailing {mejor[1]}x ATR -> R total: {mejor[2]:+.2f}R")
+        print(f"\n🏆 Mejor combinación (sobre TODO el dataset): Parcial 1:{mejor[0]} + Trailing {mejor[1]}x ATR -> R total: {mejor[2]:+.2f}R")
+        print("⚠️  Esta combinación fue elegida optimizando sobre el mismo dataset que se reporta (in-sample) —")
+        print("    validando train/test antes de confiar en ella:")
+
+        corte = int(len(df) * 0.7)
+        train = df.iloc[:corte].reset_index(drop=True)
+        test = df.iloc[corte:].reset_index(drop=True)
+        for nombre, sub_df in [("TRAIN (primeros 70%)", train), ("TEST (últimos 30%)", test)]:
+            td = backtest_trailing_con_mult(sub_df, mejor[1], mejor[0])
+            if td.empty:
+                print(f"{nombre}: sin operaciones")
+                continue
+            n = len(td)
+            wr = (td["resultado_R"] > 0).sum() / n * 100
+            r_total = td["resultado_R"].sum()
+            estado = "✅ RENTABLE" if r_total > 0 else "❌ pierde"
+            print(f"{nombre:<22} | Trades: {n:<4} | Win rate: {wr:5.1f}% | R total: {r_total:+7.2f}R  {estado}")
 
 
 def validacion_train_test(df, rr_ratio=2.5):
