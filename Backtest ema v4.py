@@ -209,7 +209,41 @@ def backtest_con_rr(df, rr_ratio):
     return trades_df
 
 
-def diagnostico_entrada_vs_salida(df):
+MIN_TRADES_SELECCION = 30   # piso de trades para que una config sea elegible en un barrido
+
+
+def metrica_robusta(trades_df):
+    """
+    Estadístico tipo t sobre el resultado NETO de spread:
+    mean(R_neto) / (std(R_neto)/sqrt(n)).
+
+    Dos razones para no usar R total bruto acá:
+    1. A diferencia del R total crudo, esta métrica no puede quedar
+       dominada por una sola racha o un trade con TP enorme: exige que el
+       edge sea consistente en relación a su propia variabilidad y al
+       número de observaciones.
+    2. El costo del spread en R depende de qué tan ajustado esté el SL
+       (costo_R = spread / riesgo) -- una config puede verse mejor en
+       bruto y ser peor en neto. Seleccionar sobre R neto evita elegir
+       una configuración que en la práctica (con spread real) es peor.
+
+    Exige un mínimo de MIN_TRADES_SELECCION trades: con muestras muy
+    chicas el t-stat es inestable y puede quedar inflado por azar (un
+    barrido de ~20-30 combinaciones sobre el mismo TRAIN ya de por sí
+    aumenta el riesgo de que gane una configuración espuria; permitir que
+    gane con n=3-5 lo empeora).
+    """
+    n = len(trades_df)
+    if n < MIN_TRADES_SELECCION:
+        return float("-inf")
+    r_neto = descontar_spread(trades_df)["resultado_R_neto"]
+    std = r_neto.std(ddof=1)
+    if not std or pd.isna(std):
+        return float("-inf")
+    return r_neto.mean() / (std / np.sqrt(n))
+
+
+def diagnostico_entrada_vs_salida(df, verbose=True):
     """
     Corre la MISMA señal de entrada con distintos R:R.
     Si el win rate se mantiene parecido en todos los R:R pero ninguno
@@ -218,9 +252,10 @@ def diagnostico_entrada_vs_salida(df):
     Si algún R:R sí supera el equilibrio -> el problema es la SALIDA
     (la entrada tiene algo de edge, pero el R:R/gestión actual lo desperdicia).
     """
-    print("\n" + "#" * 60)
-    print("DIAGNÓSTICO: ¿el problema es la ENTRADA o la SALIDA?")
-    print("#" * 60)
+    if verbose:
+        print("\n" + "#" * 60)
+        print("DIAGNÓSTICO: ¿el problema es la ENTRADA o la SALIDA?")
+        print("#" * 60)
 
     resultados = []
     for rr in [1.0, 1.5, 2.0, 2.5, 3.0]:
@@ -232,20 +267,36 @@ def diagnostico_entrada_vs_salida(df):
         r_total = trades_df["resultado_R"].sum()
         breakeven = 1 / (1 + rr) * 100
         edge = wr - breakeven
-        resultados.append((rr, n, wr, breakeven, r_total, edge))
-        estado = "✅ RENTABLE" if edge > 0 else "❌ pierde"
-        print(f"R:R 1:{rr:<4} | Trades: {n:<4} | Win rate: {wr:5.1f}% | Equilibrio: {breakeven:5.1f}% | Edge: {edge:+5.1f}pp | R total: {r_total:+7.2f}R  {estado}")
+        tstat = metrica_robusta(trades_df)
+        resultados.append((rr, n, wr, breakeven, r_total, edge, tstat))
+        if verbose:
+            estado = "✅ RENTABLE" if edge > 0 else "❌ pierde"
+            print(f"R:R 1:{rr:<4} | Trades: {n:<4} | Win rate: {wr:5.1f}% | Equilibrio: {breakeven:5.1f}% | Edge: {edge:+5.1f}pp | R total: {r_total:+7.2f}R | t-stat(neto): {tstat:+.2f}  {estado}")
 
-    print("#" * 60)
-    mejores = [r for r in resultados if r[5] > 0]
-    if mejores:
-        print(f"\n✅ Hay edge real en la entrada: {len(mejores)} de {len(resultados)} configuraciones de R:R son rentables.")
-        print("   -> El problema NO es la señal de entrada en sí, es cómo gestionás la salida.")
-        print("   -> Conviene enfocar el trabajo en break-even, trailing stop, o partial close.")
-    else:
-        print("\n❌ Ninguna configuración de R:R fue rentable con esta entrada.")
-        print("   -> El problema está en la ENTRADA: la señal EMA+filtro no predice dirección de forma fiable.")
-        print("   -> Conviene mejorar el filtro de entrada antes de optimizar la salida.")
+    if verbose:
+        print("#" * 60)
+        mejores = [r for r in resultados if r[5] > 0]
+        if mejores:
+            print(f"\n✅ Hay edge real en la entrada: {len(mejores)} de {len(resultados)} configuraciones de R:R son rentables.")
+            print("   -> El problema NO es la señal de entrada en sí, es cómo gestionás la salida.")
+            print("   -> Conviene enfocar el trabajo en break-even, trailing stop, o partial close.")
+        else:
+            print("\n❌ Ninguna configuración de R:R fue rentable con esta entrada.")
+            print("   -> El problema está en la ENTRADA: la señal EMA+filtro no predice dirección de forma fiable.")
+            print("   -> Conviene mejorar el filtro de entrada antes de optimizar la salida.")
+
+    return resultados
+
+
+def elegir_mejor_rr(resultados, default_rr=RR_RATIO):
+    """Elige el R:R con mejor estadístico t (metrica_robusta), no el de
+    mayor R total crudo -- así una sola racha o un trade con TP enorme no
+    puede ganar el barrido por azar. `resultados` debe venir SOLO de datos
+    de TRAIN — nunca de TEST, para no contaminar la validación posterior."""
+    if not resultados:
+        return default_rr
+    mejor = max(resultados, key=lambda r: r[6])
+    return mejor[0]
 
 
 PARTIAL_TP_R = 1.5      # R al que se cierra el 50% de la posición
@@ -348,15 +399,15 @@ def backtest_partial_trailing(df):
     return pd.DataFrame(trades)
 
 
-def comparar_salida_fija_vs_combinada(df):
+def comparar_salida_fija_vs_combinada(df, rr_ratio=2.0):
     print("\n" + "#" * 60)
-    print("COMPARACIÓN: TP fijo (1:2) vs Partial Close + Trailing")
+    print(f"COMPARACIÓN: TP fijo (1:{rr_ratio}) vs Partial Close + Trailing")
     print("#" * 60)
 
-    fija = backtest_con_rr(df, 2.0)
+    fija = backtest_con_rr(df, rr_ratio)
     combinada = backtest_partial_trailing(df)
 
-    for nombre, td in [("TP fijo 1:2", fija), ("Partial+Trailing", combinada)]:
+    for nombre, td in [(f"TP fijo 1:{rr_ratio}", fija), ("Partial+Trailing", combinada)]:
         if td.empty:
             print(f"{nombre}: sin operaciones")
             continue
@@ -385,10 +436,11 @@ def backtest_trailing_con_mult(df, trail_mult, partial_r):
     return trades_df
 
 
-def optimizar_trailing(df):
-    print("\n" + "#" * 60)
-    print("BARRIDO: distintas distancias de trailing y niveles de parcial")
-    print("#" * 60)
+def optimizar_trailing(df, verbose=True):
+    if verbose:
+        print("\n" + "#" * 60)
+        print("BARRIDO: distintas distancias de trailing y niveles de parcial")
+        print("#" * 60)
 
     mejor = None
     for partial_r in [1.5, 2.0, 2.5]:
@@ -399,46 +451,36 @@ def optimizar_trailing(df):
             n = len(td)
             wr = (td["resultado_R"] > 0).sum() / n * 100
             r_total = td["resultado_R"].sum()
-            print(f"Parcial 1:{partial_r} | Trailing {trail_mult}x ATR | Trades: {n:<4} | Win rate: {wr:5.1f}% | R total: {r_total:+7.2f}R")
-            if mejor is None or r_total > mejor[2]:
-                mejor = (partial_r, trail_mult, r_total)
+            tstat = metrica_robusta(td)
+            if verbose:
+                print(f"Parcial 1:{partial_r} | Trailing {trail_mult}x ATR | Trades: {n:<4} | Win rate: {wr:5.1f}% | R total: {r_total:+7.2f}R | t-stat(neto): {tstat:+.2f}")
+            if mejor is None or tstat > mejor[3]:
+                mejor = (partial_r, trail_mult, r_total, tstat)
 
-    print("#" * 60)
-    if mejor:
-        print(f"\n🏆 Mejor combinación (sobre TODO el dataset): Parcial 1:{mejor[0]} + Trailing {mejor[1]}x ATR -> R total: {mejor[2]:+.2f}R")
-        print("⚠️  Esta combinación fue elegida optimizando sobre el mismo dataset que se reporta (in-sample) —")
-        print("    validando train/test antes de confiar en ella:")
+    if verbose:
+        print("#" * 60)
+        if mejor:
+            print(f"\n🏆 Mejor combinación (in-sample, criterio t-stat): Parcial 1:{mejor[0]} + Trailing {mejor[1]}x ATR -> R total: {mejor[2]:+.2f}R (t-stat {mejor[3]:+.2f})")
+            print("   Esta selección debe hacerse SOLO con datos de TRAIN — la confirmación con")
+            print("   datos nunca vistos ocurre después, en la etapa de validación final.")
+        else:
+            print("\nNinguna combinación de trailing produjo operaciones.")
 
-        corte = int(len(df) * 0.7)
-        train = df.iloc[:corte].reset_index(drop=True)
-        test = df.iloc[corte:].reset_index(drop=True)
-        for nombre, sub_df in [("TRAIN (primeros 70%)", train), ("TEST (últimos 30%)", test)]:
-            td = backtest_trailing_con_mult(sub_df, mejor[1], mejor[0])
-            if td.empty:
-                print(f"{nombre}: sin operaciones")
-                continue
-            n = len(td)
-            wr = (td["resultado_R"] > 0).sum() / n * 100
-            r_total = td["resultado_R"].sum()
-            estado = "✅ RENTABLE" if r_total > 0 else "❌ pierde"
-            print(f"{nombre:<22} | Trades: {n:<4} | Win rate: {wr:5.1f}% | R total: {r_total:+7.2f}R  {estado}")
+    return mejor
 
 
-def validacion_train_test(df, rr_ratio=2.5):
+def validacion_train_test(train_df, test_df, rr_ratio):
     """
-    Divide el histórico en 70% (train) y 30% (test), y corre el TP fijo
-    ganador (1:2.5) en cada mitad por separado. Si el resultado se sostiene
-    en AMBAS partes -> es una señal más confiable, no solo suerte de muestra.
+    Corre el TP fijo elegido (rr_ratio, seleccionado usando SOLO train_df en
+    una etapa previa) sobre TRAIN y TEST por separado. TEST debe ser un
+    tramo que no participó en ninguna selección de parámetros -- si el
+    resultado se sostiene ahí, el edge probablemente es real y no overfitting.
     """
     print("\n" + "#" * 60)
     print(f"VALIDACIÓN TRAIN/TEST (TP fijo 1:{rr_ratio}) — ¿se sostiene el edge?")
     print("#" * 60)
 
-    corte = int(len(df) * 0.7)
-    train = df.iloc[:corte].reset_index(drop=True)
-    test = df.iloc[corte:].reset_index(drop=True)
-
-    for nombre, sub_df in [("TRAIN (primeros 70%)", train), ("TEST (últimos 30%)", test)]:
+    for nombre, sub_df in [("TRAIN (in-sample)", train_df), ("TEST (out-of-sample)", test_df)]:
         td = backtest_con_rr(sub_df, rr_ratio)
         if td.empty:
             print(f"{nombre}: sin operaciones")
@@ -460,17 +502,28 @@ def descontar_spread(trades_df, spread_puntos=SPREAD_PUNTOS, point_size=0.01):
     Resta el costo del spread a cada trade, expresado en R.
     El spread se paga siempre (ganes o pierdas), así que se descuenta
     de TODOS los trades, no solo de los perdedores.
+
+    El riesgo (denominador de costo_R) tiene que ser el riesgo ORIGINAL de
+    entrada, no la distancia actual entrada-sl: en los trades de
+    backtest_partial_trailing() el campo "sl" se va moviendo (a
+    break-even y después con el trailing), así que en un trade que cierra
+    justo en break-even, entrada-sl da 0 y el costo del spread se
+    indefine (división por cero). Esos trades sí guardan el riesgo
+    original sin mutar en la columna "riesgo"; se usa esa si está.
     """
     td = trades_df.copy()
     spread_precio = spread_puntos * point_size
-    riesgo = (td["entrada"] - td["sl"]).abs()
+    if "riesgo" in td.columns:
+        riesgo = td["riesgo"]
+    else:
+        riesgo = (td["entrada"] - td["sl"]).abs()
     costo_R = spread_precio / riesgo
     td["resultado_R_neto"] = td["resultado_R"] - costo_R
     return td
 
 
 def resumen_neto_vs_bruto(df, rr_ratio=2.5):
-    """Corre la config ganadora (TP fijo 1:2.5) y compara resultado bruto vs neto de spread."""
+    """Corre la config ganadora (TP fijo, rr_ratio) y compara resultado bruto vs neto de spread."""
     print("\n" + "#" * 60)
     print(f"RENTABILIDAD NETA DE SPREAD (TP fijo 1:{rr_ratio}, spread={SPREAD_PUNTOS} puntos)")
     print("#" * 60)
@@ -563,50 +616,226 @@ def sensibilidad_spread(df, rr_ratio=2.5, spreads=(30, 50, 80)):
     print("#" * 60)
 
 
-def comparar_con_sin_filtro_sesion(df_base):
-    """Compara el resultado con y sin filtro de sesión horaria, mismo TP fijo 1:2.5."""
+def comparar_con_sin_filtro_sesion(df_base, rr_ratio, verbose=True):
+    """Compara el resultado con y sin filtro de sesión horaria, mismo TP fijo.
+    Devuelve True si conviene usar el filtro de sesión, según el estadístico
+    t (metrica_robusta) obtenido en df_base (debe ser SOLO train)."""
     global USE_SESSION_FILTER
-    print("\n" + "#" * 60)
-    print("COMPARACIÓN: con vs sin filtro de sesión horaria (TP fijo 1:2.5)")
-    print("#" * 60)
+    if verbose:
+        print("\n" + "#" * 60)
+        print(f"COMPARACIÓN: con vs sin filtro de sesión horaria (TP fijo 1:{rr_ratio})")
+        print("#" * 60)
 
+    tstat_por_opcion = {}
     for activar, nombre in [(False, "SIN filtro de sesión"), (True, "CON filtro de sesión")]:
         USE_SESSION_FILTER = activar
         df2 = generar_senales(df_base.copy())
-        td = backtest_con_rr(df2, 2.5)
+        td = backtest_con_rr(df2, rr_ratio)
         USE_SESSION_FILTER = False  # restaurar
         if td.empty:
-            print(f"{nombre}: sin operaciones")
+            if verbose:
+                print(f"{nombre}: sin operaciones")
+            tstat_por_opcion[activar] = float("-inf")
             continue
         n = len(td)
         wr = (td["resultado_R"] > 0).sum() / n * 100
         r_total = td["resultado_R"].sum()
-        print(f"{nombre:<22} | Trades: {n:<4} | Win rate: {wr:5.1f}% | R total: {r_total:+7.2f}R")
+        tstat = metrica_robusta(td)
+        tstat_por_opcion[activar] = tstat
+        if verbose:
+            print(f"{nombre:<22} | Trades: {n:<4} | Win rate: {wr:5.1f}% | R total: {r_total:+7.2f}R | t-stat(neto): {tstat:+.2f}")
+
+    if verbose:
+        print("#" * 60)
+    return tstat_por_opcion[True] > tstat_por_opcion[False]
+
+
+def construir_bloques_walk_forward(df, n_folds):
+    """
+    Genera `n_folds` folds de walk-forward ANCLADO (expanding window): el
+    histórico se parte en n_folds+1 bloques cronológicos contiguos y
+    disjuntos. En el fold k, TRAIN es todo lo anterior al bloque k
+    (bloques 0..k-1 concatenados) y TEST es el bloque k.
+
+    A diferencia de un único split 70/30, cada TEST acá es un tramo
+    disjunto y sucesivo del histórico -- cada fold evalúa un período de
+    mercado distinto (un régimen de tendencia, una corrección, etc.) en vez
+    de depender de si el último 30% del histórico fue representativo.
+    """
+    n_blocks = n_folds + 1
+    block_size = len(df) // n_blocks
+    limites = [i * block_size for i in range(n_blocks)] + [len(df)]
+    bloques = [df.iloc[limites[i]:limites[i + 1]] for i in range(n_blocks)]
+
+    folds = []
+    for k in range(1, n_blocks):
+        train = pd.concat(bloques[:k])
+        test = bloques[k]
+        folds.append((train, test))
+    return folds
+
+
+def _rango_fechas(df):
+    return f"{df['time'].iloc[0]:%Y-%m-%d} -> {df['time'].iloc[-1]:%Y-%m-%d}"
+
+
+def correr_fold(train_raw, test_raw, fold_num, n_folds):
+    """
+    Corre un fold completo de walk-forward: selecciona R:R, trailing y
+    filtro de sesión usando SOLO train_raw (in-sample), y evalúa esa
+    combinación UNA sola vez sobre test_raw (out-of-sample). Nada de lo que
+    pasa acá vuelve a tocar test_raw para elegir parámetros.
+    """
+    global USE_SESSION_FILTER
+
+    print("\n" + "=" * 60)
+    print(f"FOLD {fold_num}/{n_folds} — TRAIN: {len(train_raw)} velas ({_rango_fechas(train_raw)}) "
+          f"| TEST: {len(test_raw)} velas ({_rango_fechas(test_raw)})")
+    print("=" * 60)
+
+    # El filtro de sesión se decide PRIMERO, con el R:R por defecto como
+    # referencia, y recién después se tunean R:R y trailing sobre el TRAIN
+    # ya filtrado. Si se hiciera al revés (tunear todo sin filtro y decidir
+    # el filtro al final), el trailing/RR quedarían optimizados sobre un
+    # conjunto de trades distinto al que después se evalúa en TEST.
+    train_sin_filtro = generar_senales(train_raw.copy())
+    usar_filtro_sesion = comparar_con_sin_filtro_sesion(train_sin_filtro, RR_RATIO, verbose=False)
+
+    USE_SESSION_FILTER = usar_filtro_sesion
+    train = generar_senales(train_raw.copy())
+    USE_SESSION_FILTER = False
+
+    resultados_rr = diagnostico_entrada_vs_salida(train, verbose=False)
+    mejor_rr = elegir_mejor_rr(resultados_rr)
+
+    mejor_trailing = optimizar_trailing(train, verbose=False)
+
+    detalle_trailing = ""
+    if mejor_trailing:
+        detalle_trailing = f" | trailing: parcial 1:{mejor_trailing[0]} / {mejor_trailing[1]}x ATR"
+    print(f"Parámetros elegidos in-sample (TRAIN de este fold): R:R 1:{mejor_rr} | "
+          f"filtro sesión: {'CON' if usar_filtro_sesion else 'SIN'}{detalle_trailing}")
+
+    # --- evaluación out-of-sample, una sola vez, con los parámetros ya fijados ---
+    USE_SESSION_FILTER = usar_filtro_sesion
+    test = generar_senales(test_raw.copy())
+    USE_SESSION_FILTER = False
+
+    resultado = {
+        "fold": fold_num, "n_train": len(train_raw), "n_test": len(test_raw),
+        "rr": mejor_rr, "filtro_sesion": usar_filtro_sesion, "trailing": mejor_trailing,
+        "n_trades_test": 0, "wr_test": None, "r_total_test": None,
+        "r_neto_test": None, "rentable": None,
+    }
+
+    td_test = backtest_con_rr(test, mejor_rr)
+    if td_test.empty:
+        print("TEST (out-of-sample): sin operaciones.")
+        return resultado
+
+    n = len(td_test)
+    wr = (td_test["resultado_R"] > 0).sum() / n * 100
+    r_total = td_test["resultado_R"].sum()
+    breakeven = 1 / (1 + mejor_rr) * 100
+    r_neto = descontar_spread(td_test)["resultado_R_neto"].sum()
+    rentable = wr > breakeven
+    estado = "✅ RENTABLE" if rentable else "❌ pierde"
+    print(f"TEST (out-of-sample) | Trades: {n:<4} | Win rate: {wr:5.1f}% | Equilibrio: {breakeven:5.1f}% | "
+          f"R total: {r_total:+7.2f}R | Neto de spread: {r_neto:+7.2f}R  {estado}")
+
+    if mejor_trailing:
+        partial_r, trail_mult = mejor_trailing[0], mejor_trailing[1]
+        td_trail = backtest_trailing_con_mult(test, trail_mult, partial_r)
+        if not td_trail.empty:
+            n_t = len(td_trail)
+            r_total_t = td_trail["resultado_R"].sum()
+            estado_t = "✅ RENTABLE" if r_total_t > 0 else "❌ pierde"
+            print(f"  (trailing OOS)      | Trades: {n_t:<4} | R total: {r_total_t:+7.2f}R  {estado_t}")
+
+    resultado.update(n_trades_test=n, wr_test=wr, r_total_test=r_total, r_neto_test=r_neto, rentable=rentable)
+    return resultado
+
+
+def resumen_walk_forward(resultados_folds):
+    print("\n" + "#" * 60)
+    print("RESUMEN WALK-FORWARD (cada fold = un período de mercado distinto)")
+    print("#" * 60)
+    for r in resultados_folds:
+        filtro = "CON filtro" if r["filtro_sesion"] else "SIN filtro"
+        if not r["n_trades_test"]:
+            print(f"Fold {r['fold']} | R:R 1:{r['rr']} | {filtro} | TEST: sin operaciones")
+            continue
+        estado = "✅ RENTABLE" if r["rentable"] else "❌ pierde"
+        print(f"Fold {r['fold']} | R:R 1:{r['rr']} | {filtro} | Trades: {r['n_trades_test']:<4} | "
+              f"Win rate: {r['wr_test']:5.1f}% | R total: {r['r_total_test']:+7.2f}R | "
+              f"Neto spread: {r['r_neto_test']:+7.2f}R  {estado}")
 
     print("#" * 60)
+    validos = [r for r in resultados_folds if r["n_trades_test"]]
+    rentables = [r for r in validos if r["rentable"]]
+    rentables_neto = [r for r in validos if r["r_neto_test"] and r["r_neto_test"] > 0]
+
+    if not validos:
+        print("\nNingún fold generó operaciones en TEST.")
+        return
+
+    print(f"\nFolds rentables (bruto):        {len(rentables)}/{len(validos)}")
+    print(f"Folds rentables (neto de spread): {len(rentables_neto)}/{len(validos)}")
+
+    r_total_prom = sum(r["r_total_test"] for r in validos) / len(validos)
+    trades_totales = sum(r["n_trades_test"] for r in validos)
+    print(f"R total promedio por fold: {r_total_prom:+.2f}R | Trades TEST acumulados: {trades_totales}")
+
+    # --- ¿el resultado agregado depende de un solo fold dominante? ---
+    r_neto_total = sum(r["r_neto_test"] for r in validos)
+    fold_max = max(validos, key=lambda r: r["r_neto_test"])
+    if r_neto_total != 0:
+        pct_dominante = fold_max["r_neto_test"] / r_neto_total * 100
+        r_neto_sin_dominante = r_neto_total - fold_max["r_neto_test"]
+        trades_sin_dominante = trades_totales - fold_max["n_trades_test"]
+        print(f"\nFold más fuerte: Fold {fold_max['fold']} ({fold_max['r_neto_test']:+.2f}R neto) "
+              f"-> {pct_dominante:.0f}% del R neto acumulado.")
+        print(f"Sin ese fold: {r_neto_sin_dominante:+.2f}R neto en {trades_sin_dominante} trades "
+              f"({r_neto_sin_dominante/trades_sin_dominante:+.3f}R/trade en promedio).")
+        if pct_dominante > 60:
+            print("⚠️  Un solo fold concentra la mayoría del resultado -- el agregado no es evidencia")
+            print("   fuerte de un edge estable, aunque varios folds individuales den positivo.")
+
+    if len(rentables) == len(validos):
+        print("\n✅ El edge se sostuvo en TODOS los folds out-of-sample -> evidencia más fuerte de que es real,")
+        print("   no depende de un único período/régimen de mercado.")
+    elif len(rentables) >= len(validos) * 0.5:
+        print("\n⚠️  El edge se sostuvo en algunos folds pero no en todos -> puede depender del régimen de")
+        print("   mercado (tendencia vs rango, rally vs corrección). No lo trates como robusto todavía.")
+    else:
+        print("\n❌ El edge NO se sostuvo en la mayoría de los folds -> el resultado de un solo split")
+        print("   70/30 anterior probablemente fue suerte de muestra (overfitting a un período puntual).")
+
+    print("\nOjo: dentro de cada fold se siguen probando ~20 combinaciones (R:R x trailing x filtro de")
+    print("sesión) sobre el TRAIN de ese fold antes de evaluar en su TEST. El criterio de selección ya")
+    print("es un estadístico t (no R total crudo) para reducir el riesgo de un ganador espurio, pero la")
+    print("búsqueda greedy en sí sigue estando presente en cada fold -- si el edge se sostiene en todos")
+    print("los folds con esto, recién ahí conviene bajar más historial de MT5 para un test final nuevo.")
 
 
 def main():
     conectar_mt5()
     df = bajar_datos(SYMBOL, TIMEFRAME, N_VELAS)
     df = calcular_indicadores(df)
-    df = generar_senales(df)
 
-    trades_df = backtest(df)
-    mostrar_resultados(trades_df)
+    diagnostico_gap_entrada(generar_senales(df.copy()))
 
-    if not trades_df.empty:
-        trades_df.to_csv("resultados_backtest.csv", index=False)
-        print("\nDetalle de operaciones guardado en resultados_backtest.csv")
+    N_FOLDS = 9  # 10 bloques de ~1500 velas c/u -> mas poder estadistico que 4 folds
+    folds = construir_bloques_walk_forward(df, N_FOLDS)
+    print(f"\nWalk-forward anclado: {N_FOLDS} folds sobre {len(df)} velas totales "
+          f"(TRAIN crece {len(df)//(N_FOLDS+1)} velas por fold, TEST fijo de {len(df)//(N_FOLDS+1)} velas c/u)")
 
-    diagnostico_entrada_vs_salida(df)
-    diagnostico_gap_entrada(df)
-    comparar_salida_fija_vs_combinada(df)
-    optimizar_trailing(df)
-    comparar_con_sin_filtro_sesion(df)
-    validacion_train_test(df, rr_ratio=2.5)
-    resumen_neto_vs_bruto(df, rr_ratio=2.5)
-    sensibilidad_spread(df, rr_ratio=2.5)
+    resultados_folds = [
+        correr_fold(train_raw, test_raw, i, N_FOLDS)
+        for i, (train_raw, test_raw) in enumerate(folds, start=1)
+    ]
+
+    resumen_walk_forward(resultados_folds)
 
     mt5.shutdown()
 
