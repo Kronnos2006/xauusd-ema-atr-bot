@@ -153,6 +153,11 @@ def main():
     print(f"Logger de señales EMA{mod.EMA_FAST}/{mod.EMA_SLOW}/{mod.EMA_TREND} + ATR{mod.ATR_PERIOD} arrancado.")
     print(f"Símbolo: {mod.SYMBOL} | Timeframe: M15 | Poll: cada {POLL_SEGUNDOS}s | Salida: {CSV_SALIDA}")
     print("Modo LOGGING PURO -- no envía órdenes. Ctrl+C para cortar.\n")
+    # Se registra el arranque en el log de errores/eventos (no solo excepciones) para que
+    # los cortes del proceso (ej: STATUS_CONTROL_C_EXIT por cierre de sesion/consola, no
+    # capturable como excepcion de Python) queden visibles como un gap entre un "ARRANQUE"
+    # y el siguiente, en vez de depender de chequear el PID a mano para notarlos.
+    log_error("ARRANQUE del logger (nuevo proceso)")
 
     conectado = False
     ultima_vela_procesada = None
