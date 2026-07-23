@@ -48,6 +48,9 @@ EMA_FAST = 9
 EMA_SLOW = 21
 EMA_TREND = 50
 
+SWING_L = 2     # barras a la izquierda para confirmar un swing high/low (fractal fijo, no tuneado por fold)
+SWING_R = 2     # barras a la derecha -- también el retraso de confirmación (no se puede saber antes)
+
 ATR_PERIOD = 14
 SL_ATR_MULT = 1.5                 # Stop Loss = 1.5x ATR
 RR_RATIO = 2.0                    # Take Profit = 2x el riesgo (1:2)
@@ -203,6 +206,105 @@ def generar_senales_mtf(df):
     # mismo warm-up posicional que generar_senales: además de proteger la
     # tendencia (ya cubierto por el warm-up propio de H1), protege contra
     # cruces espurios de EMA9/21 M15 en sus propias primeras velas.
+    warmup = df.index < EMA_TREND
+    df.loc[warmup, "senal_compra"] = False
+    df.loc[warmup, "senal_venta"] = False
+
+    return df
+
+
+def calcular_estructura_swings(df):
+    """Tendencia definida por estructura de swings (Higher-High/Higher-Low =
+    alcista, Lower-High/Lower-Low = bajista) en vez de por una EMA. Un swing
+    en la barra i recién se puede CONFIRMAR en la barra i+SWING_R (una vez
+    vistas las SWING_R barras siguientes) -- todo el desplazamiento de abajo
+    existe para que ninguna fila use información de barras que todavía no
+    "vivió" en ese punto del dataset."""
+    df = df.copy()
+
+    # --- 1. detección vectorizada (todavía no es "usable", ver paso 2) ---
+    vecinos_high = pd.concat(
+        [df["high"].shift(k) for k in list(range(1, SWING_L + 1)) + list(range(-1, -SWING_R - 1, -1))],
+        axis=1,
+    )
+    ventana_high_completa = vecinos_high.notna().all(axis=1)
+    swing_high_raw = (df["high"] > vecinos_high.max(axis=1)) & ventana_high_completa
+
+    vecinos_low = pd.concat(
+        [df["low"].shift(k) for k in list(range(1, SWING_L + 1)) + list(range(-1, -SWING_R - 1, -1))],
+        axis=1,
+    )
+    ventana_low_completa = vecinos_low.notna().all(axis=1)
+    swing_low_raw = (df["low"] < vecinos_low.min(axis=1)) & ventana_low_completa
+
+    # --- 2. confirmación desplazada SWING_R barras: el valor detectado en la
+    # fila i queda reubicado en la fila i+SWING_R, que solo depende de barras
+    # <= i+SWING_R -- mismo principio que "valido_desde" en calcular_tendencia_h1,
+    # acá posicional en barras en vez de en tiempo de calendario ---
+    swing_high_confirmado = df["high"].where(swing_high_raw).shift(SWING_R)
+    swing_low_confirmado = df["low"].where(swing_low_raw).shift(SWING_R)
+
+    # --- 3. clasificación HH/LH y HL/LL sobre los pocos miles de swings
+    # confirmados (barato, no hace falta vectorizar esto), + forward-fill ---
+    def _clasificar(serie_confirmada, etiqueta_sube, etiqueta_baja):
+        estado = pd.Series(np.nan, index=df.index, dtype=object)
+        ultimo = None
+        for idx, precio in serie_confirmada.dropna().items():
+            if ultimo is not None:
+                if precio > ultimo:
+                    estado.loc[idx] = etiqueta_sube
+                elif precio < ultimo:
+                    estado.loc[idx] = etiqueta_baja
+                # empate exacto: no se etiqueta -- no confirma ni rompe la
+                # tendencia, puede ser solo resolución de tick del broker
+            ultimo = precio
+        return estado.ffill()
+
+    estado_high_ff = _clasificar(swing_high_confirmado, "HH", "LH")
+    estado_low_ff = _clasificar(swing_low_confirmado, "HL", "LL")
+
+    df["tendencia_alcista_estructura"] = ((estado_high_ff == "HH") & (estado_low_ff == "HL")).fillna(False).astype(bool)
+    df["tendencia_bajista_estructura"] = ((estado_high_ff == "LH") & (estado_low_ff == "LL")).fillna(False).astype(bool)
+
+    # --- 4. warm-up dependiente de datos: recién hay estructura clasificable
+    # después del 2º swing confirmado de cada tipo (nada fijo como EMA_TREND) ---
+    primer_valido_high = estado_high_ff.first_valid_index()
+    primer_valido_low = estado_low_ff.first_valid_index()
+    primer_valido = max(
+        primer_valido_high if primer_valido_high is not None else len(df),
+        primer_valido_low if primer_valido_low is not None else len(df),
+    )
+    warmup_estructura = max(EMA_TREND, primer_valido)
+    print(f"Estructura de swings: warm-up calculado = {warmup_estructura} barras "
+          f"(EMA_TREND={EMA_TREND}, 2º swing confirmado de cada tipo en fila {primer_valido}).")
+
+    warmup = df.index < warmup_estructura
+    df.loc[warmup, "tendencia_alcista_estructura"] = False
+    df.loc[warmup, "tendencia_bajista_estructura"] = False
+
+    return df
+
+
+def generar_senales_estructura(df):
+    """Misma señal que generar_senales (mismo trigger EMA9/21), pero el filtro
+    de tendencia deja de ser una EMA (M15 o H1) y pasa a ser estructura de
+    swings (HH/HL vs LH/LL) ya calculada por calcular_estructura_swings.
+    Tercera variante del mismo experimento de una sola variable."""
+    df["cruce_alcista"] = (df["ema_fast"] > df["ema_slow"]) & (df["ema_fast"].shift(1) <= df["ema_slow"].shift(1))
+    df["cruce_bajista"] = (df["ema_fast"] < df["ema_slow"]) & (df["ema_fast"].shift(1) >= df["ema_slow"].shift(1))
+
+    df["senal_compra"] = df["cruce_alcista"] & df["tendencia_alcista_estructura"]
+    df["senal_venta"] = df["cruce_bajista"] & df["tendencia_bajista_estructura"]
+
+    if USE_SESSION_FILTER:
+        hora = df["time"].dt.hour
+        en_sesion = (hora >= SESSION_START_HOUR) & (hora < SESSION_END_HOUR)
+        df["senal_compra"] = df["senal_compra"] & en_sesion
+        df["senal_venta"] = df["senal_venta"] & en_sesion
+
+    # mismo warm-up posicional que generar_senales: protege contra cruces
+    # espurios de EMA9/21 M15 en sus propias primeras velas (independiente de
+    # cuál sea la fuente de tendencia).
     warmup = df.index < EMA_TREND
     df.loc[warmup, "senal_compra"] = False
     df.loc[warmup, "senal_venta"] = False
@@ -984,10 +1086,15 @@ def main():
     staleness_max = (df_mtf["time"] - df_mtf["valido_desde"]).max()
     print(f"\nAlineación MTF H1->M15: staleness máximo observado entre vela M15 y su H1 matcheada: {staleness_max}")
 
+    # --- estructura de swings (HH/HL vs LH/LL) para el filtro de tendencia --
+    # vive enteramente en M15, sin merge -> mismo largo/índice que df_m15.
+    df_estructura = calcular_estructura_swings(df_m15)
+
     N_FOLDS = 9  # 10 bloques de ~1500 velas c/u -> mas poder estadistico que 4 folds
 
     folds_baseline = construir_bloques_walk_forward(df_m15, N_FOLDS)
     folds_mtf = construir_bloques_walk_forward(df_mtf, N_FOLDS)
+    folds_estructura = construir_bloques_walk_forward(df_estructura, N_FOLDS)
     print(f"\nWalk-forward anclado: {N_FOLDS} folds sobre {len(df_m15)} velas totales "
           f"(TRAIN crece {len(df_m15)//(N_FOLDS+1)} velas por fold, TEST fijo de {len(df_m15)//(N_FOLDS+1)} velas c/u)")
 
@@ -1009,7 +1116,20 @@ def main():
     ]
     resumen_walk_forward(resultados_mtf)
 
+    print("\n" + "=" * 60)
+    print("VARIANTE ESTRUCTURA (filtro de tendencia por swings HH/HL vs LH/LL)")
+    print("=" * 60)
+    resultados_estructura = [
+        correr_fold(train_raw, test_raw, i, N_FOLDS, fn_generar_senales=generar_senales_estructura)
+        for i, (train_raw, test_raw) in enumerate(folds_estructura, start=1)
+    ]
+    resumen_walk_forward(resultados_estructura)
+
     comparar_variantes_walk_forward(resultados_baseline, resultados_mtf)
+    comparar_variantes_walk_forward(resultados_baseline, resultados_estructura,
+                                     nombre_b="Estructura (trend HH/HL)")
+    comparar_variantes_walk_forward(resultados_mtf, resultados_estructura,
+                                     nombre_a="MTF (trend H1)", nombre_b="Estructura (trend HH/HL)")
 
     mt5.shutdown()
 
