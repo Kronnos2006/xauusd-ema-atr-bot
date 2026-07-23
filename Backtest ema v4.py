@@ -33,6 +33,13 @@ SYMBOL = "XAUUSD"
 TIMEFRAME = mt5.TIMEFRAME_M15     # M15 para empezar; después probamos M5, H1
 N_VELAS = 15000                    # cuántas velas históricas bajar (subido para más robustez)
 
+HTF_TIMEFRAME = mt5.TIMEFRAME_H1   # timeframe mayor para el filtro de tendencia MTF
+TIMEFRAME_DELTA = {                # duración de una vela por timeframe (para alinear MTF sin lookahead)
+    mt5.TIMEFRAME_M15: pd.Timedelta(minutes=15),
+    mt5.TIMEFRAME_H1: pd.Timedelta(hours=1),
+}
+BUFFER_DIAS_HTF = 14               # margen calendario hacia atrás al bajar el timeframe mayor (fines de semana/feriados)
+
 USE_SESSION_FILTER = False      # solo operar en horario de mayor liquidez (Londres/NY)
 SESSION_START_HOUR = 8            # hora GMT de inicio (ajustar según tu servidor MT5)
 SESSION_END_HOUR = 20             # hora GMT de fin
@@ -60,6 +67,19 @@ def bajar_datos(symbol, timeframe, n_velas):
     rates = mt5.copy_rates_from_pos(symbol, timeframe, 0, n_velas)
     if rates is None or len(rates) == 0:
         print(f"ERROR: no se pudieron bajar datos de {symbol}. ¿Está el símbolo visible en Market Watch?")
+        quit()
+    df = pd.DataFrame(rates)
+    df["time"] = pd.to_datetime(df["time"], unit="s")
+    return df
+
+
+def bajar_datos_rango(symbol, timeframe, date_from, date_to):
+    """Como bajar_datos, pero anclado a un rango de fechas real (mt5.copy_rates_range)
+    en vez de un N de velas -- evita asumir cuántas velas hay por día con mercado
+    cerrado fines de semana/feriados."""
+    rates = mt5.copy_rates_range(symbol, timeframe, date_from, date_to)
+    if rates is None or len(rates) == 0:
+        print(f"ERROR: no se pudieron bajar datos de {symbol} en el rango {date_from} -> {date_to}.")
         quit()
     df = pd.DataFrame(rates)
     df["time"] = pd.to_datetime(df["time"], unit="s")
@@ -96,6 +116,93 @@ def generar_senales(df):
 
     # EMA_TREND recién es representativa (no sesgada hacia el primer precio
     # de la serie) después de su propio período de warm-up.
+    warmup = df.index < EMA_TREND
+    df.loc[warmup, "senal_compra"] = False
+    df.loc[warmup, "senal_venta"] = False
+
+    return df
+
+
+def calcular_tendencia_h1(df_h1):
+    """Tendencia del timeframe mayor (mismo criterio close-vs-EMA_TREND que ya
+    usa el proyecto en M15, aplicado un nivel arriba). No reutiliza
+    calcular_indicadores: no hacen falta ema_fast/ema_slow/atr en H1, y
+    calcularlos generaría colisión de nombres de columna al mergear con M15."""
+    df_h1 = df_h1.copy()
+    df_h1["ema_trend_h1"] = df_h1["close"].ewm(span=EMA_TREND, adjust=False).mean()
+    df_h1["tendencia_alcista_h1"] = df_h1["close"] > df_h1["ema_trend_h1"]
+    df_h1["tendencia_bajista_h1"] = df_h1["close"] < df_h1["ema_trend_h1"]
+
+    # warm-up de la EMA_TREND propia de H1, aplicado ANTES de exponer las
+    # columnas -- si se dejara para después del merge, las primeras filas de
+    # M15 (todo el TRAIN del fold 1) heredarían una tendencia H1 no representativa.
+    warmup_h1 = df_h1.index < EMA_TREND
+    df_h1.loc[warmup_h1, "tendencia_alcista_h1"] = False
+    df_h1.loc[warmup_h1, "tendencia_bajista_h1"] = False
+
+    # instante desde el cual esta vela H1 es información ya conocida (su close
+    # real) -- en MT5 "time" es siempre el open de la vela.
+    df_h1["valido_desde"] = df_h1["time"] + TIMEFRAME_DELTA[HTF_TIMEFRAME]
+
+    return df_h1[["valido_desde", "tendencia_alcista_h1", "tendencia_bajista_h1"]]
+
+
+def alinear_h1_a_m15(df_m15, df_h1_tendencia):
+    """Pega a cada vela M15 la tendencia de la última vela H1 que ya cerró
+    ANTES de que esa vela M15 abra (merge_asof backward sobre valido_desde) --
+    nunca usa una vela H1 todavía en formación en el instante de la señal."""
+    df_m15_ordenado = df_m15.sort_values("time")
+    df_h1_ordenado = df_h1_tendencia.sort_values("valido_desde")
+
+    # la suma de Timedelta a "time" en calcular_tendencia_h1 puede dejar
+    # valido_desde con una resolución de datetime64 distinta a la de "time" en
+    # M15 (p.ej. [s] vs [us]) -- merge_asof exige que ambas claves matcheen
+    # exactamente en dtype, no solo en tipo lógico.
+    df_m15_ordenado = df_m15_ordenado.assign(time=df_m15_ordenado["time"].astype("datetime64[ns]"))
+    df_h1_ordenado = df_h1_ordenado.assign(valido_desde=df_h1_ordenado["valido_desde"].astype("datetime64[ns]"))
+
+    df_mtf = pd.merge_asof(
+        df_m15_ordenado, df_h1_ordenado,
+        left_on="time", right_on="valido_desde",
+        direction="backward",
+    )
+
+    # filas M15 anteriores a la primera vela H1 disponible (con warm-up
+    # completo) no matchean -> quedan NaN; tratarlas como "sin tendencia
+    # confirmada" (False), no como True/False mezclado con NaN (eso sube el
+    # dtype de la columna a object y rompe el & con cruce_alcista/bajista).
+    df_mtf["tendencia_alcista_h1"] = df_mtf["tendencia_alcista_h1"].fillna(False).astype(bool)
+    df_mtf["tendencia_bajista_h1"] = df_mtf["tendencia_bajista_h1"].fillna(False).astype(bool)
+
+    df_mtf = df_mtf.reset_index(drop=True)
+    assert len(df_mtf) == len(df_m15), (
+        f"alinear_h1_a_m15 cambió el número de filas ({len(df_mtf)} vs {len(df_m15)}) "
+        "-- construir_bloques_walk_forward necesita el mismo largo para cortar los "
+        "mismos boundaries de folds que el baseline."
+    )
+    return df_mtf
+
+
+def generar_senales_mtf(df):
+    """Misma señal que generar_senales (mismo trigger EMA9/21), pero el filtro
+    de tendencia deja de ser propio de M15 (close vs EMA50 M15) y pasa a ser la
+    tendencia de H1 ya alineada por alinear_h1_a_m15. Experimento de una sola
+    variable: qué timeframe define la tendencia, nada más cambia."""
+    df["cruce_alcista"] = (df["ema_fast"] > df["ema_slow"]) & (df["ema_fast"].shift(1) <= df["ema_slow"].shift(1))
+    df["cruce_bajista"] = (df["ema_fast"] < df["ema_slow"]) & (df["ema_fast"].shift(1) >= df["ema_slow"].shift(1))
+
+    df["senal_compra"] = df["cruce_alcista"] & df["tendencia_alcista_h1"]
+    df["senal_venta"] = df["cruce_bajista"] & df["tendencia_bajista_h1"]
+
+    if USE_SESSION_FILTER:
+        hora = df["time"].dt.hour
+        en_sesion = (hora >= SESSION_START_HOUR) & (hora < SESSION_END_HOUR)
+        df["senal_compra"] = df["senal_compra"] & en_sesion
+        df["senal_venta"] = df["senal_venta"] & en_sesion
+
+    # mismo warm-up posicional que generar_senales: además de proteger la
+    # tendencia (ya cubierto por el warm-up propio de H1), protege contra
+    # cruces espurios de EMA9/21 M15 en sus propias primeras velas.
     warmup = df.index < EMA_TREND
     df.loc[warmup, "senal_compra"] = False
     df.loc[warmup, "senal_venta"] = False
@@ -616,7 +723,7 @@ def sensibilidad_spread(df, rr_ratio=2.5, spreads=(30, 50, 80)):
     print("#" * 60)
 
 
-def comparar_con_sin_filtro_sesion(df_base, rr_ratio, verbose=True):
+def comparar_con_sin_filtro_sesion(df_base, rr_ratio, verbose=True, fn_generar_senales=generar_senales):
     """Compara el resultado con y sin filtro de sesión horaria, mismo TP fijo.
     Devuelve True si conviene usar el filtro de sesión, según el estadístico
     t (metrica_robusta) obtenido en df_base (debe ser SOLO train)."""
@@ -629,7 +736,7 @@ def comparar_con_sin_filtro_sesion(df_base, rr_ratio, verbose=True):
     tstat_por_opcion = {}
     for activar, nombre in [(False, "SIN filtro de sesión"), (True, "CON filtro de sesión")]:
         USE_SESSION_FILTER = activar
-        df2 = generar_senales(df_base.copy())
+        df2 = fn_generar_senales(df_base.copy())
         td = backtest_con_rr(df2, rr_ratio)
         USE_SESSION_FILTER = False  # restaurar
         if td.empty:
@@ -679,7 +786,7 @@ def _rango_fechas(df):
     return f"{df['time'].iloc[0]:%Y-%m-%d} -> {df['time'].iloc[-1]:%Y-%m-%d}"
 
 
-def correr_fold(train_raw, test_raw, fold_num, n_folds):
+def correr_fold(train_raw, test_raw, fold_num, n_folds, fn_generar_senales=generar_senales):
     """
     Corre un fold completo de walk-forward: selecciona R:R, trailing y
     filtro de sesión usando SOLO train_raw (in-sample), y evalúa esa
@@ -698,11 +805,12 @@ def correr_fold(train_raw, test_raw, fold_num, n_folds):
     # ya filtrado. Si se hiciera al revés (tunear todo sin filtro y decidir
     # el filtro al final), el trailing/RR quedarían optimizados sobre un
     # conjunto de trades distinto al que después se evalúa en TEST.
-    train_sin_filtro = generar_senales(train_raw.copy())
-    usar_filtro_sesion = comparar_con_sin_filtro_sesion(train_sin_filtro, RR_RATIO, verbose=False)
+    train_sin_filtro = fn_generar_senales(train_raw.copy())
+    usar_filtro_sesion = comparar_con_sin_filtro_sesion(
+        train_sin_filtro, RR_RATIO, verbose=False, fn_generar_senales=fn_generar_senales)
 
     USE_SESSION_FILTER = usar_filtro_sesion
-    train = generar_senales(train_raw.copy())
+    train = fn_generar_senales(train_raw.copy())
     USE_SESSION_FILTER = False
 
     resultados_rr = diagnostico_entrada_vs_salida(train, verbose=False)
@@ -718,7 +826,7 @@ def correr_fold(train_raw, test_raw, fold_num, n_folds):
 
     # --- evaluación out-of-sample, una sola vez, con los parámetros ya fijados ---
     USE_SESSION_FILTER = usar_filtro_sesion
-    test = generar_senales(test_raw.copy())
+    test = fn_generar_senales(test_raw.copy())
     USE_SESSION_FILTER = False
 
     resultado = {
@@ -818,24 +926,90 @@ def resumen_walk_forward(resultados_folds):
     print("los folds con esto, recién ahí conviene bajar más historial de MT5 para un test final nuevo.")
 
 
+def comparar_variantes_walk_forward(resultados_a, resultados_b,
+                                     nombre_a="Baseline (trend M15)", nombre_b="MTF (trend H1)"):
+    """Compara fold a fold dos corridas de walk-forward sobre la MISMA partición
+    de folds (misma cantidad de folds, mismos boundaries). Muestra también los
+    parámetros in-sample elegidos por cada variante: RR/trailing/filtro de
+    sesión pueden diferir legítimamente entre baseline y MTF en el mismo fold,
+    y sin mostrarlos una diferencia de resultado se puede malinterpretar como
+    "la tendencia H1 es mejor" cuando en realidad también cambió el RR elegido."""
+    print("\n" + "#" * 60)
+    print(f"COMPARACIÓN FOLD A FOLD: {nombre_a}  vs  {nombre_b}")
+    print("#" * 60)
+
+    for ra, rb in zip(resultados_a, resultados_b):
+        estado_a = "sin trades" if not ra["n_trades_test"] else ("✅" if ra["rentable"] else "❌")
+        estado_b = "sin trades" if not rb["n_trades_test"] else ("✅" if rb["rentable"] else "❌")
+        r_neto_a = ra["r_neto_test"] or 0.0
+        r_neto_b = rb["r_neto_test"] or 0.0
+        delta = r_neto_b - r_neto_a
+        print(f"\nFold {ra['fold']}:")
+        print(f"  {nombre_a:<22} | R:R 1:{ra['rr']} | filtro sesión: {'CON' if ra['filtro_sesion'] else 'SIN'} | "
+              f"trades: {ra['n_trades_test']:<4} | neto: {r_neto_a:+7.2f}R  {estado_a}")
+        print(f"  {nombre_b:<22} | R:R 1:{rb['rr']} | filtro sesión: {'CON' if rb['filtro_sesion'] else 'SIN'} | "
+              f"trades: {rb['n_trades_test']:<4} | neto: {r_neto_b:+7.2f}R  {estado_b}")
+        print(f"  delta ({nombre_b} - {nombre_a}): {delta:+7.2f}R")
+
+    # mismo chequeo de "fold dominante" que resumen_walk_forward, aplicado a la
+    # variante MTF -- ese % de concentración es el criterio real de si esta
+    # hipótesis mejoró algo (no solo si el R total subió).
+    validos_b = [r for r in resultados_b if r["n_trades_test"]]
+    if validos_b:
+        r_neto_total_b = sum(r["r_neto_test"] for r in validos_b)
+        fold_max_b = max(validos_b, key=lambda r: r["r_neto_test"])
+        if r_neto_total_b != 0:
+            pct_dominante_b = fold_max_b["r_neto_test"] / r_neto_total_b * 100
+            print(f"\n[{nombre_b}] Fold más fuerte: Fold {fold_max_b['fold']} -> "
+                  f"{pct_dominante_b:.0f}% del R neto acumulado.")
+            print("(comparar este % contra el reportado arriba para el baseline en su propio resumen_walk_forward)")
+
+    print("#" * 60)
+
+
 def main():
     conectar_mt5()
-    df = bajar_datos(SYMBOL, TIMEFRAME, N_VELAS)
-    df = calcular_indicadores(df)
+    df_m15 = bajar_datos(SYMBOL, TIMEFRAME, N_VELAS)
+    df_m15 = calcular_indicadores(df_m15)
 
-    diagnostico_gap_entrada(generar_senales(df.copy()))
+    diagnostico_gap_entrada(generar_senales(df_m15.copy()))
+
+    # --- datos del timeframe mayor para el filtro de tendencia MTF ---
+    date_from_htf = df_m15["time"].min() - pd.Timedelta(days=BUFFER_DIAS_HTF)
+    date_to_htf = df_m15["time"].max() + pd.Timedelta(hours=1)
+    df_h1 = bajar_datos_rango(SYMBOL, HTF_TIMEFRAME, date_from_htf, date_to_htf)
+    df_h1_tendencia = calcular_tendencia_h1(df_h1)
+    df_mtf = alinear_h1_a_m15(df_m15, df_h1_tendencia)
+
+    staleness_max = (df_mtf["time"] - df_mtf["valido_desde"]).max()
+    print(f"\nAlineación MTF H1->M15: staleness máximo observado entre vela M15 y su H1 matcheada: {staleness_max}")
 
     N_FOLDS = 9  # 10 bloques de ~1500 velas c/u -> mas poder estadistico que 4 folds
-    folds = construir_bloques_walk_forward(df, N_FOLDS)
-    print(f"\nWalk-forward anclado: {N_FOLDS} folds sobre {len(df)} velas totales "
-          f"(TRAIN crece {len(df)//(N_FOLDS+1)} velas por fold, TEST fijo de {len(df)//(N_FOLDS+1)} velas c/u)")
 
-    resultados_folds = [
+    folds_baseline = construir_bloques_walk_forward(df_m15, N_FOLDS)
+    folds_mtf = construir_bloques_walk_forward(df_mtf, N_FOLDS)
+    print(f"\nWalk-forward anclado: {N_FOLDS} folds sobre {len(df_m15)} velas totales "
+          f"(TRAIN crece {len(df_m15)//(N_FOLDS+1)} velas por fold, TEST fijo de {len(df_m15)//(N_FOLDS+1)} velas c/u)")
+
+    print("\n" + "=" * 60)
+    print("VARIANTE BASELINE (filtro de tendencia propio de M15)")
+    print("=" * 60)
+    resultados_baseline = [
         correr_fold(train_raw, test_raw, i, N_FOLDS)
-        for i, (train_raw, test_raw) in enumerate(folds, start=1)
+        for i, (train_raw, test_raw) in enumerate(folds_baseline, start=1)
     ]
+    resumen_walk_forward(resultados_baseline)
 
-    resumen_walk_forward(resultados_folds)
+    print("\n" + "=" * 60)
+    print("VARIANTE MTF (filtro de tendencia de H1)")
+    print("=" * 60)
+    resultados_mtf = [
+        correr_fold(train_raw, test_raw, i, N_FOLDS, fn_generar_senales=generar_senales_mtf)
+        for i, (train_raw, test_raw) in enumerate(folds_mtf, start=1)
+    ]
+    resumen_walk_forward(resultados_mtf)
+
+    comparar_variantes_walk_forward(resultados_baseline, resultados_mtf)
 
     mt5.shutdown()
 
