@@ -51,6 +51,9 @@ EMA_TREND = 50
 SWING_L = 2     # barras a la izquierda para confirmar un swing high/low (fractal fijo, no tuneado por fold)
 SWING_R = 2     # barras a la derecha -- también el retraso de confirmación (no se puede saber antes)
 
+RETEST_VENTANA = 20            # velas para buscar el retest despues de una ruptura de swing (~5hs en M15), fijo, sin barrido
+RETEST_MARGEN_ATR_MULT = 0.25  # margen de la zona de retest, en multiplos del ATR de la vela de ruptura, fijo, sin barrido
+
 ATR_PERIOD = 14
 SL_ATR_MULT = 1.5                 # Stop Loss = 1.5x ATR
 RR_RATIO = 2.0                    # Take Profit = 2x el riesgo (1:2)
@@ -266,6 +269,12 @@ def calcular_estructura_swings(df):
     df["tendencia_alcista_estructura"] = ((estado_high_ff == "HH") & (estado_low_ff == "HL")).fillna(False).astype(bool)
     df["tendencia_bajista_estructura"] = ((estado_high_ff == "LH") & (estado_low_ff == "LL")).fillna(False).astype(bool)
 
+    # niveles crudos del ultimo swing high/low confirmado (forward-fill), expuestos
+    # para reutilizar en calcular_rupturas_retest -- no es tendencia, es el precio
+    # del swing en si, para poder comparar close/low/high contra el nivel roto.
+    df["ultimo_swing_high"] = swing_high_confirmado.ffill()
+    df["ultimo_swing_low"] = swing_low_confirmado.ffill()
+
     # --- 4. warm-up dependiente de datos: recién hay estructura clasificable
     # después del 2º swing confirmado de cada tipo (nada fijo como EMA_TREND) ---
     primer_valido_high = estado_high_ff.first_valid_index()
@@ -308,6 +317,84 @@ def generar_senales_estructura(df):
     warmup = df.index < EMA_TREND
     df.loc[warmup, "senal_compra"] = False
     df.loc[warmup, "senal_venta"] = False
+
+    return df
+
+
+def calcular_rupturas_retest(df):
+    """
+    Trigger de entrada nuevo: ruptura de un swing confirmado (mismo fractal
+    2-2 de calcular_estructura_swings) + retest de la zona rota. A
+    diferencia de las variantes MTF/estructura, esto NO es un filtro de
+    tendencia sobre el cruce EMA9/21 -- reemplaza el trigger por completo.
+
+    Version SIMPLE de confirmacion (elegida sobre la version estricta con
+    vela de rechazo, para minimizar variables nuevas en este primer test):
+    la vela que toca la zona de retest confirma con solo cerrar del lado
+    correcto del nivel roto.
+
+    Ventana de retest (RETEST_VENTANA) y margen de zona (RETEST_MARGEN_ATR_MULT)
+    quedan fijos, sin barrido -- mismo motivo.
+    """
+    df = calcular_estructura_swings(df)  # reutiliza la deteccion de swings ya construida; solo se usan los niveles, no la clasificacion HH/HL
+
+    n = len(df)
+    close = df["close"].to_numpy()
+    low = df["low"].to_numpy()
+    high = df["high"].to_numpy()
+    atr = df["atr"].to_numpy()
+    swing_high = df["ultimo_swing_high"].to_numpy()
+    swing_low = df["ultimo_swing_low"].to_numpy()
+
+    senal_compra = np.zeros(n, dtype=bool)
+    senal_venta = np.zeros(n, dtype=bool)
+
+    for i in range(1, n):
+        # --- ruptura alcista: el cierre cruza por encima del ultimo swing high confirmado ---
+        if not np.isnan(swing_high[i]) and not np.isnan(swing_high[i - 1]) and not np.isnan(atr[i]):
+            if close[i] > swing_high[i] and close[i - 1] <= swing_high[i - 1]:
+                nivel = swing_high[i]
+                margen = RETEST_MARGEN_ATR_MULT * atr[i]
+                for j in range(i + 1, min(i + RETEST_VENTANA + 1, n)):
+                    if low[j] <= nivel + margen:
+                        if close[j] > nivel:
+                            senal_compra[j] = True
+                        break  # un solo intento de retest -- confirmado o no, el evento se resuelve aca
+                    if close[j] < nivel:
+                        break  # cerro del lado equivocado antes de llegar a la zona -> ruptura invalidada
+
+        # --- ruptura bajista: simetrico ---
+        if not np.isnan(swing_low[i]) and not np.isnan(swing_low[i - 1]) and not np.isnan(atr[i]):
+            if close[i] < swing_low[i] and close[i - 1] >= swing_low[i - 1]:
+                nivel = swing_low[i]
+                margen = RETEST_MARGEN_ATR_MULT * atr[i]
+                for j in range(i + 1, min(i + RETEST_VENTANA + 1, n)):
+                    if high[j] >= nivel - margen:
+                        if close[j] < nivel:
+                            senal_venta[j] = True
+                        break
+                    if close[j] > nivel:
+                        break
+
+    df["senal_compra"] = senal_compra
+    df["senal_venta"] = senal_venta
+    return df
+
+
+def generar_senales_retest(df):
+    """Wrapper con la misma firma que generar_senales/_mtf/_estructura, para
+    poder correr este trigger nuevo con la misma infra de folds (correr_fold
+    recibe train_raw.copy()/test_raw.copy() de forma independiente por fold,
+    asi que la deteccion de swings y el escaneo de retest quedan
+    autocontenidos dentro de cada fold, sin fuga de informacion entre
+    TRAIN/TEST de folds distintos)."""
+    df = calcular_rupturas_retest(df)
+
+    if USE_SESSION_FILTER:
+        hora = df["time"].dt.hour
+        en_sesion = (hora >= SESSION_START_HOUR) & (hora < SESSION_END_HOUR)
+        df["senal_compra"] = df["senal_compra"] & en_sesion
+        df["senal_venta"] = df["senal_venta"] & en_sesion
 
     return df
 
@@ -1125,11 +1212,22 @@ def main():
     ]
     resumen_walk_forward(resultados_estructura)
 
+    print("\n" + "=" * 60)
+    print("VARIANTE RETEST (trigger nuevo: ruptura de swing + retest, sin EMA9/21)")
+    print("=" * 60)
+    resultados_retest = [
+        correr_fold(train_raw, test_raw, i, N_FOLDS, fn_generar_senales=generar_senales_retest)
+        for i, (train_raw, test_raw) in enumerate(folds_baseline, start=1)
+    ]
+    resumen_walk_forward(resultados_retest)
+
     comparar_variantes_walk_forward(resultados_baseline, resultados_mtf)
     comparar_variantes_walk_forward(resultados_baseline, resultados_estructura,
                                      nombre_b="Estructura (trend HH/HL)")
     comparar_variantes_walk_forward(resultados_mtf, resultados_estructura,
                                      nombre_a="MTF (trend H1)", nombre_b="Estructura (trend HH/HL)")
+    comparar_variantes_walk_forward(resultados_baseline, resultados_retest,
+                                     nombre_b="Retest (ruptura+retest)")
 
     mt5.shutdown()
 
