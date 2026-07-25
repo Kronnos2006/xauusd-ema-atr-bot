@@ -1,1 +1,17 @@
 historial/
+__pycache__/
+*.pyc
+venv/
+.venv/
+env/
+
+# Logs y CSVs generados por el logger en vivo / pruebas -- datos operativos,
+# no parte del codigo del bot
+*.log
+senales_demo_live*.csv
+test_s4u_result.log
+
+# Config local / credenciales -- nunca versionar
+.env
+*.env
+task_backup_*.xml
