@@ -9,6 +9,8 @@ env/
 # no parte del codigo del bot
 *.log
 senales_demo_live*.csv
+senal_macro_dfii10_live.csv
+estado_macro_dfii10.json
 test_s4u_result.log
 
 # Config local / credenciales -- nunca versionar
