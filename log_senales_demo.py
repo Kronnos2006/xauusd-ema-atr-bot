@@ -91,10 +91,14 @@ def intentar_conectar():
     return True
 
 
-def obtener_ultima_vela_cerrada():
+def obtener_velas_cerradas():
     """Trae las ultimas N_VELAS_CONTEXTO velas M15 YA CERRADAS (pos=1 salta
     la vela en formacion) y corre la misma logica de indicadores/señales
-    del backtest. Devuelve la fila de la vela cerrada mas reciente."""
+    del backtest. Devuelve el DataFrame completo (no solo la ultima fila)
+    para que el caller pueda procesar todas las velas nuevas desde la
+    ultima procesada -- si se procesara solo iloc[-1], una señal en una
+    vela intermedia se perdería para siempre cuando el proceso está caído
+    más de un ciclo M15 (ej. reinicios de Windows o cortes de sesión)."""
     rates = mod.mt5.copy_rates_from_pos(mod.SYMBOL, mod.TIMEFRAME, 1, N_VELAS_CONTEXTO)
     if rates is None or len(rates) == 0:
         return None
@@ -103,7 +107,7 @@ def obtener_ultima_vela_cerrada():
     df = mod.calcular_indicadores(df)
     mod.USE_SESSION_FILTER = False  # se loggean TODAS las señales; el filtro de sesion se aplica despues, en el analisis
     df = mod.generar_senales(df)
-    return df.iloc[-1]
+    return df
 
 
 def procesar_senal(vela):
@@ -168,11 +172,16 @@ def main():
                 conectado = intentar_conectar()
 
             if conectado:
-                vela = obtener_ultima_vela_cerrada()
-                if vela is not None and vela["time"] != ultima_vela_procesada:
-                    if vela["senal_compra"] or vela["senal_venta"]:
-                        procesar_senal(vela)  # si tira excepcion, NO se marca la vela como procesada -> se reintenta
-                    ultima_vela_procesada = vela["time"]
+                df = obtener_velas_cerradas()
+                if df is not None:
+                    if ultima_vela_procesada is None:
+                        velas_nuevas = df.iloc[[-1]]  # primer ciclo: solo la mas reciente, no todo el historial de contexto
+                    else:
+                        velas_nuevas = df[df["time"] > ultima_vela_procesada]
+                    for _, vela in velas_nuevas.iterrows():
+                        if vela["senal_compra"] or vela["senal_venta"]:
+                            procesar_senal(vela)  # si tira excepcion, NO se marca esta vela como procesada -> se reintenta desde aca
+                        ultima_vela_procesada = vela["time"]
 
         except Exception as e:
             log_error(f"Error en el loop: {e!r}")
