@@ -143,7 +143,7 @@ def ciclo(estado):
     df_dfii10 = descargar_dfii10()
     df_oro = bajar_oro_reciente()
     if df_oro is None or df_oro.empty:
-        return estado  # bajar_oro_reciente ya loggeo el motivo; se reintenta en el proximo ciclo
+        return estado, False  # bajar_oro_reciente ya loggeo el motivo; se reintenta en el proximo ciclo
 
     # --- 1. posicion abierta: chequear SL o cierre por horizonte M ---
     pos = estado.get("posicion_abierta")
@@ -218,7 +218,7 @@ def ciclo(estado):
     if not df_dfii10.empty:
         estado["ultima_fecha_dfii10_procesada"] = str(df_dfii10["fecha"].iloc[-1])
 
-    return estado
+    return estado, True
 
 
 def main():
@@ -229,6 +229,8 @@ def main():
 
     estado = cargar_estado()
     conectado = False
+    fallos_consecutivos = 0
+    UMBRAL_RECONEXION = 3  # fallos de IPC seguidos (a POLL_SEGUNDOS=3600, ~3hs) antes de forzar shutdown+initialize
 
     while True:
         try:
@@ -236,11 +238,22 @@ def main():
                 conectado = intentar_conectar()
 
             if conectado:
-                estado = ciclo(estado)
+                estado, oro_ok = ciclo(estado)
                 guardar_estado(estado)
+                if oro_ok:
+                    fallos_consecutivos = 0
+                else:
+                    fallos_consecutivos += 1
+                    if fallos_consecutivos >= UMBRAL_RECONEXION:
+                        log_evento(f"{fallos_consecutivos} fallos de IPC seguidos -- forzando "
+                                   f"mt5.shutdown()+initialize() para recuperar la conexion.")
+                        mod.mt5.shutdown()
+                        conectado = False
+                        fallos_consecutivos = 0
         except Exception as e:
             log_evento(f"Error en el loop: {e!r}")
             conectado = False  # fuerza reconexión en la próxima vuelta
+            fallos_consecutivos = 0
 
         time.sleep(POLL_SEGUNDOS)
 

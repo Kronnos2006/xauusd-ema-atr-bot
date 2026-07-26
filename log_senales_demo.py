@@ -101,6 +101,7 @@ def obtener_velas_cerradas():
     más de un ciclo M15 (ej. reinicios de Windows o cortes de sesión)."""
     rates = mod.mt5.copy_rates_from_pos(mod.SYMBOL, mod.TIMEFRAME, 1, N_VELAS_CONTEXTO)
     if rates is None or len(rates) == 0:
+        log_error(f"No se pudieron bajar velas: {mod.mt5.last_error()}")
         return None
     df = pd.DataFrame(rates)
     df["time"] = pd.to_datetime(df["time"], unit="s")
@@ -165,6 +166,8 @@ def main():
 
     conectado = False
     ultima_vela_procesada = None
+    fallos_consecutivos = 0
+    UMBRAL_RECONEXION = 20  # fallos seguidos (a POLL_SEGUNDOS=30, ~10 min) antes de forzar shutdown+initialize
 
     while True:
         try:
@@ -174,6 +177,7 @@ def main():
             if conectado:
                 df = obtener_velas_cerradas()
                 if df is not None:
+                    fallos_consecutivos = 0
                     if ultima_vela_procesada is None:
                         velas_nuevas = df.iloc[[-1]]  # primer ciclo: solo la mas reciente, no todo el historial de contexto
                     else:
@@ -182,10 +186,19 @@ def main():
                         if vela["senal_compra"] or vela["senal_venta"]:
                             procesar_senal(vela)  # si tira excepcion, NO se marca esta vela como procesada -> se reintenta desde aca
                         ultima_vela_procesada = vela["time"]
+                else:
+                    fallos_consecutivos += 1
+                    if fallos_consecutivos >= UMBRAL_RECONEXION:
+                        log_error(f"{fallos_consecutivos} fallos seguidos al pedir velas -- forzando "
+                                  f"mt5.shutdown()+initialize() para recuperar la conexion.")
+                        mod.mt5.shutdown()
+                        conectado = False
+                        fallos_consecutivos = 0
 
         except Exception as e:
             log_error(f"Error en el loop: {e!r}")
             conectado = False  # fuerza reconexión en la próxima vuelta
+            fallos_consecutivos = 0
 
         time.sleep(POLL_SEGUNDOS)
 
