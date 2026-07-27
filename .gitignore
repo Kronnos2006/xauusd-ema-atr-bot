@@ -17,3 +17,7 @@ test_s4u_result.log
 .env
 *.env
 task_backup_*.xml
+backup_tarea_*.xml
+
+# Config local de la app Obsidian (workspace, plugins) -- no es contenido del vault
+XAUUSD EMA/ATR/.obsidian/
