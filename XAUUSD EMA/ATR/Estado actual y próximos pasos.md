@@ -10,9 +10,13 @@
 
 ## Qué está pendiente
 
-- **Correr `_remediar_huerfanos_y_desplegar_autorecuperacion.ps1` como Administrador** — el fix de auto-recuperación de IPC (commit `37c4826`) para ambos loggers está commiteado pero no desplegado: al intentar reiniciar las tareas quedaron dos procesos huérfanos (código viejo, sin supervisión de Task Scheduler) que solo se pueden matar con una PowerShell elevada. Próximo pendiente de infraestructura, con plan concreto ya escrito, no un ítem abierto. Ver [[Infraestructura]] · [[Errores y bugs corregidos]].
-- **Deshabilitar la suspensión automática de Windows (`powercfg`)**, al menos con la PC enchufada — hallazgo del diagnóstico del gap S4U: el sleep recurrente del sistema es un vector de pérdida de señales que ni S4U ni `Password` resuelven (ni la auto-recuperación de IPC: durante un sleep real no hay proceso ejecutando nada que reconectar). Prioridad alta, tarea explícita. Ver [[Infraestructura]].
-- **Hipótesis macro DFII10 fase 1**: acumular más datos del holdout en vivo. No se diseña la confirmación técnica de fase 2 hasta tener una lectura más sólida que la actual (t-stat marginal, p=0.059, dependiente de un fold). Ver [[Macro DFII10 - fase 1]].
+- **Hipótesis macro DFII10 fase 1**: acumular más datos del holdout en vivo. A la fecha (2026-07-27) el CSV de salida (`senal_macro_dfii10_live.csv`) sigue en 0 episodios desde que arrancó el 2026-07-23 — esperable dada la baja frecuencia de episodios N=60, no un síntoma de falla. No se diseña la confirmación técnica de fase 2 hasta tener una lectura más sólida que la actual (t-stat marginal, p=0.059, dependiente de un fold). Ver [[Macro DFII10 - fase 1]].
+
+## Resuelto (2026-07-27)
+
+- **Huérfanos matados y fix de auto-recuperación de IPC (commit `37c4826`) ya desplegado y verificado en producción**, vía primera invocación real de `infra-guardian`. Ver [[Infraestructura]] · [[Errores y bugs corregidos]].
+- **`powercfg standby-timeout-ac`**: verificado en 0 (ya estaba correcto, no fue necesario cambiarlo — contrario a lo asumido antes de verificar).
+- **Repo sincronizado con GitHub**: divergencia con `origin/master` (un README creado directo en la interfaz web) resuelta con rebase limpio; los 5 commits pendientes de esta sesión más el vault de Obsidian (agregado a git por primera vez) ya están pusheados. `git`/`origin` quedaron 0/0.
 - **Hipótesis macro 2s10s fase 1**: cerrada, no en curso. Descartada en el filtro exploratorio (p=0.20, p=0.42 sin el fold más fuerte) — no se instrumentó logger en vivo. No se retoma salvo una razón nueva y específica (ej. otra definición de "empinamiento", otro horizonte). Ver [[Macro 2s10s - fase 1]].
 - **Familia EMA9/21 crossover**: no se retoma salvo que aparezca una razón nueva y específica para creer que en otro contexto (timeframe, instrumento) sí andaría distinto — no "probar una vez más por las dudas". Ver [[EMA baseline (M15)]].
 - **D1**: pospuesto, no descartado formalmente — pero con un techo de información bajo (extender el histórico antes de 2008 mezclaría regímenes de mercado no comparables) que lo hace improbable de resolver con confianza en ningún plazo razonable. Candidato lógico solo si el resto de las vías se agotan.
