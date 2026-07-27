@@ -86,6 +86,12 @@ Aplicado y confirmado: `Get-ScheduledTask` muestra `LogonType=S4U` tanto en `EMA
 
 **Bloqueo nuevo al desplegar código sobre tareas ya S4U**: `Stop-ScheduledTask` puede matar el `cmd.exe` que Task Scheduler supervisa pero dejar el `python.exe` hijo corriendo huérfano (sin proceso padre), y ese huérfano después no se puede matar con `Stop-Process` desde una PowerShell no elevada (S4U corre con un token distinto al de la sesión interactiva — "Acceso denegado"). Pasó exactamente esto al intentar desplegar el fix de auto-recuperación de IPC (ver [[Errores y bugs corregidos]]): quedó `_remediar_huerfanos_y_desplegar_autorecuperacion.ps1` listo para correr como Administrador.
 
+## Monitor de conveniencia del holdout DFII10 (2026-07-27)
+
+Tarea NUEVA e independiente en Task Scheduler, `XAUUSD_MacroDFII10_HoldoutMonitor` — **no es infraestructura productiva**, es solo un aviso para no tener que revisar el CSV a mano. Corre `_monitor_holdout_dfii10.ps1` una vez al día (09:00 hora local) más un trigger `AtLogOn` como catch-up. Cuenta filas de `senal_macro_dfii10_live.csv`, compara contra el conteo guardado en `estado_monitor_dfii10.json` (ignorado por git) y, si subió, muestra una notificación toast de Windows con el detalle de la(s) fila(s) nueva(s) (evento, fecha de entrada, `resultado_R`).
+
+`LogonType=Interactive` a propósito (no S4U) — necesita sesión gráfica para mostrar el toast, así que si no hay sesión iniciada ese día simplemente no se muestra hasta el próximo login. Aceptable acá porque no es una tarea que deba sobrevivir 24/7 sin falta (a diferencia de los loggers productivos). Registrada y probada con una corrida manual (`LastTaskResult=0`, estado inicial `conteo=0` guardado correctamente, sin disparar un aviso falso).
+
 ## Remediación de huérfanos y despliegue del fix de IPC (2026-07-27, resuelto)
 
 Ejecutado vía agente `infra-guardian` (primera invocación real, con confirmación explícita del usuario citada en el prompt del agente). Huérfanos (PID 38212 EMA, 21432 macro) matados, tareas relanzadas, verificado después: PIDs nuevos con padre `cmd.exe` vivo, `SessionId=0` (S4U sin degradar), ARRANQUE fresco en ambos logs. `powercfg standby-timeout-ac` verificado en 0 (ya estaba así, no requirió cambio). Detalle completo en [[Errores y bugs corregidos]]#Corte de IPC sin auto-recuperación.

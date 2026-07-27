@@ -36,5 +36,9 @@ Reutiliza `detectar_inicios_episodio()` de `hipotesis_macro_dfii10.py` sin reimp
 
 Punto de partida del logger: 2026-07-23, sin backfillear episodios históricos como pendientes (`estado_macro_dfii10.json`) — resguardo deliberado contra tomar un episodio viejo como señal fresca al primer arranque, ver [[Errores y bugs corregidos]].
 
+**Sin episodios acumulados aún (verificado 2026-07-27)**: `senal_macro_dfii10_live.csv` sigue con 0 filas de datos, ~4 días desde el arranque — esperable dada la baja frecuencia de episodios N=60 (piso de referencia ~132-291 episodios en más de 20 años de historia), no un síntoma de falla.
+
+**Monitor de conveniencia agregado (2026-07-27)**: tarea diaria de Task Scheduler (`XAUUSD_MacroDFII10_HoldoutMonitor`, ver [[Infraestructura]]) avisa con una notificación toast apenas el CSV sume una fila nueva — así el usuario no tiene que revisar el archivo a mano mientras se acumulan los episodios necesarios para volver a evaluar el checkpoint.
+
 ## Ver también
 [[Infraestructura]] · [[EMA baseline (M15)]] (contexto de por qué se buscó una hipótesis fuera de la familia EMA9/21) · [[Cronología]]
