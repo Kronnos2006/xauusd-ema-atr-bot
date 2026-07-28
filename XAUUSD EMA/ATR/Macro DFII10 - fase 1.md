@@ -1,6 +1,10 @@
 # Macro DFII10 — fase 1 (tasas reales, sin trigger técnico)
 
-Índice: [[Bienvenido]] · Ver también [[Metodología]] · [[Errores y bugs corregidos]]
+## Reclasificado (2026-07-27): factor archivado — efecto real pero económicamente débil
+
+Tras el cambio de objetivo del proyecto (ver [[Objetivo del proyecto - biblioteca de factores]]), DFII10 deja de ser "hipótesis activa en holdout" y pasa a **factor archivado**, en monitoreo pasivo sin research activo. Motivo: la auditoría de robustez del 2026-07-27 (más abajo) confirmó que el efecto es real (no un artefacto de spread ni de look-ahead) pero el power analysis mostró que confirmarlo solo con confianza estadística sólida necesitaría ~13 años más de holdout — un horizonte que lo descalifica como candidato a señal individual, aunque sigue siendo un candidato legítimo para la biblioteca de factores (ver [[factor-independence]]) si en algún momento hay 2+ factores para combinar. El logger en vivo y el monitor de holdout siguen corriendo (no cuesta nada mantenerlos), pero no se invierte más tiempo de diseño en esta hipótesis sola.
+
+Índice: [[Bienvenido]] · Ver también [[Metodología]] · [[Errores y bugs corregidos]] · [[Objetivo del proyecto - biblioteca de factores]]
 
 ## Contexto
 

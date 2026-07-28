@@ -10,7 +10,10 @@
 
 ## Qué está pendiente
 
-- **Hipótesis macro DFII10 fase 1**: acumular más datos del holdout en vivo, con una salvedad importante encontrada en la auditoría de robustez del 2026-07-27 (ver [[Macro DFII10 - fase 1]]#Auditoría de robustez): el power analysis muestra que llegar a 80% de poder estadístico con el efecto ya observado necesita 105 trades adicionales — a la frecuencia esperada (~8 episodios/año), son **~13 años más**, no un par de meses. Costos de spread y look-ahead de datos (ALFRED) ya verificados limpios; drawdown y profit factor razonables. No se diseña la confirmación técnica de fase 2 todavía. Ver [[Macro DFII10 - fase 1]] y [[Checklist paso a cuenta demo]] para los criterios objetivos de cuándo pasaría a demo.
+- **Objetivo del proyecto redefinido (2026-07-27)**: de "encontrar una señal fuerte" a "construir una biblioteca de factores independientes de baja correlación". Ver [[Objetivo del proyecto - biblioteca de factores]] y [[Criterios de cierre del enfoque]].
+- **DFII10 archivado, no en research activo**: el power analysis mostró que confirmarla sola necesitaría ~105 trades adicionales, ~13 años más de holdout — un plazo que la descalifica como candidata a señal individual, aunque sigue siendo candidata a la biblioteca de factores. El logger en vivo y el monitor de holdout siguen corriendo (monitoreo pasivo, sin costo). Ver [[Macro DFII10 - fase 1]].
+- **Próximos candidatos**: ver [[Candidatos futuros]], todos sujetos al triage de frecuencia (`hypothesis-gate`) antes de entrar al pipeline completo.
+- Ver [[Checklist paso a cuenta demo]] para los criterios objetivos de cuándo cualquier factor (o combinación) pasaría a demo.
 
 ## Resuelto (2026-07-27)
 

@@ -4,9 +4,9 @@
 
 Redactado el 2026-07-27, **antes de que ninguna hipótesis esté cerca de necesitarlo** — a propósito, para que los umbrales no se negocien bajo presión el día que un resultado esté "casi" pasando. Aplica a cualquier hipótesis futura, no solo a DFII10. Si algún número acá se cambia más adelante, el cambio y su motivo quedan documentados en esta misma nota, con fecha — no se edita en silencio.
 
-## Los siete criterios
+## Los nueve criterios
 
-Los siete tienen que cumplirse a la vez. No hay promedio ni "pasa 5 de 7" — es la misma disciplina binaria (PASA / NO LISTO) que ya usa `hypothesis-gate` para el checkpoint exploratorio, aplicada un escalón más arriba.
+Los nueve tienen que cumplirse a la vez (los criterios 8 y 9 agregados el 2026-07-27, revisión externa). No hay promedio ni "pasa 7 de 9" — es la misma disciplina binaria (PASA / NO LISTO) que ya usa `hypothesis-gate` para el checkpoint exploratorio, aplicada un escalón más arriba.
 
 ### 1. Significancia estadística fuera de muestra
 **t-stat pooled sobre R neto de spread, con Y sin el fold/período más fuerte, ambos con p < 0.05 (dos colas).**
@@ -35,6 +35,18 @@ No alcanza con que la fuente sea "confiable" en general — series sujetas a rev
 **La hipótesis en cuestión tiene que tener su propia frase falsable y regla de corte fijadas ANTES de correr el walk-forward** (ya exigido por `hypothesis-gate` en la fase exploratoria) **Y el veredicto de este checklist tiene que aplicarse tal como está escrito acá, sin relajar ningún número porque el resultado "casi" pasa.**
 Este último punto es el que más vale la pena escribir en frío: la tentación real no es ignorar un criterio entero, es mover un umbral 2-3 puntos porcentuales para que algo "casi listo" pase. Si eso pasa, es una señal de que el checklist se está usando mal, no de que el número original estaba mal.
 
+### 8. Regla de degradación backtest → vivo
+
+**Asumir que el Sharpe en cuenta viva va a ser el 40-60% del Sharpe de backtest (degradación conocida en la industria: costos no modelados, slippage, cambio de régimen, sesgo de selección del propio proceso de research). Para una hipótesis de baja frecuencia como las de este proyecto (pocos trades/año), esto exige un Sharpe de backtest ≥ 1.0-1.5 para tener una expectativa razonable de Sharpe en vivo positivo y útil.**
+
+No es una corrección cosmética — con un Sharpe de backtest de 0.45 (el caso real de DFII10, ver [[Macro DFII10 - fase 1]]), el 40-60% esperado en vivo cae a 0.18-0.27, un nivel donde el ruido de ejecución real fácilmente se come cualquier edge. Este criterio es el motivo cuantitativo, no solo intuitivo, de por qué un Sharpe marginal en backtest no es "casi suficiente" — es estructuralmente insuficiente para sobrevivir el paso a vivo.
+
+### 9. Autoridad para excepciones
+
+**Solo el dueño del proyecto (el usuario) puede autorizar una excepción a cualquiera de estos nueve criterios, y tiene que hacerlo por escrito, con fecha y motivo, ANTES de la decisión de pasar a demo — nunca implícita, nunca decidida unilateralmente por el asistente.**
+
+El asistente (Claude Code, cualquier skill o agente de este proyecto) puede señalar que un criterio no se cumple y puede opinar sobre si una excepción parece razonable, pero **no tiene autoridad para decidir que un criterio no aplica esta vez** ni para avanzar a demo asumiendo que una excepción está implícita. Cualquier excepción ejercida queda registrada en esta misma nota (nueva entrada abajo, con fecha) — no se relaja un umbral en silencio ni se edita el criterio original para que encaje con un resultado ya visto.
+
 ## Aplicación ilustrativa a DFII10 (2026-07-27, no es un veredicto de este checklist — la hipótesis nunca se propuso para demo)
 
 Para que quede concreto, no solo abstracto — cómo se ve DFII10 hoy contra cada criterio, sin que esto implique que DFII10 esté siendo evaluada para pasar a demo (no lo está, ver [[Macro DFII10 - fase 1]]):
@@ -48,8 +60,14 @@ Para que quede concreto, no solo abstracto — cómo se ve DFII10 hoy contra cad
 | 5. Datos sin look-ahead | ✅ verificado vía ALFRED, sin contaminación |
 | 6. Consistencia con holdout en vivo | ⏳ sin datos todavía (0 episodios acumulados) |
 | 7. Regla de corte pre-registrada | ✅ definida desde el inicio de la hipótesis |
+| 8. Sharpe backtest ≥ 1.0-1.5 (para Sharpe vivo positivo) | ❌ Sharpe backtest = 0.453 — muy por debajo del piso, ni siquiera con el mejor escenario de degradación (60%) llegaría a algo útil |
+| 9. Excepción autorizada por escrito | N/D — no se está evaluando pasar a demo, no aplica todavía |
 
-Cumple 4 de 7 con certeza, 1 pendiente de datos, y falla los dos criterios más duros (significancia estadística y tamaño de muestra) por un margen que no se cierra esperando poco tiempo.
+Cumple 4 de 9 con certeza, 1 pendiente de datos, 1 no aplicable en este momento, y falla los tres criterios más duros (significancia estadística, tamaño de muestra, y ahora también Sharpe de backtest) por márgenes que no se cierran esperando poco tiempo. Consistente con la reclasificación a factor archivado (ver [[Objetivo del proyecto - biblioteca de factores]]).
+
+## Registro de excepciones ejercidas
+
+(Vacío al 2026-07-27 — ninguna excepción se ejerció todavía. Cualquier excepción futura se agrega acá, con fecha, criterio afectado, motivo, y quién la autorizó.)
 
 ## Ver también
-[[Macro DFII10 - fase 1]] · [[Metodología]] · [[Infraestructura]]
+[[Macro DFII10 - fase 1]] · [[Metodología]] · [[Infraestructura]] · [[Objetivo del proyecto - biblioteca de factores]]
