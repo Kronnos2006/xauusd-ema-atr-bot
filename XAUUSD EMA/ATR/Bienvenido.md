@@ -20,6 +20,7 @@ Backtest de estrategias técnicas (y ahora macro) sobre XAUUSD vía MetaTrader5,
 - **[[Diagnóstico entrada-vs-salida]]** — el hallazgo más informativo del proyecto: por qué se cerró la familia EMA9/21 con datos, no por cansancio.
 - **[[Infraestructura]]** — scripts de backtest, loggers en vivo, el incidente de Task Scheduler y la resolución vía S4U.
 - **[[Estado actual y próximos pasos]]** — qué sigue corriendo, qué está pendiente, y la regla general para cualquier hipótesis futura.
+- **[[Checklist paso a cuenta demo]]** — los siete criterios objetivos, con umbrales numéricos, que cualquier hipótesis tiene que cumplir antes de pasar a demo. Escrito antes de que haga falta, no bajo presión.
 
 ### Hipótesis probadas
 

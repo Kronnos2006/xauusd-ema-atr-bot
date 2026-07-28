@@ -10,7 +10,7 @@
 
 ## Qué está pendiente
 
-- **Hipótesis macro DFII10 fase 1**: acumular más datos del holdout en vivo. A la fecha (2026-07-27) el CSV de salida (`senal_macro_dfii10_live.csv`) sigue en 0 episodios desde que arrancó el 2026-07-23 — esperable dada la baja frecuencia de episodios N=60, no un síntoma de falla. No se diseña la confirmación técnica de fase 2 hasta tener una lectura más sólida que la actual (t-stat marginal, p=0.059, dependiente de un fold). Ver [[Macro DFII10 - fase 1]].
+- **Hipótesis macro DFII10 fase 1**: acumular más datos del holdout en vivo, con una salvedad importante encontrada en la auditoría de robustez del 2026-07-27 (ver [[Macro DFII10 - fase 1]]#Auditoría de robustez): el power analysis muestra que llegar a 80% de poder estadístico con el efecto ya observado necesita 105 trades adicionales — a la frecuencia esperada (~8 episodios/año), son **~13 años más**, no un par de meses. Costos de spread y look-ahead de datos (ALFRED) ya verificados limpios; drawdown y profit factor razonables. No se diseña la confirmación técnica de fase 2 todavía. Ver [[Macro DFII10 - fase 1]] y [[Checklist paso a cuenta demo]] para los criterios objetivos de cuándo pasaría a demo.
 
 ## Resuelto (2026-07-27)
 
