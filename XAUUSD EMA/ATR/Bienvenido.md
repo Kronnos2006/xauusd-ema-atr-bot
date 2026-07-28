@@ -32,7 +32,7 @@ Backtest de estrategias técnicas (y ahora macro) sobre XAUUSD vía MetaTrader5,
 | H1 con SL/R:R propios (retuneado) | Descartado — minoría de folds rentables, t-stat decayendo con más datos (firma de edge ilusorio) | [[H1 retuneado]] |
 | Macro DFII10 fase 1 | **En curso / no confirmada** — pasa checkpoint exploratorio con reservas | [[Macro DFII10 - fase 1]] |
 | Macro 2s10s fase 1 (empinamiento del spread) | Descartado — no pasa checkpoint exploratorio, p=0.20 (p=0.42 sin el fold más fuerte) | [[Macro 2s10s - fase 1]] |
-| Macro DXY fase 1 | Bloqueado antes del chequeo de frecuencia — el broker no tiene el índice dólar real bajo ningún símbolo | [[Macro DXY - fase 1]] |
+| Macro DXY fase 1 (proxy sintético, 6 pares FX) | Descartado — 3/4 folds rentables pero p=0.072 con todos los folds, p=0.31 sin el fold más fuerte (59% del R neto) | [[Macro DXY - fase 1]] |
 | Ratio oro/plata fase 1 | Descartado — 4/4 folds rentables pero t-stat pooled no significativo (p=0.11, p=0.47 sin el fold más fuerte que concentra 63% del R neto) | [[Ratio oro-plata - fase 1]] |
 
 ## Reglas del proyecto (principios acumulados)

@@ -1,4 +1,4 @@
-# Macro DXY — fase 1 (bloqueado antes de empezar: sin instrumento real)
+# Macro DXY — fase 1 (proxy sintético validado, en curso)
 
 Índice: [[Bienvenido]] · Ver también [[Macro DFII10 - fase 1]] · [[Metodología]]
 
@@ -46,9 +46,36 @@ Al intentar bajar el historial D1 de los 6 pares FX, dos intentos sucesivos de c
 
 **Pendiente para retomar**: el usuario necesita liberar la conexión (matar los procesos Python colgados, o confirmar que ya se resolvieron solos/reiniciar el terminal MT5 si hace falta) antes de que se pueda bajar el historial de los 6 pares FX y completar la validación (paso 2 del plan: comparar contra 5-10 valores reales publicados de DXY, ya obtenidos de investing.com para fechas de julio 2026 — falta el lado del cálculo sintético).
 
+## Bloqueo de conexión resuelto (2026-07-27)
+
+El usuario liberó la conexión MT5 (procesos colgados terminados/reiniciados). Diagnóstico posterior sobre los procesos que sí llegaron a completar: no era un deadlock real sino una sincronización de historial muy lenta la primera vez que el terminal accede a un símbolo nunca antes seleccionado (~4 minutos por par en el peor caso) — quedó resuelto simplemente esperando o reintentando, sin necesidad de intervención más allá de liberar el canal.
+
+## Validación del proxy sintético (2026-07-27)
+
+`construir_dxy_sintetico.py` bajó los 6 pares (2000-01-03 → 2026-07-27, 6902 días solapados) y calculó la serie con la fórmula ICE exacta. `validar_dxy_sintetico.py` comparó 21 de 23 fechas de referencia (investing.com, 2026-06-29 → 2026-07-27) contra el cálculo:
+
+- **Correlación: 0.9945**. Diferencia absoluta media: 0.023 puntos (~0.02% del nivel del índice, ~101). Máxima: 0.069.
+- **3/21 fechas superan el umbral estricto de 0.05** prestado de la verificación FRED-vs-Treasury de DFII10 (07-07: 0.067, 07-08: 0.069, 07-13: 0.062) — ese umbral se calibró para puntos porcentuales de tasa de interés, una escala distinta a puntos de un índice ~100, así que no es directamente comparable. Sin sesgo direccional visible en los residuos (no hay patrón de sobre/sub-estimación sistemática) — el patrón es consistente con diferencias de timing de cotización FX entre el broker de este proyecto y el settlement oficial de ICE, no con un error de fórmula.
+- **Veredicto: validación aceptada** sobre el criterio sustantivo (correlación + error relativo pequeño, sin sesgo), con la reserva de las 3 fechas anotada explícitamente. Se procedió al chequeo de frecuencia y walk-forward.
+
+## Chequeo de frecuencia (2026-07-27)
+
+`diagnostico_frecuencia_dxy.py`, misma definición que DFII10 (`DXY[t] < DXY[t-N]`). Restringido al rango de datos de oro en MT5 (2004-06-11+): **260 episodios (N=20), 200 (N=60), 111 (N=120)** — comparable a DFII10 (291/177/132). Justifica N_FOLDS=4, igual que DFII10.
+
+## Resultado del walk-forward (2026-07-27) — NO PASA el checkpoint
+
+`hipotesis_macro_dxy.py`, mismo diseño exacto que DFII10 (frase, entrada D+1, ATR SL, horizonte M, walk-forward 4 folds anclados, grilla 3×3 de N×M), única variable cambiada: la fuente macro. Regla de corte fijada **antes de correr** (más estricta que la redacción original de DFII10, corrigiendo la falta de un número explícito señalada en la nota metodológica de [[Ratio oro-plata - fase 1]]): p<0.05 en el t-stat pooled, con y sin el fold más fuerte.
+
+- **3/4 folds rentables netos** (149 trades TEST acumulados, +27.18R neto total).
+- **t-stat pooled con todos los folds: p=0.0720** — no cruza 0.05.
+- **Sin el fold más fuerte** (Fold 4, 2022-02-24→2026-07-27, 59% del R neto acumulado): **p=0.3057** — no significativo.
+- **NO PASA**, aplicando la regla pre-registrada sin ambigüedad. Nota de consistencia: incluso con el estándar más laxo que se usó originalmente para DFII10 (solo mirar el p con todos los folds, sin exigir también <0.05 sin el fold dominante), DXY seguiría sin pasar — su p=0.072 es peor que el p=0.059 marginal de DFII10.
+
+**Conclusión**: el proxy sintético valida bien como serie de datos, pero la hipótesis en sí (caída sostenida de DXY → sesgo alcista en oro) no muestra un edge estadísticamente distinguible de ruido con esta definición. No se itera N/M fuera de la grilla ya declarada.
+
 ## Cómo aplicar
 
-No reintentar la conexión a MT5 para esta hipótesis hasta que el usuario confirme que el bloqueo de conexión está resuelto. El resto del plan (validación, chequeo de frecuencia, walk-forward) sigue vigente y queda listo para retomar apenas se libere.
+No retomar DXY salvo una razón nueva y específica (otra definición de "caída sostenida", otro horizonte, o combinarlo como filtro de otra señal en vez de hipótesis propia). Código en `construir_dxy_sintetico.py`, `validar_dxy_sintetico.py`, `diagnostico_frecuencia_dxy.py`, `hipotesis_macro_dxy.py` (todos commiteados). Serie en `historial/dxy_sintetico.csv` (ignorada por git).
 
 ## Ver también
 [[Macro DFII10 - fase 1]] · [[Macro 2s10s - fase 1]] · [[Estado actual y próximos pasos]]
