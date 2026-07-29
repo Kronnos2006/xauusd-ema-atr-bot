@@ -2,15 +2,17 @@
 
 Backtest de estrategias técnicas (y ahora macro) sobre XAUUSD vía MetaTrader5, en Python, con una disciplina de walk-forward anclado (TRAIN elige parámetros, TEST confirma una sola vez) construida para evitar data snooping. Proyecto solo, sin control de versiones hasta el 2026-07-21.
 
-## Estado actual (2026-07-25)
+## Estado actual (2026-07-27)
 
 **Familia EMA9/21 crossover: RETIRADA por completo.** 5 variantes evaluadas con la misma disciplina, las 5 fallan de forma convergente (no dispersa). El problema se diagnosticó como el trigger de entrada en sí (cruce EMA9/21), no el timeframe, no el filtro de tendencia, no la salida. No se retoma salvo razón nueva y específica.
 
 **D1: pospuesto, no descartado formalmente**, pero con techo de información bajo (77 trades en 11 años; extender el histórico antes de 2008 mezclaría regímenes de mercado no comparables). No es cuestión de esperar más.
 
-**Hipótesis activa: [[Macro DFII10 - fase 1]]** (tasas reales de EE.UU. → sesgo direccional en oro). Pasó el checkpoint exploratorio (3/4 folds rentables) pero con reservas estadísticas documentadas (t-stat marginal, p=0.059, frágil). No lista para fase 2 ni demo todavía. Logger en vivo corriendo desde el 2026-07-24 para acumular holdout genuino.
+**Tres hipótesis macro nuevas probadas y descartadas desde el 2026-07-25**: [[Macro 2s10s - fase 1]] (no pasa el filtro exploratorio, p=0.20), [[Macro DXY - fase 1]] (proxy sintético validado con 6 pares FX, pero p=0.072 con todos los folds y p=0.31 sin el fold dominante) y [[Ratio oro-plata - fase 1]] (4/4 folds rentables pero p=0.11, p=0.47 sin el fold dominante que concentra 63% del R). Los tres son el mismo patrón: conteo de folds ganadores que no sobrevive el chequeo real de t-stat.
 
-**Infraestructura**: dos loggers en vivo corriendo en paralelo (EMA M15 baseline + Macro DFII10), ambos en modo lectura pura. Incidente de estabilidad de Task Scheduler (2026-07-22) parcialmente mitigado; prueba de `LogonType S4U` en curso para resolverlo del todo.
+**Hipótesis activa: [[Macro DFII10 - fase 1]]** (tasas reales de EE.UU. → sesgo direccional en oro), la única que no fue descartada. Pasó el checkpoint exploratorio (3/4 folds rentables) pero con reservas estadísticas documentadas (t-stat marginal, p=0.059, frágil). No lista para fase 2 ni demo todavía. Logger en vivo corriendo desde el 2026-07-24 para acumular holdout genuino — sigue en 0 episodios acumulados al 2026-07-27 (esperable dada la baja frecuencia, no un síntoma de falla), con un monitor diario de conveniencia (toast de Windows) agregado para avisar apenas sume una fila.
+
+**Infraestructura**: dos loggers en vivo corriendo en paralelo (EMA M15 baseline + Macro DFII10), ambos en modo lectura pura. Incidente de estabilidad de Task Scheduler (2026-07-22) resuelto: migración a `LogonType S4U` cerrada en producción para ambas tareas (2026-07-26), y un incidente posterior de corte de IPC sin auto-recuperación (~11hs, 2026-07-25/26) ya remediado y con fix desplegado y verificado (huérfanos matados, primera invocación real de `infra-guardian`, 2026-07-27). El proyecto suma también skills de disciplina (`hypothesis-gate`, `infra-ops-playbook`, `sync-knowledge`) para no depender de acordarse de aplicar las reglas a mano.
 
 ## Cómo está organizada esta documentación
 
