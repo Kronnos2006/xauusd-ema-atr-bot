@@ -12,8 +12,13 @@
 
 - **Objetivo del proyecto redefinido (2026-07-27)**: de "encontrar una señal fuerte" a "construir una biblioteca de factores independientes de baja correlación". Ver [[Objetivo del proyecto - biblioteca de factores]] y [[Criterios de cierre del enfoque]].
 - **DFII10 archivado, no en research activo**: el power analysis mostró que confirmarla sola necesitaría ~105 trades adicionales, ~13 años más de holdout — un plazo que la descalifica como candidata a señal individual, aunque sigue siendo candidata a la biblioteca de factores. El logger en vivo y el monitor de holdout siguen corriendo (monitoreo pasivo, sin costo). Ver [[Macro DFII10 - fase 1]].
-- **Próximos candidatos**: ver [[Candidatos futuros]], todos sujetos al triage de frecuencia (`hypothesis-gate`) antes de entrar al pipeline completo.
+- **Pipeline de candidatos vacío (2026-08-03)**: los 8 candidatos de [[Candidatos futuros]] quedaron todos cerrados en esta ronda (6 descartados en triage de frecuencia, Momentum DXY descartado tras walk-forward completo, GLD sin fuente, COT descarte estructural, XAUEUR/XAUGBP reclasificado como técnica de auditoría). **Hace falta una ronda nueva de generación de candidatos** antes de seguir — no queda nada evaluable pendiente en la lista actual.
 - Ver [[Checklist paso a cuenta demo]] para los criterios objetivos de cuándo cualquier factor (o combinación) pasaría a demo.
+
+## Resuelto (2026-08-03)
+
+- **Momentum DXY sintético 1d**: cerrada, no en curso. Único de 8 candidatos que pasó el triage de frecuencia (horizonte 4.1 años) y el test de driver económico, pero descartada tras walk-forward completo de 16 folds — 6/16 rentables neto de spread, R neto acumulado -17.20R, t-stat pooled -0.986 (p=0.32), sin el fold más fuerte -1.195 (p=0.23). No es un caso marginal como DFII10: el signo es negativo y lejos de \|t\|>1.96. Ver [[Macro Momentum DXY - fase 1]].
+- **Triage de frecuencia real corrido sobre los 8 candidatos de [[Candidatos futuros]]** (datos descargados de FRED, MT5 y home.treasury.gov, no estimados): 6 descartados por horizonte proyectado de 12.9-33.2 años, GLD sin fuente verificable, COT con descarte estructural por cadencia semanal, XAUEUR/XAUGBP reclasificado (no es candidato con mecanismo propio). Detalle completo en [[Candidatos futuros]].
 
 ## Resuelto (2026-07-27)
 

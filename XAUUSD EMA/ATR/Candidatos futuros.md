@@ -2,7 +2,29 @@
 
 Índice: [[Bienvenido]] · Ver también [[Objetivo del proyecto - biblioteca de factores]] · [[Criterios de cierre del enfoque]] · [[hypothesis-gate]]
 
-Registro actualizado el 2026-07-27 (revisión externa, punto 6). **Ninguno de estos entra directo al pipeline completo** — todos pasan primero por el triage de frecuencia (Fase 0 de `hypothesis-gate`: chequeo de frecuencia + power analysis con efecto típico, descarte si el horizonte proyectado supera ~5 años) y por el screen rápido de IC (más abajo). El orden de la lista es de prioridad estimada, no de llegada — GLD y COT seguían en la lista de una ronda anterior y ya no son automáticamente los primeros.
+## Triage completo de la ronda (2026-08-03) — resultado
+
+Los 8 candidatos de abajo pasaron por el triage de frecuencia real (Fase 0, con datos descargados/verificados, no estimados) y, el único que pasó, por el walk-forward completo. Resultado: **los 8 quedan cerrados, ninguno queda pendiente de trabajo en esta ronda.**
+
+| Candidato | Frecuencia/año (mejor diseño) | Horizonte proyectado | Estado |
+|---|---|---|---|
+| **Momentum DXY sintético 1d** | 46.51 | 4.1 años → pasó triage | **Pasó triage y driver económico, pero descartada tras walk-forward completo** (16 folds, 6/16 rentables, R neto -17.20R, t=-0.986/p=0.32 pooled, t=-1.195/p=0.23 sin fold dominante — no llega ni cerca de \|t\|>1.96). Ver [[Macro Momentum DXY - fase 1]]. |
+| Spread crédito GHYG/LQD | 14.94 (N=20) | 12.9 años | Descartado en triage (Fase 0), sin pipeline. |
+| Pendiente curva TIPS (30Y-5Y) | 13.83 (N=20) | 13.9 años | Descartado en triage (Fase 0), sin pipeline. |
+| Inflation breakevens 10Y (T10YIE) | 12.20 (N=20) | 15.7 años | Descartado en triage (Fase 0), sin pipeline. |
+| GVZ (VIX del oro) | 6.11 (spike p85/252d) | 31.4 años | Descartado en triage (Fase 0), sin pipeline. |
+| VIX (fuente FRED real) | 5.78 (spike p85/252d) | 33.2 años | Descartado en triage (Fase 0), sin pipeline. |
+| GLD (flujos ETF) | — | — | Sin fuente de datos verificada — no evaluable, no se fabricó un número. Sigue pendiente de investigación de fuente si se retoma. |
+| COT (posicionamiento CFTC) | — | ≥3.7 años en el mejor caso teórico irreal (52 episodios/año, cada semana cuenta) | Descarte estructural sin pipeline — un diseño realista de "posicionamiento extremo" es por naturaleza tan poco frecuente como GVZ/VIX (~6/año), que ya fallaron por amplio margen. |
+| Oro en otras monedas (XAUEUR/XAUGBP/XAUJPY) | N/A | N/A | **Reclasificado**: no es una hipótesis con mecanismo propio, es una técnica de verificación cruzada para aislar si el driver de OTRA hipótesis es el oro o el dólar. Se anotó como auditoría posterior natural para Momentum DXY (ya sin efecto, no aplica). XAUJPY no existe en el broker (XAUEUR/XAUGBP sí, verificado vía MT5). |
+
+Nota metodológica: la biblioteca de efectos típicos (`triage_frecuencia.py`) solo tenía UNA entrada completa (media_R + std_R) al momento de este triage — DFII10 (0.230/1.135) — así que se usó esa para los 8, documentado como supuesto optimista (DFII10 terminó fallando su propio power analysis). Esto no cambia el resultado: incluso con el efecto más generoso disponible, 6 de 8 candidatos fallaron el triage por márgenes amplios, y el único que pasó (Momentum DXY) falló limpio en el walk-forward.
+
+Con esto, el pipeline de candidatos de esta ronda queda vacío — hace falta una ronda nueva de generación de candidatos antes de seguir (ver [[Estado actual y próximos pasos]]).
+
+## Registro anterior (2026-07-27, revisión externa, punto 6)
+
+**Ninguno de estos entra directo al pipeline completo** — todos pasan primero por el triage de frecuencia (Fase 0 de `hypothesis-gate`: chequeo de frecuencia + power analysis con efecto típico, descarte si el horizonte proyectado supera ~5 años) y por el screen rápido de IC (más abajo). El orden de la lista es de prioridad estimada, no de llegada — GLD y COT seguían en la lista de una ronda anterior y ya no son automáticamente los primeros.
 
 ## Screen rápido de IC — el segundo filtro barato, antes del pipeline completo
 
@@ -29,4 +51,4 @@ Esto es un chequeo direccional simple (¿la señal predice algo del retorno sigu
 Antes de invertir tiempo en cualquiera de estos: (1) triage de frecuencia, (2) screen de IC sobre VALIDATION, (3) si pasa ambos, recién ahí `hypothesis-gate` Fase 1 completa. Para los candidatos macro relacionados entre sí (breakevens, DXY, GVZ — todos tocan expectativas/volatilidad ligadas a política monetaria o risk-off genérico), correr `factor-independence` contra DFII10 (ya archivado) y entre ellos mismos antes de asumir que aportan algo nuevo — varios de estos podrían resultar ser la misma exposición con otro nombre.
 
 ## Ver también
-[[hypothesis-gate]] · [[factor-independence]] · [[Objetivo del proyecto - biblioteca de factores]] · [[Criterios de cierre del enfoque]]
+[[hypothesis-gate]] · [[factor-independence]] · [[Objetivo del proyecto - biblioteca de factores]] · [[Criterios de cierre del enfoque]] · [[Macro Momentum DXY - fase 1]] · [[Estado actual y próximos pasos]]
