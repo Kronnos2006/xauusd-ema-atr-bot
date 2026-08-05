@@ -2,6 +2,21 @@
 
 Índice: [[Bienvenido]] · Ver también [[Objetivo del proyecto - biblioteca de factores]] · [[Criterios de cierre del enfoque]] · [[hypothesis-gate]]
 
+## Ronda intradía (2026-08-04) — en curso
+
+Tras el levantamiento de la restricción de intradía (ver [[Bitácora de decisiones]] y `CLAUDE.md`), motivado por el cierre 0/8 de la ronda anterior. Regla nueva de esta ronda: el driver tiene que ser **externo al precio del oro** — DXY quedó excluido como driver después de 2 fallos consecutivos (ver [[Criterios de cierre del enfoque]], NO HACER), y un candidato de price action puro sobre el propio XAUUSD se descartó por marco, no por número (ver [[Bitácora de decisiones]]).
+
+Hallazgo estructural de esta ronda: la mayoría de los 8 candidatos de la ronda anterior (T10YIE, GVZ, pendiente TIPS, GLD, COT) **no se benefician de pasar a H4/H1** — el techo de frecuencia es del propio driver (series publicadas una vez al día o por semana), no de la muestra de oro. Solo tienen sentido acá los drivers que cotizan intradía de verdad (ETFs/CFDs con precio continuo).
+
+| Candidato | Instrumento(s) | Historia H4 disponible | Frecuencia/año (k=1.25, más restrictivo) | Horizonte proyectado | Estado |
+|---|---|---|---|---|---|
+| Momentum DXY sintético H4 | 6 pares FX (fórmula ICE) | 22.1 años (2004+) | 203.93 | 0.94-1.50 años → pasó triage | **Pasó triage y Fase 1, descartada tras walk-forward completo** (16 folds, 3/13 evaluables rentables, R neto -112.41R, t=-2.862/p=0.0042 pooled, t=-3.266/p=0.0011 sin fold dominante — edge negativo, no solo no-significativo). Ver [[Macro Momentum DXY H4 - fase 1]] |
+| Momentum propio XAUUSD H1 | XAUUSD (propio precio) | 16.9 años (2009-09-04+, limitado por `maxbars` del terminal, no por el broker) | 508.20 | 0.38-0.60 años → pasó triage con margen amplísimo | **Descartado por marco, sin correr backtest** — price action puro sobre el propio oro, misma categoría que la familia EMA9/21 ya retirada; fuera de "biblioteca de factores macro independientes". Ver [[Bitácora de decisiones]] |
+| Spread de crédito HY/IG (ratio GHYG/LQD) | `GHYG`/`LQD` (HYG real solo tiene 402 velas H4, inutilizable) | 14.3 años (2012-04-05+) | 31.83 | 6.03 años (ref. DFII10) / 9.61 años (ref. conservadora) | **Descartado en el triage (Fase 0), sin pipeline** — supera el límite de 5 años en ambas referencias de efecto típico |
+| Risk-off vía US500 | `US500` (CFD) | 14.0 años (2012-08-06+) | 62.89 | 3.05 años (ref. DFII10) / 4.87 años (ref. conservadora) | Pasó triage y Fase 1, pero **no pasa el checkpoint tras walk-forward completo** (8 folds, 5/8 rentables, R neto +34.87R, t=+1.525/p=0.1271 pooled, t=+0.921/p=0.3570 sin fold dominante, DSR=0.1806) — positivo pero sin significancia estadística. Ver [[Risk-off US500 H4 - fase 1]] |
+
+Nota metodológica: a diferencia de los candidatos DXY (episodio simétrico, cualquier signo dispara con dirección determinada por el signo), US500 y GHYG/LQD usan una definición **direccional por diseño** — solo caídas (US500) o solo ensanchamiento del proxy de spread (ratio GHYG/LQD cayendo) cuentan como episodio, porque el mecanismo de risk-off/flight-to-safety solo predice algo en esa dirección.
+
 ## Triage completo de la ronda (2026-08-03) — resultado
 
 Los 8 candidatos de abajo pasaron por el triage de frecuencia real (Fase 0, con datos descargados/verificados, no estimados) y, el único que pasó, por el walk-forward completo. Resultado: **los 8 quedan cerrados, ninguno queda pendiente de trabajo en esta ronda.**

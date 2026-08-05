@@ -2,6 +2,10 @@
 
 Backtest de estrategias técnicas (y ahora macro) sobre XAUUSD vía MetaTrader5, en Python, con una disciplina de walk-forward anclado (TRAIN elige parámetros, TEST confirma una sola vez) construida para evitar data snooping. Proyecto solo, sin control de versiones hasta el 2026-07-21.
 
+## PAUSA ACTIVA (2026-08-05)
+
+**Los tres marcos de este proyecto (XAUUSD walk-forward, EURUSD walk-forward, EURUSD event study) están cerrados — ningún marco abierto.** Ver [[Cierre formal del proyecto - 2026-08-05]] para el estado completo y la decisión pendiente. El resto de esta nota queda como registro histórico de cómo se llegó hasta acá.
+
 ## Objetivo del proyecto (actualizado 2026-07-27)
 
 **Ya no es "encontrar una señal fuerte para operar" — es construir una biblioteca de factores independientes de baja correlación que, combinados, puedan producir un edge robusto.** Ver [[Objetivo del proyecto - biblioteca de factores]] para el porqué completo y [[Criterios de cierre del enfoque]] para el presupuesto explícito de esta búsqueda.
