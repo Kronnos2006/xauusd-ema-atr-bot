@@ -2,6 +2,10 @@
 
 Índice: [[Bienvenido]]
 
+## PAUSA ACTIVA (reafirmada 2026-08-06)
+
+Los tres marcos originales del proyecto están cerrados desde 2026-08-04/05 (ver [[Cierre formal del proyecto - 2026-08-05]]). El 2026-08-06 el usuario reabrió investigación con un cuarto marco, **TF_Basket_H1** (trend following Donchian/MA, basket de 10 instrumentos) — descartado en Fase 0 sin llegar a walk-forward: Donchian 20 sin edge (t≈0), MA 10/50 no significativo y con Sharpe implícito por debajo del objetivo antes de costos. Ver [[TF_Basket_H1 — Fase 0]]. **Ningún marco abierto de nuevo** — próxima decisión de investigación pendiente del usuario. El resto de esta nota (desde 2026-07-26) queda como registro histórico previo a la pausa.
+
 ## Qué sigue corriendo (2026-07-26)
 
 - **`log_senales_demo.py`** (logger EMA M15 baseline): vía Task Scheduler (`EMA_XAUUSD_LiveSignalLogger`), ya migrada a `LogonType=S4U` y confirmada `Running`. No se invierte más tiempo de diseño ahí, pero se mantiene porque el dataset puede servir si alguna variante de M15 se revisita con evidencia nueva. Ver [[EMA baseline (M15)]] · [[Infraestructura]].

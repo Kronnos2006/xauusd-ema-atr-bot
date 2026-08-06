@@ -2,9 +2,9 @@
 
 Backtest de estrategias técnicas (y ahora macro) sobre XAUUSD vía MetaTrader5, en Python, con una disciplina de walk-forward anclado (TRAIN elige parámetros, TEST confirma una sola vez) construida para evitar data snooping. Proyecto solo, sin control de versiones hasta el 2026-07-21.
 
-## PAUSA ACTIVA (2026-08-05)
+## PAUSA ACTIVA (desde 2026-08-05, reafirmada 2026-08-06)
 
-**Los tres marcos de este proyecto (XAUUSD walk-forward, EURUSD walk-forward, EURUSD event study) están cerrados — ningún marco abierto.** Ver [[Cierre formal del proyecto - 2026-08-05]] para el estado completo y la decisión pendiente. El resto de esta nota queda como registro histórico de cómo se llegó hasta acá.
+**Los tres marcos originales de este proyecto (XAUUSD walk-forward, EURUSD walk-forward, EURUSD event study) están cerrados.** Ver [[Cierre formal del proyecto - 2026-08-05]] para el estado completo y la decisión pendiente. El 2026-08-06 el usuario reabrió investigación con un cuarto marco (**TF_Basket_H1**, trend following Donchian/MA sobre un basket de 10 instrumentos) — descartado en Fase 0, sin llegar a walk-forward (ver [[TF_Basket_H1 — Fase 0]] y la tabla de hipótesis probadas más abajo). **Ningún marco abierto de nuevo.** El resto de esta nota queda como registro histórico de cómo se llegó hasta acá.
 
 ## Objetivo del proyecto (actualizado 2026-07-27)
 
@@ -47,6 +47,7 @@ Backtest de estrategias técnicas (y ahora macro) sobre XAUUSD vía MetaTrader5,
 | Macro 2s10s fase 1 (empinamiento del spread) | Descartado — no pasa checkpoint exploratorio, p=0.20 (p=0.42 sin el fold más fuerte) | [[Macro 2s10s - fase 1]] |
 | Macro DXY fase 1 (proxy sintético, 6 pares FX) | Descartado — 3/4 folds rentables pero p=0.072 con todos los folds, p=0.31 sin el fold más fuerte (59% del R neto) | [[Macro DXY - fase 1]] |
 | Ratio oro/plata fase 1 | Descartado — 4/4 folds rentables pero t-stat pooled no significativo (p=0.11, p=0.47 sin el fold más fuerte que concentra 63% del R neto) | [[Ratio oro-plata - fase 1]] |
+| TF_Basket_H1 (Donchian/MA, basket de 10 instrumentos) | **Descartado en Fase 0** — nunca llegó a walk-forward. Donchian 20 sin edge (t=-0.04), MA 10/50 no significativo (t=0.93, p=0.35), Sharpe portfolio implícito 0.229 ya por debajo del objetivo 0.3 antes de costos, horizonte 149.3 años | [[TF_Basket_H1 — Fase 0]] |
 
 ## Reglas del proyecto (principios acumulados)
 
