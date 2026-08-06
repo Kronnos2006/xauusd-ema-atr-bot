@@ -1,10 +1,21 @@
 # Instrucciones de proyecto
 
-Proyecto de investigación estadística cuantitativa vía MT5. Sin ejecución de órdenes, sin capital real.
+Proyecto de investigación estadística cuantitativa vía MT5. Regla general: sin ejecución de órdenes, sin capital real — **excepto la fase de forward test acotada descrita abajo**, decidida explícitamente por el usuario el 2026-08-06.
 
-## Estado (desde 2026-08-05, reafirmado 2026-08-06): PAUSA ACTIVA — ningún marco abierto
+## FASE FORWARD TEST ACTIVA (desde 2026-08-06)
 
-Los tres marcos originales de este proyecto están **cerrados**. El 2026-08-06 el usuario reabrió investigación con un cuarto marco (TF_Basket_H1, trend following técnico) que también quedó cerrado, esta vez en Fase 0 sin llegar a walk-forward — ver detalle abajo. No hay ninguna hipótesis en curso. La próxima acción de investigación requiere una decisión nueva y explícita del usuario, no la continuación automática de lo último que se probó — no abrir ninguna hipótesis nueva de trading (macro, técnica, o de cualquier otro tipo) sin esa decisión.
+- **Capital real asignado: $20** (10% de $200 total)
+- **Instrumento**: Donchian 20, basket de 10 símbolos (EURUSD, USDJPY, GBPUSD, XAUUSD, XAGUSD, TLT, LQD, GDX, XLE, NVDA)
+- **Sin auto-trading — ejecución manual únicamente**
+- **Red line: drawdown ≥ −$3 → cierre inmediato, sin excepción**
+- **Puntos de decisión: mes 6 y mes 12 únicamente**
+- **El signo del P&L NO decide continuidad — solo los criterios operativos** (ver condiciones completas en `XAUUSD EMA/ATR/Bitácora de decisiones.md`, fila "Decisión Salida 2")
+
+Esta fase es una excepción acotada y pre-registrada a la regla general del proyecto, no un cambio de esa regla — cualquier otra hipótesis o marco de investigación nuevo sigue sin poder tocar capital real ni ejecutar órdenes sin una decisión igual de explícita.
+
+## Estado (desde 2026-08-05, reafirmado 2026-08-06): PAUSA ACTIVA en investigación — forward test operativo activo
+
+Los tres marcos originales de este proyecto están **cerrados**. El 2026-08-06 el usuario reabrió investigación con un cuarto marco (TF_Basket_H1, trend following técnico) que también quedó cerrado en Fase 0, sin llegar a walk-forward — ver detalle abajo. **La pausa de investigación sigue vigente** (no hay ninguna hipótesis nueva en curso bajo `hypothesis-gate`, no se abre ninguna sin decisión explícita), pero el mismo día el usuario tomó una decisión distinta y explícita — **Salida 2**: llevar Donchian 20 a un forward test operativo con capital real acotado, tratando el backtest como filtro de implementación (costos, no edge) y no como una hipótesis nueva de investigación. Ver "FASE FORWARD TEST ACTIVA" arriba y la fila "Decisión Salida 2" en `Bitácora de decisiones.md` para las condiciones completas.
 
 **Próxima decisión pendiente (del usuario)**: revisar si el enfoque macro en FX/oro (o técnico, tras el cierre de TF_Basket_H1) es el diseño adecuado, o si el patrón acumulado de cuatro marcos cerrados es evidencia de que hace falta un cambio más de fondo (instrumento, clase de driver, horizonte, objetivo del proyecto). Ver `XAUUSD EMA/ATR/Cierre formal del proyecto - 2026-08-05.md` para el resumen de los tres primeros cierres y `XAUUSD EMA/ATR/TF_Basket_H1 — Fase 0.md` para el cuarto.
 
