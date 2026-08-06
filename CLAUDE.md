@@ -1,21 +1,14 @@
 # Instrucciones de proyecto
 
-Proyecto de investigación estadística cuantitativa vía MT5. Regla general: sin ejecución de órdenes, sin capital real — **excepto la fase de forward test acotada descrita abajo**, decidida explícitamente por el usuario el 2026-08-06.
+Proyecto de investigación estadística cuantitativa vía MT5. Sin ejecución de órdenes, sin capital real.
 
-## FASE FORWARD TEST ACTIVA (desde 2026-08-06)
+## Decisión Salida 2 (2026-08-06) — cerrada en el filtro de implementación, capital real nunca desplegado
 
-- **Capital real asignado: $20** (10% de $200 total)
-- **Instrumento**: Donchian 20, basket de 10 símbolos (EURUSD, USDJPY, GBPUSD, XAUUSD, XAGUSD, TLT, LQD, GDX, XLE, NVDA)
-- **Sin auto-trading — ejecución manual únicamente**
-- **Red line: drawdown ≥ −$3 → cierre inmediato, sin excepción**
-- **Puntos de decisión: mes 6 y mes 12 únicamente**
-- **El signo del P&L NO decide continuidad — solo los criterios operativos** (ver condiciones completas en `XAUUSD EMA/ATR/Bitácora de decisiones.md`, fila "Decisión Salida 2")
+El 2026-08-06 el usuario decidió llevar Donchian 20 a un forward test operativo con capital real acotado ($20 de $200), tratando el backtest como filtro de costos de implementación (no como test de edge) y con condiciones pre-registradas no negociables (detalle completo en `XAUUSD EMA/ATR/Bitácora de decisiones.md`, filas "Decisión Salida 2" y "Backtest de implementación"). El backtest de implementación (condición 2, con costos reales de spread+swap del terminal y sizing por vol 8%/posición) dio **Sharpe neto anualizado −0.27 y drag de swaps 603.7% del retorno bruto** — ambas condiciones de ABORTA pre-registradas se dispararon. Por la condición 6 (pre-registrada el mismo día: "si salta la red line, cerrar y documentar sin re-optimizar"), **Salida 2 queda cerrada acá, sin llegar a desplegar el capital de forward test**. La regla general del proyecto ("sin capital real") nunca llegó a tener una excepción activa en la práctica — la excepción pre-registrada se cerró en su propio filtro antes de ejecutarse.
 
-Esta fase es una excepción acotada y pre-registrada a la regla general del proyecto, no un cambio de esa regla — cualquier otra hipótesis o marco de investigación nuevo sigue sin poder tocar capital real ni ejecutar órdenes sin una decisión igual de explícita.
+## Estado (desde 2026-08-05, reafirmado 2026-08-06): PAUSA ACTIVA — ningún marco abierto, Salida 2 cerrada
 
-## Estado (desde 2026-08-05, reafirmado 2026-08-06): PAUSA ACTIVA en investigación — forward test operativo activo
-
-Los tres marcos originales de este proyecto están **cerrados**. El 2026-08-06 el usuario reabrió investigación con un cuarto marco (TF_Basket_H1, trend following técnico) que también quedó cerrado en Fase 0, sin llegar a walk-forward — ver detalle abajo. **La pausa de investigación sigue vigente** (no hay ninguna hipótesis nueva en curso bajo `hypothesis-gate`, no se abre ninguna sin decisión explícita), pero el mismo día el usuario tomó una decisión distinta y explícita — **Salida 2**: llevar Donchian 20 a un forward test operativo con capital real acotado, tratando el backtest como filtro de implementación (costos, no edge) y no como una hipótesis nueva de investigación. Ver "FASE FORWARD TEST ACTIVA" arriba y la fila "Decisión Salida 2" en `Bitácora de decisiones.md` para las condiciones completas.
+Los tres marcos originales de este proyecto están **cerrados**. El 2026-08-06 el usuario reabrió investigación con un cuarto marco (TF_Basket_H1, trend following técnico) que también quedó cerrado en Fase 0, sin llegar a walk-forward — ver detalle abajo. El mismo día, la decisión operativa Salida 2 (Donchian 20 a forward test con capital real) también cerró, en su propio filtro de implementación — ver arriba. **Ninguna hipótesis de investigación en curso, ningún capital real desplegado.** No abrir ninguna hipótesis nueva ni ninguna decisión de implementación con capital real sin una decisión explícita nueva del usuario.
 
 **Próxima decisión pendiente (del usuario)**: revisar si el enfoque macro en FX/oro (o técnico, tras el cierre de TF_Basket_H1) es el diseño adecuado, o si el patrón acumulado de cuatro marcos cerrados es evidencia de que hace falta un cambio más de fondo (instrumento, clase de driver, horizonte, objetivo del proyecto). Ver `XAUUSD EMA/ATR/Cierre formal del proyecto - 2026-08-05.md` para el resumen de los tres primeros cierres y `XAUUSD EMA/ATR/TF_Basket_H1 — Fase 0.md` para el cuarto.
 
