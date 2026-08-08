@@ -26,12 +26,12 @@ int OnInit()
             ") distinto del esperado (", SimboloEsperado, "). EA no se activa.");
       return(INIT_PARAMETERS_INCORRECT);
      }
+   // No se exige D1 en el grafico: todas las llamadas a datos fijan PERIOD_D1
+   // explicitamente (iTime/iClose/CopyClose), asi que el canal Donchian se
+   // calcula siempre sobre velas D1 sin importar el timeframe del grafico.
    if(_Period != PERIOD_D1)
-     {
-      Print("Donchian20_Visual: este EA esta diseñado para D1, timeframe actual es ",
-            EnumToString(_Period), ". EA no se activa.");
-      return(INIT_PARAMETERS_INCORRECT);
-     }
+      Print("Donchian20_Visual: grafico en ", EnumToString(_Period),
+            ", el canal se calcula igual sobre velas D1 (dato interno, no depende del grafico).");
 
    Print("Donchian20_Visual inicializado -- SOLO visualizacion, no ejecuta ordenes ni toca capital. ",
          "Periodo Donchian=", DonchianPeriodo);
