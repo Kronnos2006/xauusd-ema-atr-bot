@@ -13,6 +13,18 @@
 > Ese período no se volvió a correr acá — si en algún momento se retoma, comparar
 > ambos horizontes explícitamente en vez de asumir que uno invalida al otro.
 
+## Mapeo InpStrategyMode → estrategia (por run)
+
+| Run | InpStrategyMode | Estrategia |
+|---|---|---|
+| 1 | 1 | Judas |
+| 2 | 2 | Venom |
+| 3 | 3 | Bernd |
+| 4 | 4 | LonClose |
+| 5 | 5 | SilverBullet |
+| 6 | 6 | CRT |
+| 7 | 0 (STRAT_ALL) | Todas combinadas |
+
 ## Resultado por estrategia
 
 | Estrategia | Trades | PF | Net Profit | Expectancy/trade | Win Rate | Max DD | Veredicto |
@@ -40,3 +52,58 @@
 Ninguna de las 6 estrategias sobrevive el filtro inicial en este período de 10 años. `STRAT_ALL` (corrida combinada) no se vuelve a evaluar por separado porque en la corrida original quedó dominada casi por completo por la ruina de CRT (168 de 170 trades eran CRT) — sin ninguna estrategia individual con edge, no hay expectativa de que la combinación lo tenga.
 
 **Próxima decisión pendiente del usuario**: no queda ninguna estrategia en `STRAT_MODE` con evidencia de edge en este horizonte. Antes de escribir código nuevo, definir una hipótesis nueva (con frase falsable + regla de corte) pasa primero por el mismo triage que ya se aplicó acá.
+
+## ⛔ RAMA TIME-SERIES MOMENTUM — CERRADA FORMALMENTE (2026-08-08)
+
+**Conclusión:** H1 (Momentum, 4 valores de N) y H2 (Donchian 20) probados en Python
+con datos D1 EURUSD 2005–2019. Ninguna hipótesis sobrevive validación.
+
+H1-N120 fue eliminado por concentración temporal extrema, no por PF bajo:
+- PF Validation 1.82 depende de 4 trades en años de 1 sola operación
+- 2016 (70% de la muestra): PF 0.38
+- Bootstrap CI90%: [0.585, 4.727]
+
+**El Test (2020–2026) no fue ejecutado. Sigue congelado.**
+
+**Demo:** sigue en pausa. No se activa ningún EA sin hipótesis nueva aprobada.
+
+### H1 — Time-Series Momentum en EURUSD D1
+**Estado:** ❌ FALSADA
+
+| N | Train PF | Validation PF | Veredicto |
+|---|---|---|---|
+| 20 | 1.33 | 0.62 | Eliminada — Validation < 1.10 |
+| 60 | 1.06 | 0.66 | Eliminada — Validation < 1.10 |
+| 120 | 1.67 | 1.82* | Eliminada — PF espurio, sin estabilidad temporal |
+| 252 | 0.53 | 0.43 | Eliminada — ambos períodos negativos |
+
+*H1-N120: 23 trades en Validation. Año 2016 (16 trades, 70% de muestra): PF 0.38.
+Bootstrap CI90%: [0.585, 4.727]. 18.5% de remuestreos tienen PF ≤ 1.0.
+
+### H2 — Donchian Breakout en EURUSD D1
+**Estado:** ❌ FALSADA
+
+| N | Train PF | Validation PF | Veredicto |
+|---|---|---|---|
+| 20 | 1.27 | 0.79 | Eliminada — Validation < 1.10 |
+
+---
+
+### Regla aplicada
+> FASE 2 cerrada. No se agregan filtros para rescatar ninguna hipótesis.
+> La próxima hipótesis (H3) requiere una explicación económica o estadística
+> concreta antes de codificar nada. Debe presentarse con frase falsable + regla
+> de corte para aprobación antes de implementar.
+
+## Roadmap completo
+
+> Nota: esta sección no existía en el archivo antes de este commit — la
+> reconstruyo con lo que está confirmado en este registro. Si había más filas
+> previstas (Fase 3 ya esbozada, ideas paralelas, etc.) que no quedaron
+> documentadas acá, corregir/completar.
+
+```
+FASE 1 ✅  6 estrategias ICT/SMC (MQL5, EURUSD M5) — CERRADA. Ninguna sobrevive backtest 10 años (PF<1).
+FASE 2 ✅  H1 (Momentum D1) + H2 (Donchian D1) — CERRADA. Ninguna sobrevive validación.
+FASE 3 ⏳  Pendiente de definir — requiere explicación económica/estadística nueva antes de codificar (frase falsable + regla de corte).
+```
