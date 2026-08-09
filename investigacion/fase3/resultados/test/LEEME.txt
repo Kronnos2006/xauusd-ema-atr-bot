@@ -1,0 +1,7 @@
+Esta carpeta queda vacía a propósito.
+
+El período de Test (2020-01-01 – 2026-08-08) está congelado — utils_fase3.load_dev_data()
+corta los datos en 2019-12-31 (DEV_CUTOFF), y run_h3_variant() nunca ve filas
+posteriores. No se corre hasta que H3-20, H3-60 o H3-120 sobrevivan Validation
+(los 4 criterios A-D) y el usuario autorice explícitamente gastar el único
+intento sobre Test.

@@ -1,0 +1,13 @@
+label: H3_N20
+periodo: 2005-01-01..2014-12-31
+retorno_bruto_pct: 16.340136477722034
+retorno_neto_pct: 13.001043907575372
+cagr_neto_pct: 1.1880281671125648
+sharpe_anualizado: 0.2760427626992606
+volatilidad_anual_pct: 4.687415360997676
+max_drawdown_pct: 10.335698038088225
+pct_meses_positivos: 50.83333333333333
+n_rebalanceos: 120
+turnover_promedio_mensual_pct: 127.22222222222221
+costos_acumulados_pct: 2.911734741599916
+composicion_inicial: {'winners': ['GBP', 'JPY', 'NZD'], 'losers': ['CHF', 'NOK', 'SEK'], 'middle': ['AUD', 'CAD', 'EUR']}

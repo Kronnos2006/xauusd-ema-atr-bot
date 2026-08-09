@@ -1,0 +1,20 @@
+label: H3_N20
+periodo: 2015-01-01..2019-12-31
+retorno_bruto_pct: -0.08902266288732807
+retorno_neto_pct: -1.718191809309455
+cagr_neto_pct: -0.3343686128945089
+sharpe_anualizado: -0.08755526268301722
+volatilidad_anual_pct: 3.051403728678526
+max_drawdown_pct: 9.97088879241559
+pct_meses_positivos: 53.333333333333336
+n_rebalanceos: 60
+turnover_promedio_mensual_pct: 134.99999999999997
+costos_acumulados_pct: 1.642931197433818
+composicion_inicial: {'winners': ['CHF', 'GBP', 'JPY'], 'losers': ['CAD', 'EUR', 'NZD'], 'middle': ['AUD', 'NOK', 'SEK']}
+criterio_A_sharpe_gt_050: False
+criterio_B_retorno_neto_gt_0: False
+criterio_C_annos_pos: 3/5
+criterio_C_ok: True
+criterio_D_concentracion: 0.3505731215828247
+criterio_D_ok: True
+veredicto: ELIMINADA
