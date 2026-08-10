@@ -21,6 +21,17 @@ Antes de escribir un solo backtest completo (antes incluso de la Fase 1 de abajo
 
 Este triage es deliberadamente pesimista (proyecta el horizonte completo desde cero, no desde datos ya acumulados) — es correcto que lo sea, porque corre ANTES de tener ningún trade real. Si una hipótesis pasa el triage y más adelante, con datos ya acumulados, el horizonte restante recalculado da distinto, eso es normal y no invalida el triage inicial.
 
+### Caso especial — hipótesis tipo portfolio (Sharpe), no trade discreto
+
+**Agregado 2026-08-09, tras la discusión de H4 (carry FX, Fase 4 Invenio)**: los pasos 1-3 de arriba asumen un sistema de trades discretos con R-multiple por señal (entrada/salida, stop/target) — el caso de DFII10, DXY sintético, ratio oro/plata. Una hipótesis de **portfolio de rebalanceo periódico, siempre invertido, evaluada por Sharpe anualizado** (ej. H3 momentum cross-sectional, H4 carry FX — long/short sobre un universo, rebalanceo mensual) es dimensionalmente distinta: no tiene "trades" con R-multiple, y los tamaños de efecto catalogados en `EFECTOS_OBSERVADOS` (R-multiple por trade) NO son aplicables sin un error de unidades.
+
+Para este caso, la potencia de un test de Sharpe con retornos ~iid depende de los **años** de datos, no de la frecuencia de rebalanceo ni de la frecuencia de muestreo de los retornos (diario vs. mensual da el mismo resultado en años — el Sharpe ya está normalizado por frecuencia, la `f` se cancela algebraicamente). Dos formas de aplicar el mismo principio, `investigacion/fase4/triage_frecuencia_h4.py`:
+
+1. **Años necesarios dado un Sharpe típico** (mismo enfoque que el triage estándar, con el efecto expresado como Sharpe anual en vez de R-multiple): `años_necesarios = ((z_alpha+z_beta) / Sharpe_típico) ** 2`. El Sharpe típico se elige por precedente de diseño más cercano en el proyecto (ej. el Sharpe real ya observado en una hipótesis hermana con el mismo mecanismo exacto), nunca el objetivo de la propia hipótesis candidata.
+2. **MDE (minimum detectable effect), preferible cuando se cuestione el Sharpe típico elegido**: da vuelta la pregunta y no depende de asumir ningún Sharpe — dados los años de datos que realmente se van a usar en la ventana de decisión (ej. Validation), `MDE = (z_alpha+z_beta) / √T_años` da el Sharpe verdadero más chico que esos años podrían distinguir del ruido con 80% de poder. Comparar el MDE contra el propio umbral de Sharpe pre-registrado en la regla de corte (Fase 1, punto 2): si el umbral está por debajo del MDE, la hipótesis pide un resultado que su propia ventana de datos no tiene forma de confirmar aunque el efecto fuera real — descartar ahí, sin necesidad de debatir qué Sharpe típico asumir.
+
+Ni la autocorrelación débil (ACF(1) de una magnitud típica de mercados FX, ~0.05-0.15) ni el ajuste por dependencia temporal más fina (HAC, variance ratio) cierran una brecha de más de ~2x en Sharpe o de varias veces en años — esos ajustes solo importan cuando la brecha ya es chica. Si el MDE (o el horizonte en años) falla por un margen grande, no vale la pena construir el walk-forward/Monte Carlo/stress-test completo para "verlo de todas formas": foldear reduce aún más los años efectivos por fold, empeorando el problema, no resolviéndolo (mismo patrón que llevó a crear este triage tras el caso DFII10).
+
 ## Fase 1 — Antes de escribir una sola línea de código
 
 No se abre ningún archivo de backtest nuevo, no se corre nada, hasta tener esto escrito y mostrado al usuario:
