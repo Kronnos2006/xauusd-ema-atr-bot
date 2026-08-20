@@ -2,29 +2,23 @@
 
 Backtest de estrategias técnicas (y ahora macro) sobre XAUUSD vía MetaTrader5, en Python, con una disciplina de walk-forward anclado (TRAIN elige parámetros, TEST confirma una sola vez) construida para evitar data snooping. Proyecto solo, sin control de versiones hasta el 2026-07-21.
 
-<<<<<<< HEAD
-## Estado actual (2026-07-27)
-=======
 ## Objetivo del proyecto (actualizado 2026-07-27)
 
 **Ya no es "encontrar una señal fuerte para operar" — es construir una biblioteca de factores independientes de baja correlación que, combinados, puedan producir un edge robusto.** Ver [[Objetivo del proyecto - biblioteca de factores]] para el porqué completo y [[Criterios de cierre del enfoque]] para el presupuesto explícito de esta búsqueda.
 
-## Estado actual (2026-07-25)
->>>>>>> 653c742844643e9800d02652224124836d496834
+## Estado actual (2026-07-27)
 
 **Familia EMA9/21 crossover: RETIRADA por completo.** 5 variantes evaluadas con la misma disciplina, las 5 fallan de forma convergente (no dispersa). El problema se diagnosticó como el trigger de entrada en sí (cruce EMA9/21), no el timeframe, no el filtro de tendencia, no la salida. No se retoma salvo razón nueva y específica.
 
 **D1: pospuesto, no descartado formalmente**, pero con techo de información bajo (77 trades en 11 años; extender el histórico antes de 2008 mezclaría regímenes de mercado no comparables). No es cuestión de esperar más.
 
-<<<<<<< HEAD
 **Tres hipótesis macro nuevas probadas y descartadas desde el 2026-07-25**: [[Macro 2s10s - fase 1]] (no pasa el filtro exploratorio, p=0.20), [[Macro DXY - fase 1]] (proxy sintético validado con 6 pares FX, pero p=0.072 con todos los folds y p=0.31 sin el fold dominante) y [[Ratio oro-plata - fase 1]] (4/4 folds rentables pero p=0.11, p=0.47 sin el fold dominante que concentra 63% del R). Los tres son el mismo patrón: conteo de folds ganadores que no sobrevive el chequeo real de t-stat.
-=======
-**Sin hipótesis activa en research (2026-07-27).** [[Macro DFII10 - fase 1]] (tasas reales de EE.UU. → sesgo direccional en oro) pasó el checkpoint exploratorio con reservas (t-stat marginal, p=0.059) y sobrevivió una auditoría completa de robustez, pero quedó **reclasificada como factor archivado** — el power analysis mostró que confirmarla sola necesitaría ~13 años más de holdout. Sigue en monitoreo pasivo (logger en vivo + aviso de holdout), candidata a la biblioteca de factores, sin research activo. Ver [[Objetivo del proyecto - biblioteca de factores]].
->>>>>>> 653c742844643e9800d02652224124836d496834
 
-**Hipótesis activa: [[Macro DFII10 - fase 1]]** (tasas reales de EE.UU. → sesgo direccional en oro), la única que no fue descartada. Pasó el checkpoint exploratorio (3/4 folds rentables) pero con reservas estadísticas documentadas (t-stat marginal, p=0.059, frágil). No lista para fase 2 ni demo todavía. Logger en vivo corriendo desde el 2026-07-24 para acumular holdout genuino — sigue en 0 episodios acumulados al 2026-07-27 (esperable dada la baja frecuencia, no un síntoma de falla), con un monitor diario de conveniencia (toast de Windows) agregado para avisar apenas sume una fila.
+**Sin hipótesis activa en research (2026-07-27).** [[Macro DFII10 - fase 1]] (tasas reales de EE.UU. → sesgo direccional en oro) pasó el checkpoint exploratorio con reservas (t-stat marginal, p=0.059) y sobrevivió una auditoría completa de robustez, pero quedó **reclasificada como factor archivado** — el power analysis mostró que confirmarla sola necesitaría ~13 años más de holdout. Sigue en monitoreo pasivo, candidata a la biblioteca de factores, sin research activo. Ver [[Objetivo del proyecto - biblioteca de factores]].
 
-**Infraestructura**: dos loggers en vivo corriendo en paralelo (EMA M15 baseline + Macro DFII10), ambos en modo lectura pura. Incidente de estabilidad de Task Scheduler (2026-07-22) resuelto: migración a `LogonType S4U` cerrada en producción para ambas tareas (2026-07-26), y un incidente posterior de corte de IPC sin auto-recuperación (~11hs, 2026-07-25/26) ya remediado y con fix desplegado y verificado (huérfanos matados, primera invocación real de `infra-guardian`, 2026-07-27). El proyecto suma también skills de disciplina (`hypothesis-gate`, `infra-ops-playbook`, `sync-knowledge`) para no depender de acordarse de aplicar las reglas a mano.
+**Monitoreo pasivo de DFII10**: logger en vivo corriendo desde el 2026-07-24, con 0 episodios acumulados al 2026-07-27 (esperable dada la baja frecuencia, no un síntoma de falla). Monitor diario de conveniencia (toast de Windows) agregado para avisar apenas sume una fila.
+
+**Infraestructura**: dos loggers en vivo corriendo en paralelo (EMA M15 baseline + Macro DFII10), ambos en modo lectura pura. Incidente de estabilidad de Task Scheduler (2026-07-22) resuelto: migración a `LogonType S4U` cerrada en producción para ambas tareas (2026-07-26), y un incidente posterior de corte de IPC sin auto-recuperación (~11hs, 2026-07-25/26) ya remediado y con fix desplegado y verificado (huérfanos matados, primera invocación real de `infra-guardian`, 2026-07-27). El proyecto suma también skills de disciplina (`hypothesis-gate`, `infra-ops-playbook`, `sync-knowledge`, `data-integrity`, `factor-independence`) para no depender de acordarse de aplicar las reglas a mano.
 
 ## Cómo está organizada esta documentación
 
