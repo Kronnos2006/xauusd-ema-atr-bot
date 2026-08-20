@@ -107,14 +107,15 @@ def calcular_indicadores(df):
     return df
 
 
-def generar_senales(df):
+def generar_senales(df, use_session_filter=None):
     df["cruce_alcista"] = (df["ema_fast"] > df["ema_slow"]) & (df["ema_fast"].shift(1) <= df["ema_slow"].shift(1))
     df["cruce_bajista"] = (df["ema_fast"] < df["ema_slow"]) & (df["ema_fast"].shift(1) >= df["ema_slow"].shift(1))
 
     df["senal_compra"] = df["cruce_alcista"] & (df["close"] > df["ema_trend"])
     df["senal_venta"] = df["cruce_bajista"] & (df["close"] < df["ema_trend"])
 
-    if USE_SESSION_FILTER:
+    filtro_sesion = USE_SESSION_FILTER if use_session_filter is None else use_session_filter
+    if filtro_sesion:
         hora = df["time"].dt.hour
         en_sesion = (hora >= SESSION_START_HOUR) & (hora < SESSION_END_HOUR)
         df["senal_compra"] = df["senal_compra"] & en_sesion
@@ -189,7 +190,7 @@ def alinear_h1_a_m15(df_m15, df_h1_tendencia):
     return df_mtf
 
 
-def generar_senales_mtf(df):
+def generar_senales_mtf(df, use_session_filter=None):
     """Misma señal que generar_senales (mismo trigger EMA9/21), pero el filtro
     de tendencia deja de ser propio de M15 (close vs EMA50 M15) y pasa a ser la
     tendencia de H1 ya alineada por alinear_h1_a_m15. Experimento de una sola
@@ -200,7 +201,8 @@ def generar_senales_mtf(df):
     df["senal_compra"] = df["cruce_alcista"] & df["tendencia_alcista_h1"]
     df["senal_venta"] = df["cruce_bajista"] & df["tendencia_bajista_h1"]
 
-    if USE_SESSION_FILTER:
+    filtro_sesion = USE_SESSION_FILTER if use_session_filter is None else use_session_filter
+    if filtro_sesion:
         hora = df["time"].dt.hour
         en_sesion = (hora >= SESSION_START_HOUR) & (hora < SESSION_END_HOUR)
         df["senal_compra"] = df["senal_compra"] & en_sesion
@@ -294,7 +296,7 @@ def calcular_estructura_swings(df):
     return df
 
 
-def generar_senales_estructura(df):
+def generar_senales_estructura(df, use_session_filter=None):
     """Misma señal que generar_senales (mismo trigger EMA9/21), pero el filtro
     de tendencia deja de ser una EMA (M15 o H1) y pasa a ser estructura de
     swings (HH/HL vs LH/LL) ya calculada por calcular_estructura_swings.
@@ -305,7 +307,8 @@ def generar_senales_estructura(df):
     df["senal_compra"] = df["cruce_alcista"] & df["tendencia_alcista_estructura"]
     df["senal_venta"] = df["cruce_bajista"] & df["tendencia_bajista_estructura"]
 
-    if USE_SESSION_FILTER:
+    filtro_sesion = USE_SESSION_FILTER if use_session_filter is None else use_session_filter
+    if filtro_sesion:
         hora = df["time"].dt.hour
         en_sesion = (hora >= SESSION_START_HOUR) & (hora < SESSION_END_HOUR)
         df["senal_compra"] = df["senal_compra"] & en_sesion
@@ -381,7 +384,7 @@ def calcular_rupturas_retest(df):
     return df
 
 
-def generar_senales_retest(df):
+def generar_senales_retest(df, use_session_filter=None):
     """Wrapper con la misma firma que generar_senales/_mtf/_estructura, para
     poder correr este trigger nuevo con la misma infra de folds (correr_fold
     recibe train_raw.copy()/test_raw.copy() de forma independiente por fold,
@@ -390,7 +393,8 @@ def generar_senales_retest(df):
     TRAIN/TEST de folds distintos)."""
     df = calcular_rupturas_retest(df)
 
-    if USE_SESSION_FILTER:
+    filtro_sesion = USE_SESSION_FILTER if use_session_filter is None else use_session_filter
+    if filtro_sesion:
         hora = df["time"].dt.hour
         en_sesion = (hora >= SESSION_START_HOUR) & (hora < SESSION_END_HOUR)
         df["senal_compra"] = df["senal_compra"] & en_sesion
@@ -399,11 +403,19 @@ def generar_senales_retest(df):
     return df
 
 
-def backtest(df, point_value=0.01):
+def backtest(df, point_value=0.01, rr_ratio=None, sl_atr_mult=None):
     """
     Simula operaciones una a la vez (no pyramiding).
     Devuelve lista de trades con resultado en R (múltiplos de riesgo).
+
+    `rr_ratio`/`sl_atr_mult` opcionales: si se pasan, tienen precedencia
+    sobre los globals RR_RATIO/SL_ATR_MULT. Quien no los pasa obtiene el
+    comportamiento de siempre (lee el global) -- retrocompatible con
+    cualquier call-site existente.
     """
+    rr = RR_RATIO if rr_ratio is None else rr_ratio
+    sl_mult = SL_ATR_MULT if sl_atr_mult is None else sl_atr_mult
+
     trades = []
     posicion_abierta = None  # dict con datos de la posición
 
@@ -421,24 +433,24 @@ def backtest(df, point_value=0.01):
                     trades.append({**posicion_abierta, "resultado_R": -1.0, "salida": "SL", "time_salida": row["time"]})
                     posicion_abierta = None
                 elif row["high"] >= tp:
-                    trades.append({**posicion_abierta, "resultado_R": RR_RATIO, "salida": "TP", "time_salida": row["time"]})
+                    trades.append({**posicion_abierta, "resultado_R": rr, "salida": "TP", "time_salida": row["time"]})
                     posicion_abierta = None
             elif tipo == "venta":
                 if row["high"] >= sl:
                     trades.append({**posicion_abierta, "resultado_R": -1.0, "salida": "SL", "time_salida": row["time"]})
                     posicion_abierta = None
                 elif row["low"] <= tp:
-                    trades.append({**posicion_abierta, "resultado_R": RR_RATIO, "salida": "TP", "time_salida": row["time"]})
+                    trades.append({**posicion_abierta, "resultado_R": rr, "salida": "TP", "time_salida": row["time"]})
                     posicion_abierta = None
 
         # --- abrir nueva posición si no hay una abierta ---
         if posicion_abierta is None and not pd.isna(row["atr"]):
-            riesgo = row["atr"] * SL_ATR_MULT
+            riesgo = row["atr"] * sl_mult
 
             if row["senal_compra"]:
                 entrada = row["close"]
                 sl = entrada - riesgo
-                tp = entrada + riesgo * RR_RATIO
+                tp = entrada + riesgo * rr
                 posicion_abierta = {
                     "tipo": "compra", "entrada": entrada, "sl": sl, "tp": tp,
                     "time_entrada": row["time"]
@@ -446,7 +458,7 @@ def backtest(df, point_value=0.01):
             elif row["senal_venta"]:
                 entrada = row["close"]
                 sl = entrada + riesgo
-                tp = entrada - riesgo * RR_RATIO
+                tp = entrada - riesgo * rr
                 posicion_abierta = {
                     "tipo": "venta", "entrada": entrada, "sl": sl, "tp": tp,
                     "time_entrada": row["time"]
@@ -497,12 +509,7 @@ def mostrar_resultados(trades_df):
 
 def backtest_con_rr(df, rr_ratio):
     """Igual que backtest() pero permite variar el R:R sin tocar la entrada."""
-    global RR_RATIO
-    original = RR_RATIO
-    RR_RATIO = rr_ratio
-    trades_df = backtest(df)
-    RR_RATIO = original
-    return trades_df
+    return backtest(df, rr_ratio=rr_ratio)
 
 
 MIN_TRADES_SELECCION = 30   # piso de trades para que una config sea elegible en un barrido
@@ -982,8 +989,6 @@ def correr_fold(train_raw, test_raw, fold_num, n_folds, fn_generar_senales=gener
     combinación UNA sola vez sobre test_raw (out-of-sample). Nada de lo que
     pasa acá vuelve a tocar test_raw para elegir parámetros.
     """
-    global USE_SESSION_FILTER
-
     print("\n" + "=" * 60)
     print(f"FOLD {fold_num}/{n_folds} — TRAIN: {len(train_raw)} velas ({_rango_fechas(train_raw)}) "
           f"| TEST: {len(test_raw)} velas ({_rango_fechas(test_raw)})")
@@ -998,9 +1003,7 @@ def correr_fold(train_raw, test_raw, fold_num, n_folds, fn_generar_senales=gener
     usar_filtro_sesion = comparar_con_sin_filtro_sesion(
         train_sin_filtro, RR_RATIO, verbose=False, fn_generar_senales=fn_generar_senales)
 
-    USE_SESSION_FILTER = usar_filtro_sesion
-    train = fn_generar_senales(train_raw.copy())
-    USE_SESSION_FILTER = False
+    train = fn_generar_senales(train_raw.copy(), use_session_filter=usar_filtro_sesion)
 
     resultados_rr = diagnostico_entrada_vs_salida(train, verbose=False)
     mejor_rr = elegir_mejor_rr(resultados_rr)
@@ -1014,15 +1017,13 @@ def correr_fold(train_raw, test_raw, fold_num, n_folds, fn_generar_senales=gener
           f"filtro sesión: {'CON' if usar_filtro_sesion else 'SIN'}{detalle_trailing}")
 
     # --- evaluación out-of-sample, una sola vez, con los parámetros ya fijados ---
-    USE_SESSION_FILTER = usar_filtro_sesion
-    test = fn_generar_senales(test_raw.copy())
-    USE_SESSION_FILTER = False
+    test = fn_generar_senales(test_raw.copy(), use_session_filter=usar_filtro_sesion)
 
     resultado = {
         "fold": fold_num, "n_train": len(train_raw), "n_test": len(test_raw),
         "rr": mejor_rr, "filtro_sesion": usar_filtro_sesion, "trailing": mejor_trailing,
         "n_trades_test": 0, "wr_test": None, "r_total_test": None,
-        "r_neto_test": None, "rentable": None,
+        "r_neto_test": None, "rentable": None, "trades_test_df": pd.DataFrame(),
     }
 
     td_test = backtest_con_rr(test, mejor_rr)
@@ -1049,7 +1050,8 @@ def correr_fold(train_raw, test_raw, fold_num, n_folds, fn_generar_senales=gener
             estado_t = "✅ RENTABLE" if r_total_t > 0 else "❌ pierde"
             print(f"  (trailing OOS)      | Trades: {n_t:<4} | R total: {r_total_t:+7.2f}R  {estado_t}")
 
-    resultado.update(n_trades_test=n, wr_test=wr, r_total_test=r_total, r_neto_test=r_neto, rentable=rentable)
+    resultado.update(n_trades_test=n, wr_test=wr, r_total_test=r_total, r_neto_test=r_neto,
+                      rentable=rentable, trades_test_df=td_test)
     return resultado
 
 

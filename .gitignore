@@ -22,3 +22,10 @@ backup_tarea_*.xml
 
 # Config local de la app Obsidian (workspace, plugins) -- no es contenido del vault
 XAUUSD EMA/ATR/.obsidian/
+
+# Output del motor de investigación (research/) -- datos/resultados generados,
+# no codigo. Cada carpeta experiment_*/ es reproducible desde su propio
+# config.yaml + metadata.json, no hace falta versionarla.
+data_snapshots/
+experiments/
+
