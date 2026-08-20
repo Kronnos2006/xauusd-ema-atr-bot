@@ -10,7 +10,10 @@
 
 ## Qué está pendiente
 
-- **Hipótesis macro DFII10 fase 1**: acumular más datos del holdout en vivo. A la fecha (2026-07-27) el CSV de salida (`senal_macro_dfii10_live.csv`) sigue en 0 episodios desde que arrancó el 2026-07-23 — esperable dada la baja frecuencia de episodios N=60, no un síntoma de falla. No se diseña la confirmación técnica de fase 2 hasta tener una lectura más sólida que la actual (t-stat marginal, p=0.059, dependiente de un fold). Ver [[Macro DFII10 - fase 1]].
+- **Objetivo del proyecto redefinido (2026-07-27)**: de "encontrar una señal fuerte" a "construir una biblioteca de factores independientes de baja correlación". Ver [[Objetivo del proyecto - biblioteca de factores]] y [[Criterios de cierre del enfoque]].
+- **DFII10 archivado, no en research activo**: el power analysis mostró que confirmarla sola necesitaría ~105 trades adicionales, ~13 años más de holdout — un plazo que la descalifica como candidata a señal individual, aunque sigue siendo candidata a la biblioteca de factores. El logger en vivo y el monitor de holdout siguen corriendo (monitoreo pasivo, sin costo). Ver [[Macro DFII10 - fase 1]].
+- **Próximos candidatos**: ver [[Candidatos futuros]], todos sujetos al triage de frecuencia (`hypothesis-gate`) antes de entrar al pipeline completo.
+- Ver [[Checklist paso a cuenta demo]] para los criterios objetivos de cuándo cualquier factor (o combinación) pasaría a demo.
 
 ## Resuelto (2026-07-27)
 

@@ -2,13 +2,25 @@
 
 Backtest de estrategias técnicas (y ahora macro) sobre XAUUSD vía MetaTrader5, en Python, con una disciplina de walk-forward anclado (TRAIN elige parámetros, TEST confirma una sola vez) construida para evitar data snooping. Proyecto solo, sin control de versiones hasta el 2026-07-21.
 
+<<<<<<< HEAD
 ## Estado actual (2026-07-27)
+=======
+## Objetivo del proyecto (actualizado 2026-07-27)
+
+**Ya no es "encontrar una señal fuerte para operar" — es construir una biblioteca de factores independientes de baja correlación que, combinados, puedan producir un edge robusto.** Ver [[Objetivo del proyecto - biblioteca de factores]] para el porqué completo y [[Criterios de cierre del enfoque]] para el presupuesto explícito de esta búsqueda.
+
+## Estado actual (2026-07-25)
+>>>>>>> 653c742844643e9800d02652224124836d496834
 
 **Familia EMA9/21 crossover: RETIRADA por completo.** 5 variantes evaluadas con la misma disciplina, las 5 fallan de forma convergente (no dispersa). El problema se diagnosticó como el trigger de entrada en sí (cruce EMA9/21), no el timeframe, no el filtro de tendencia, no la salida. No se retoma salvo razón nueva y específica.
 
 **D1: pospuesto, no descartado formalmente**, pero con techo de información bajo (77 trades en 11 años; extender el histórico antes de 2008 mezclaría regímenes de mercado no comparables). No es cuestión de esperar más.
 
+<<<<<<< HEAD
 **Tres hipótesis macro nuevas probadas y descartadas desde el 2026-07-25**: [[Macro 2s10s - fase 1]] (no pasa el filtro exploratorio, p=0.20), [[Macro DXY - fase 1]] (proxy sintético validado con 6 pares FX, pero p=0.072 con todos los folds y p=0.31 sin el fold dominante) y [[Ratio oro-plata - fase 1]] (4/4 folds rentables pero p=0.11, p=0.47 sin el fold dominante que concentra 63% del R). Los tres son el mismo patrón: conteo de folds ganadores que no sobrevive el chequeo real de t-stat.
+=======
+**Sin hipótesis activa en research (2026-07-27).** [[Macro DFII10 - fase 1]] (tasas reales de EE.UU. → sesgo direccional en oro) pasó el checkpoint exploratorio con reservas (t-stat marginal, p=0.059) y sobrevivió una auditoría completa de robustez, pero quedó **reclasificada como factor archivado** — el power analysis mostró que confirmarla sola necesitaría ~13 años más de holdout. Sigue en monitoreo pasivo (logger en vivo + aviso de holdout), candidata a la biblioteca de factores, sin research activo. Ver [[Objetivo del proyecto - biblioteca de factores]].
+>>>>>>> 653c742844643e9800d02652224124836d496834
 
 **Hipótesis activa: [[Macro DFII10 - fase 1]]** (tasas reales de EE.UU. → sesgo direccional en oro), la única que no fue descartada. Pasó el checkpoint exploratorio (3/4 folds rentables) pero con reservas estadísticas documentadas (t-stat marginal, p=0.059, frágil). No lista para fase 2 ni demo todavía. Logger en vivo corriendo desde el 2026-07-24 para acumular holdout genuino — sigue en 0 episodios acumulados al 2026-07-27 (esperable dada la baja frecuencia, no un síntoma de falla), con un monitor diario de conveniencia (toast de Windows) agregado para avisar apenas sume una fila.
 
@@ -22,6 +34,11 @@ Backtest de estrategias técnicas (y ahora macro) sobre XAUUSD vía MetaTrader5,
 - **[[Diagnóstico entrada-vs-salida]]** — el hallazgo más informativo del proyecto: por qué se cerró la familia EMA9/21 con datos, no por cansancio.
 - **[[Infraestructura]]** — scripts de backtest, loggers en vivo, el incidente de Task Scheduler y la resolución vía S4U.
 - **[[Estado actual y próximos pasos]]** — qué sigue corriendo, qué está pendiente, y la regla general para cualquier hipótesis futura.
+- **[[Checklist paso a cuenta demo]]** — los nueve criterios objetivos, con umbrales numéricos, que cualquier hipótesis tiene que cumplir antes de pasar a demo. Escrito antes de que haga falta, no bajo presión.
+- **[[Data Dictionary]]** — cada archivo de datos del proyecto: qué es, de dónde sale, con qué frecuencia se actualiza, cómo se verifica.
+- **[[Bitácora de decisiones]]** — tabla de una línea por decisión importante del proyecto, de punta a punta (complementa a [[Cronología]], que es narrativa).
+- **[[Criterios de cierre del enfoque]]** — cuándo el problema deja de ser "falta una hipótesis más" y pasa a ser el diseño completo (mercado/frecuencia) del proyecto.
+- **[[Candidatos futuros]]** — próximos factores a explorar, priorizados por frecuencia y racional económico, todos sujetos al triage de `hypothesis-gate` antes de entrar al pipeline.
 
 ### Hipótesis probadas
 
@@ -32,7 +49,7 @@ Backtest de estrategias técnicas (y ahora macro) sobre XAUUSD vía MetaTrader5,
 | Filtro de tendencia por estructura (HH/HL) | Descartado — peor que baseline y MTF, 123% del R concentrado en 1 fold | [[Estructura de swings (HH-HL)]] |
 | Trigger ruptura de estructura + retest | Descartado — R neto agregado negativo, sin fold dominante que lo sostenga | [[Ruptura y retest]] |
 | H1 con SL/R:R propios (retuneado) | Descartado — minoría de folds rentables, t-stat decayendo con más datos (firma de edge ilusorio) | [[H1 retuneado]] |
-| Macro DFII10 fase 1 | **En curso / no confirmada** — pasa checkpoint exploratorio con reservas | [[Macro DFII10 - fase 1]] |
+| Macro DFII10 fase 1 | **Archivado** — efecto real (pasa checkpoint, sobrevive auditoría) pero económicamente débil; necesitaría ~13 años más para confirmación sólida sola | [[Macro DFII10 - fase 1]] |
 | Macro 2s10s fase 1 (empinamiento del spread) | Descartado — no pasa checkpoint exploratorio, p=0.20 (p=0.42 sin el fold más fuerte) | [[Macro 2s10s - fase 1]] |
 | Macro DXY fase 1 (proxy sintético, 6 pares FX) | Descartado — 3/4 folds rentables pero p=0.072 con todos los folds, p=0.31 sin el fold más fuerte (59% del R neto) | [[Macro DXY - fase 1]] |
 | Ratio oro/plata fase 1 | Descartado — 4/4 folds rentables pero t-stat pooled no significativo (p=0.11, p=0.47 sin el fold más fuerte que concentra 63% del R neto) | [[Ratio oro-plata - fase 1]] |
