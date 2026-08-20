@@ -1,0 +1,12 @@
+label: H1_N120
+periodo: 2005-01-01..2014-12-31
+trades: 75
+trades_abiertos_excluidos: 0
+win_rate: 0.3333333333333333
+profit_factor: 1.6688855238853608
+expectancy_pct: 0.00449638783679324
+expectancy_pips: 62.52622439999982
+max_drawdown_pct: 0.2882958708620542
+sharpe_anualizado: 0.21407716176658206
+retorno_total_pct: 0.22507278845402823
+veredicto: candidato fuerte (PF > 1.20)

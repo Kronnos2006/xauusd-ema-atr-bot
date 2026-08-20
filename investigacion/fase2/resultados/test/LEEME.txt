@@ -1,0 +1,6 @@
+Esta carpeta queda vacía a propósito.
+
+El período de Test (2020-01-01 – 2026-08-08) está congelado — utils.load_dev_data()
+ni siquiera carga esas filas del CSV (corta en 2019-12-31). No se corre hasta que
+H1 o H2 sobrevivan Validation y haya una decisión explícita del usuario para
+gastar el único intento sobre Test.

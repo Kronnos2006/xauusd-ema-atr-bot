@@ -1,0 +1,12 @@
+label: H2_D20
+periodo: 2015-01-01..2019-12-31
+trades: 24
+trades_abiertos_excluidos: 1
+win_rate: 0.3333333333333333
+profit_factor: 0.7944411232356162
+expectancy_pct: -0.0022900065441831354
+expectancy_pips: -25.16470770833288
+max_drawdown_pct: 0.16983942938927354
+sharpe_anualizado: 0.07217146338722995
+retorno_total_pct: 0.022266839660822768
+veredicto: fuerte candidato a eliminar (PF < 0.90)

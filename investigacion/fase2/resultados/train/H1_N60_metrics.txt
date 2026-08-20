@@ -1,0 +1,12 @@
+label: H1_N60
+periodo: 2005-01-01..2014-12-31
+trades: 153
+trades_abiertos_excluidos: 0
+win_rate: 0.3333333333333333
+profit_factor: 1.0649989013076195
+expectancy_pct: 0.0004578104047166466
+expectancy_pips: 9.305751209150099
+max_drawdown_pct: 0.3878407070262879
+sharpe_anualizado: -0.013906800656928711
+retorno_total_pct: -0.007760673583045996
+veredicto: inconcluso (PF 0.90-1.10)

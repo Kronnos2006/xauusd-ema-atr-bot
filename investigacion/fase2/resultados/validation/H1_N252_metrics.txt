@@ -1,0 +1,12 @@
+label: H1_N252
+periodo: 2015-01-01..2019-12-31
+trades: 45
+trades_abiertos_excluidos: 1
+win_rate: 0.3111111111111111
+profit_factor: 0.4261381495084227
+expectancy_pct: -0.003725626606208659
+expectancy_pips: -40.94557544444418
+max_drawdown_pct: 0.2548642849687588
+sharpe_anualizado: -0.11642632549343429
+retorno_total_pct: -0.05754377985243142
+veredicto: fuerte candidato a eliminar (PF < 0.90)

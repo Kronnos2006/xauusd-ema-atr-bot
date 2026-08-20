@@ -1,0 +1,12 @@
+label: H1_N20
+periodo: 2015-01-01..2019-12-31
+trades: 140
+trades_abiertos_excluidos: 1
+win_rate: 0.3142857142857143
+profit_factor: 0.6206474646366624
+expectancy_pct: -0.001864978286516389
+expectancy_pips: -20.558304714285754
+max_drawdown_pct: 0.28483832566755796
+sharpe_anualizado: -0.38940303130716
+retorno_total_pct: -0.17274180257143001
+veredicto: fuerte candidato a eliminar (PF < 0.90)

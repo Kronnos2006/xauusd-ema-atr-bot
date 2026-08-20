@@ -1,0 +1,12 @@
+label: H1_N60
+periodo: 2015-01-01..2019-12-31
+trades: 102
+trades_abiertos_excluidos: 1
+win_rate: 0.23529411764705882
+profit_factor: 0.6565089787398389
+expectancy_pct: -0.0017416993715819098
+expectancy_pips: -19.020776274509714
+max_drawdown_pct: 0.2930968584397009
+sharpe_anualizado: -0.23676934737054986
+retorno_total_pct: -0.10845400838157548
+veredicto: fuerte candidato a eliminar (PF < 0.90)
