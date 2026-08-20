@@ -39,6 +39,20 @@ Informe_Proyecto_EMA_XAUUSD.md — informe de estado completo (rentabilidad/vali
 
 Los .log y .csv generados en vivo están en .gitignore — son datos, no código, y quedan fuera del historial de git.
 
+Motor de investigación (research/) — Fase 1
+
+Capa nueva sobre "Backtest ema v4.py" (que sigue siendo la fuente de verdad de indicadores/señales/backtest/walk-forward, sin mover ni renombrar) para dejar cada corrida como un experimento determinista y reproducible:
+
+- research/data_cache.py — snapshot local de datos OHLC (CSV, keyed por symbol+timeframe+rango) para no depender de una descarga en vivo distinta cada corrida.
+- research/config.py — carga y valida un config.yaml de experimento.
+- research/metrics.py — Sharpe, Sortino, Profit Factor, CAGR, Max Drawdown, Expectancy, n_trades, R por trade (todo neto de spread).
+- research/export.py — arma experiments/experiment_<fecha>_<NNN>/ con config.yaml, metrics.json, trades.csv, equity.csv, log.txt, summary.md y metadata.json (commit de git, hash de los datos usados, parámetros exactos).
+- research/engine.py — orquestador: python -m research.engine --config research/config.example.yaml.
+
+Correr los tests (determinismo + no-leakage del walk-forward): python -m unittest discover tests.
+
+resultados_backtest.csv y resultados_neto_spread.csv (raíz del repo) son artefacto histórico pre-Fase-1 (de backtest_ema.py/_v2/_v3, ya inertes) — no confundir con el trades.csv que queda dentro de cada carpeta experiment_*/, que es el output vigente.
+
 Infraestructura
 
 El logger corre como tarea programada de Windows (Task Scheduler). Tuvo un incidente de downtime (~4hs) por el modo de sesión configurado originalmente; la resolución (migración a logon tipo S4U, validado con MT5 conectando en sesión no interactiva) está documentada en el informe de estado.

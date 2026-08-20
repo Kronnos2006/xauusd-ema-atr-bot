@@ -1,0 +1,15 @@
+# Config de ejemplo para research/engine.py -- copiar y ajustar por experimento.
+symbol: XAUUSD
+timeframe: M15          # M15 o H1
+date_from: 2025-01-01
+date_to: 2026-01-01
+ema_fast: 9
+ema_slow: 21
+ema_trend: 50
+atr_period: 14
+sl_atr_mult: 1.5
+rr_ratio: 2.0
+spread_puntos: 30
+use_session_filter: false
+n_folds: 9
+strategy: baseline       # baseline | mtf | estructura | retest

@@ -1,0 +1,9 @@
+pandas>=2.0
+numpy>=1.24
+PyYAML>=6.0
+
+# MetaTrader5 -- solo Windows (broker terminal), no instalable en este repo
+# fuera de la PC Windows con MT5. Necesario para correr "Backtest ema v4.py"
+# y research/engine.py contra datos reales; no hace falta en un entorno que
+# solo corre los tests de research/ (usan tests/fixtures/mt5_stub.py).
+# MetaTrader5
