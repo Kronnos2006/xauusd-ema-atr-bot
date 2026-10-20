@@ -41,4 +41,7 @@ La PAUSA ACTIVA sigue vigente para hipótesis y estrategias. El usuario autoriz�
 - **KT-002**: workflow horario en GitHub Actions (`.github/workflows/kt002.yml`) que escribe en `data/kt002/`. Registro: `docs/KT-002_registro_prospectivo.md`.
 - **KT-003**: diagnóstico histórico 2017–2026 (`.github/workflows/kt003.yml`), solo se lanza a mano. Registro: `docs/KT-003_registro_historico.md`.
 
-Auditor: agente `desconfiado` (`.claude/agents/desconfiado.md`), con una auditoría diaria programada que notifica al usuario.
+Agentes del proyecto:
+- `desconfiado` (`.claude/agents/desconfiado.md`): auditor; auditoría diaria programada que notifica al usuario.
+- `mejorador` (`.claude/agents/mejorador.md`): aprende de los resultados y propone variantes nuevas pre-registradas. Flujo: mejorador propone → desconfiado audita → el usuario da el OK explícito → recién ahí se registra y ejecuta.
+- `vigia-datos` (`.claude/agents/vigia-datos.md`): revisa los datos recogidos y el estado de los workflows; solo lee, y solo relanza lo parado o fallido.
