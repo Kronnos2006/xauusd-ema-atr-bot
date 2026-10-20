@@ -43,3 +43,16 @@ Pedida por el auditor `desconfiado`.
 - **Dependencia**: las bases son diarias y no se solapan, pero días seguidos comparten régimen de mercado; las p se leen como descriptivas, no como prueba de edge.
 - **Reproducibilidad**: el shard 0 repite su primer lote con la misma semilla y guarda `data/kt003/reproducibilidad.json`.
 - **Conteo de intentos**: misma configuración que KT-001/KT-002; no es una variante nueva ni un intento financiero.
+
+## Enmienda B (2026-10-20, antes de ejecutar)
+
+Pedida por el auditor `desconfiado` en su segunda revisión del diseño.
+
+- **Exposición total aceptada por el usuario** (2026-10-20, por respuesta explícita): KT-003 expone toda la historia BTCUSDT 2017–2026, no solo desde 2024-07-01. Ninguna estrategia BTC futura podrá usar ese período como holdout sellado; solo datos posteriores a hoy. Esto corrige el apartado "Exposición" del borrador de Fase 0 BTC.
+- **Resultado primario**: período post corte. Las tres pruebas McNemar (Kronos, TimesFM, KT-001 contra «siempre sube») se corrigen con **Holm** dentro de ese período; los cortes por año y el período dentro del entrenamiento son descriptivos, sin inferencia.
+- **Potencia**: con n≈840, MDE ≈ 4,8 puntos (80 %, bilateral, α 0,05), ≈ 5,6 con corrección para 3 modelos. Efectos menores no se pueden distinguir del azar.
+- **Integridad de datos**: el manifiesto guarda SHA-256 del CSV final (comprimido y contenido) y del tramo bajado por API; el CSV se versiona en `data/kt003/`. Las bases cuyo contexto tenga una vela OHLC inválida se saltan y se cuentan; las velas de volumen 0 se cuentan pero no se excluyen.
+- **Referencia adicional**: «persistencia» (repetir el signo de las 4 h previas a la base), además de «siempre sube».
+- **Workflow**: solo corre desde `master`; `unir` exige que el conjunto de bases pronosticadas sea igual al esperado y falla si falta `reproducibilidad.json`.
+- **Corrida de prueba previa**: con `lanzar.txt = prueba` se descargan y sellan los datos, se cuentan bases y saltos, se compara `predict` contra `predict_batch` con la misma semilla, se miden tiempos por lote y se registran las fechas de los checkpoints en Hugging Face. No se pronostica el diagnóstico. El modo `completo` solo se lanza después de que el auditor revise esa salida.
+- Precisión de redacción: el contexto son 400 velas que terminan en la vela base (399 previas + la base).

@@ -1,5 +1,9 @@
 # Contexto compartido
 
+## KT-003 Enmienda B y corrida de prueba (2026-10-20, Costa Rica)
+
+Autor Claude; auditor desconfiado (2a revision del diseno: DUDAS ABIERTAS, sin look-ahead); revisor Codex pendiente. El usuario acepta explicitamente que KT-003 exponga toda la historia BTC 2017-2026. Enmienda B escrita antes de cualquier dato: Holm sobre 3 modelos en post corte como resultado primario, MDE 4,8 pts, hashes y CSV versionado, persistencia como referencia, guardas de rama y de conjunto de bases. Se lanza primero el modo prueba (datos, equivalencia predict/predict_batch, tiempos, fechas de checkpoints), sin pronosticar el diagnostico; el modo completo espera la revision del auditor.
+
 ## Auditoria desconfiado y arranque KT-002 (2026-10-20 14:30 UTC)
 
 Autor Claude; auditor agente desconfiado; revisor Codex pendiente. La primera auditoria dio DUDAS ABIERTAS: el workflow KT-002 no tuvo ninguna corrida (cron sin ejecutar). Aplicado lo pedido: disparo por push del propio script, McNemar exacto vs siempre sube, conteo de horas omitidas, chequeo de reproducibilidad en la primera corrida, Enmienda A del registro KT-002 (antes del primer dato), cambios.json corregido, CLAUDE.md con las tareas descriptivas autorizadas. KT-003 sigue en la rama kt003-diseno; su workflow se lanza solo a mano. Auditoria diaria programada 6:33 Costa Rica con notificacion al usuario.

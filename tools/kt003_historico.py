@@ -115,7 +115,13 @@ def cmd_datos(out_dir):
                   ultima=df.open_time.iloc[-1].isoformat(), duplicados_eliminados=dup,
                   huecos=int((gaps != HOUR).sum()), horas_faltantes=int(((gaps - HOUR) / HOUR).clip(lower=0).sum()),
                   velas_ohlc_invalidas=bad_ohlc, archivos=manifest)
-    df.to_csv(out_dir / 'btcusdt_1h.csv.gz', index=False, compression='gzip')
+    if api_rows:
+        manifest[-1]['sha256'] = hashlib.sha256(json.dumps(api_rows).encode()).hexdigest()
+    csv_path = out_dir / 'btcusdt_1h.csv.gz'
+    df.to_csv(csv_path, index=False, compression='gzip')
+    report['sha256_csv_gz'] = hashlib.sha256(csv_path.read_bytes()).hexdigest()
+    report['sha256_csv_contenido'] = hashlib.sha256(gzip.decompress(csv_path.read_bytes())).hexdigest()
+    report['velas_volumen_cero'] = int((df.volume == 0).sum())
     (out_dir / 'manifiesto_datos.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
     print(json.dumps({k: v for k, v in report.items() if k != 'archivos'}, indent=2))
 
@@ -129,13 +135,15 @@ def bases(df):
     """Bases diarias: vela que abre a las 00:00 UTC, con 400 velas contiguas y objetivo cerrado."""
     pos = pd.Series(np.arange(len(df)), index=df.open_time)
     out, skipped = [], 0
+    ok = ((df.high >= df[['open', 'close']].max(axis=1)) & (df.low <= df[['open', 'close']].min(axis=1))
+          & (df[['open', 'high', 'low', 'close']] > 0).all(axis=1)).to_numpy()
     for i in np.flatnonzero(df.open_time.dt.hour.to_numpy() == BASE_HOUR_UTC):
         if i < CONTEXT - 1:
             continue
         b = df.open_time.iloc[i]
         tgt = b + HOUR * HORIZON
         span = df.open_time.iloc[i - CONTEXT + 1:i + 1]
-        if span.iloc[0] != b - HOUR * (CONTEXT - 1) or tgt not in pos.index:
+        if span.iloc[0] != b - HOUR * (CONTEXT - 1) or tgt not in pos.index or not ok[i - CONTEXT + 1:i + 1].all():
             skipped += 1
             continue
         out.append(i)
@@ -185,6 +193,55 @@ def cmd_shard(data_csv, i, n, out_csv):
     pd.DataFrame(rows, columns=kt2.COLUMNS).to_csv(out_csv, index=False)
 
 
+def cmd_prueba(data_csv, out_json):
+    import torch
+    import timesfm
+    sys.path.insert(0, str(kt2.KRONOS_SRC))
+    from model import Kronos, KronosTokenizer, KronosPredictor
+    df = load(data_csv)
+    idx, skipped = bases(df)
+    b = df.open_time.iloc[idx]
+    cut = pd.Timestamp(CUTOFF)
+    shards_ok = sorted(sum([idx[j::16] for j in range(16)], [])) == idx
+    torch.set_num_threads(max(1, os.cpu_count() or 1))
+    R = kt2.REVISIONS
+    tok = KronosTokenizer.from_pretrained('NeoQuasar/Kronos-Tokenizer-base', revision=R['NeoQuasar/Kronos-Tokenizer-base'])
+    mdl = Kronos.from_pretrained('NeoQuasar/Kronos-small', revision=R['NeoQuasar/Kronos-small'])
+    pred = KronosPredictor(mdl, tok, device='cpu', max_context=512)
+    cols = ['open', 'high', 'low', 'close', 'volume', 'amount']
+    j = idx[0]
+    c = df.iloc[j - CONTEXT + 1:j + 1].reset_index(drop=True)
+    x = c.open_time.dt.tz_localize(None).reset_index(drop=True)
+    y = pd.Series([x.iloc[-1] + HOUR * (k + 1) for k in range(HORIZON)])
+    torch.manual_seed(42)
+    with torch.inference_mode():
+        single = pred.predict(c[cols], x, y, pred_len=HORIZON, T=1., top_p=.9, sample_count=20, verbose=False)
+    torch.manual_seed(42)
+    with torch.inference_mode():
+        batch = pred.predict_batch([c[cols]], [x], [y], pred_len=HORIZON, T=1., top_p=.9, sample_count=20, verbose=False)[0]
+    diff = float(np.abs(single.to_numpy() - batch.to_numpy()).max())
+    # tiempo por lote de 8 (dos lotes)
+    tiempos = []
+    for start in (0, BATCH):
+        chunk = idx[start:start + BATCH]
+        ctxs = [df.iloc[k - CONTEXT + 1:k + 1].reset_index(drop=True) for k in chunk]
+        xs = [cc.open_time.dt.tz_localize(None).reset_index(drop=True) for cc in ctxs]
+        ys = [pd.Series([xx.iloc[-1] + HOUR * (k + 1) for k in range(HORIZON)]) for xx in xs]
+        t0 = time.perf_counter()
+        torch.manual_seed(42)
+        with torch.inference_mode():
+            pred.predict_batch([cc[cols] for cc in ctxs], xs, ys, pred_len=HORIZON, T=1., top_p=.9, sample_count=20, verbose=False)
+        tiempos.append(round(time.perf_counter() - t0, 1))
+    lotes_por_shard = math.ceil(len(idx) / 16 / BATCH)
+    rep = dict(bases=len(idx), bases_saltadas=skipped, post_corte=int((b >= cut).sum()),
+               primera=b.min().isoformat(), ultima=b.max().isoformat(), shards_cubren_todo=shards_ok,
+               predict_vs_batch_max_dif=diff, predict_vs_batch_identico=bool(single.equals(batch)),
+               segundos_por_lote=tiempos, lotes_por_shard=lotes_por_shard,
+               minutos_estimados_por_shard=round(max(tiempos) * lotes_por_shard / 60, 1))
+    Path(out_json).write_text(json.dumps(rep, indent=2), encoding='utf-8')
+    print(json.dumps(rep, indent=2))
+
+
 def cmd_unir(data_csv, *shards):
     OUT.mkdir(parents=True, exist_ok=True)
     df = load(data_csv)
@@ -192,8 +249,9 @@ def cmd_unir(data_csv, *shards):
     preds = pd.concat([pd.read_csv(s, dtype=str) for s in shards], ignore_index=True)
     if preds.base_open_utc.duplicated().any():
         raise ValueError('Bases duplicadas entre shards')
-    if len(preds) != len(idx):
-        raise ValueError(f'Faltan pronosticos: {len(preds)} de {len(idx)}')
+    esperadas = set(df.open_time.iloc[idx].map(lambda t: t.isoformat()))
+    if set(preds.base_open_utc) != esperadas:
+        raise ValueError(f'Bases distintas de las esperadas: {len(set(preds.base_open_utc) ^ esperadas)} diferencias')
     close = df.set_index('open_time').close
     now = pd.Timestamp(datetime.now(timezone.utc))
     for i in preds.index:
@@ -205,6 +263,10 @@ def cmd_unir(data_csv, *shards):
         for m in kt2.MODELS:
             preds.at[i, f'{m}_hit'] = kt2.sign_hit(float(preds.at[i, f'{m}_ret']), ar)
         preds.at[i, 'scored_utc'] = now.isoformat()
+    preds['persist_ret'] = ''
+    for i in preds.index:
+        bt = pd.Timestamp(preds.at[i, 'base_open_utc'])
+        preds.at[i, 'persist_ret'] = kt2.num(float(close[bt]) / float(close[bt - HOUR * HORIZON]) - 1)
     preds = preds.sort_values('base_open_utc').reset_index(drop=True)
     base = pd.to_datetime(preds.base_open_utc, utc=True)
     preds['periodo'] = np.where(base < CUTOFF, 'dentro_entrenamiento', 'post_corte')
@@ -214,6 +276,9 @@ def cmd_unir(data_csv, *shards):
         ar = sub.actual_ret.astype(float)
         nz = ar[ar != 0]
         b = dict(n=int(len(sub)), siempre_sube=stat(int((nz > 0).sum()), int(len(nz))))
+        pr = sub.persist_ret.astype(float)
+        ph = ((pr > 0) == (ar > 0))[(pr != 0) & (ar != 0)].astype(int)
+        b['persistencia'] = stat(int(ph.sum()), int(len(ph)))
         up = (sub.actual_ret.astype(float) > 0).astype(int).where(sub.actual_ret.astype(float) != 0)
         for m in kt2.MODELS:
             h = sub[f'{m}_hit']
@@ -221,6 +286,11 @@ def cmd_unir(data_csv, *shards):
             both = h.index.intersection(up.dropna().index)
             b[m] = stat(int(h.sum()), int(len(h)))
             b[m]['mcnemar_vs_sube'] = kt2.mcnemar(h[both], up[both].astype(int))
+        ps = sorted((b[m]['mcnemar_vs_sube']['p'], m) for m in kt2.MODELS if b[m]['mcnemar_vs_sube']['p'] is not None)
+        run = 0.0
+        for r, (pv, m) in enumerate(ps):  # Holm sobre los 3 modelos
+            run = max(run, min(1.0, (len(ps) - r) * pv))
+            b[m]['mcnemar_vs_sube']['p_holm'] = round(run, 4)
         return b
 
     def stat(k, n):
@@ -243,7 +313,8 @@ def cmd_unir(data_csv, *shards):
             continue
         lines += [f'## {title} — n={b["n"]}', '', f'- Kronos: {f(b["kronos"])}', f'- TimesFM: {f(b["timesfm"])}',
                   f'- KT-001 50/50: {f(b["kt001"])}', f'- Referencia «siempre sube»: {f(b["siempre_sube"])}',
-                  '- McNemar vs «siempre sube» (p): ' + ', '.join(f'{m} {b[m]["mcnemar_vs_sube"]["p"]}' for m in kt2.MODELS), '']
+                  f'- Referencia «persistencia» (repite las 4 h previas): {f(b["persistencia"])}',
+                  '- McNemar vs «siempre sube» (p / p Holm): ' + ', '.join(f'{m} {b[m]["mcnemar_vs_sube"]["p"]} / {b[m]["mcnemar_vs_sube"].get("p_holm")}' for m in kt2.MODELS), '']
     lines += ['## Por año (KT-001 / siempre sube)', '']
     for y, b in summary['por_anio'].items():
         lines.append(f'- {y}: {f(b["kt001"])} / {f(b["siempre_sube"])}')
@@ -253,4 +324,4 @@ def cmd_unir(data_csv, *shards):
 
 if __name__ == '__main__':
     cmd, *args = sys.argv[1:]
-    {'datos': cmd_datos, 'shard': cmd_shard, 'unir': cmd_unir}[cmd](*args)
+    {'datos': cmd_datos, 'prueba': cmd_prueba, 'shard': cmd_shard, 'unir': cmd_unir}[cmd](*args)
