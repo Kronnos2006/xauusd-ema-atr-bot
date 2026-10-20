@@ -7,7 +7,7 @@ tags: [agentes, desconfiado, mejorador, vigia]
 
 # Agentes del proyecto
 
-Índice: [[00 Inicio]] · Ver también [[Guía de uso#4. Proponer una mejora a los modelos]] · [[Automatizaciones]]
+Índice: [[00 Inicio]] · Organización: [[Gerencia y mesa directiva]] · Ver también [[Guía de uso#4. Proponer una mejora a los modelos]] · [[Automatizaciones]]
 
 Asistentes especializados de Claude con instrucciones propias, guardadas en `.claude/agents/`. Se invocan pidiéndoselo a Claude ("que el desconfiado revise…").
 
@@ -15,7 +15,7 @@ Asistentes especializados de Claude con instrucciones propias, guardadas en `.cl
 - **Rol:** auditor escéptico. Asume que hay un error hasta que la evidencia muestre lo contrario. No escribe código del proyecto.
 - **Revisa:** fuga de información, contaminación del modelo, datos, holdouts, pruebas múltiples, muestras dependientes, potencia, costos, robustez y reproducibilidad.
 - **Responde:** APROBADO / RECHAZADO / DUDAS ABIERTAS, con lo que verificó, los problemas por gravedad, las ejecuciones que pide y lo que no pudo verificar.
-- **Programado:** auditoría diaria a las 6:33 a. m. con notificación.
+- **Programado:** participa como Jefe de Auditoría en la reunión diaria de las 6:57 a. m. ([[Gerencia y mesa directiva]]).
 - Archivo: `.claude/agents/desconfiado.md`
 
 ## Mejorador
