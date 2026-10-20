@@ -72,3 +72,9 @@ Pedida por el auditor `desconfiado` tras revisar la corrida de prueba.
 - **Velas recortadas**: hay 11 velas que cierran antes de completar la hora (caídas de Binance). Ninguna es base, objetivo ni referencia de persistencia de una base válida; el resumen igual las cuenta (`velas_recortadas_en_bases`). Se corrige la observación del auditor sobre 2021-04-25: ese día no es base porque su contexto incluye el hueco del 2021-04-20.
 - **Versiones**: el shard 0 guarda `pip freeze` en `data/kt003/pip_freeze.txt`.
 - **Exposición declarada**: al probar la unión de resultados sobre los datos reales con pronósticos aleatorios (sin modelos), el autor vio las tasas de las referencias triviales («siempre sube» y «persistencia») por período y año. No son hipótesis ni cambian ninguna regla de esta prueba; se deja constancia.
+
+## Nota E (2026-10-20, tras los resultados): cancelación del intento 1
+
+Pedida por el auditor `desconfiado`. El run 39450116803 tuvo dos intentos. El intento 1 se canceló a las 16:47 UTC por pedido de Claude al usuario: la página pública de Actions mostraba el run como "En cola" y Claude lo interpretó, por error, como atascado, cuando 14 shards llevaban ~1 h 9 min corriendo y 2 (shards 2 y 4) habían fallado a los ~4 min por causa no registrada. Nadie descargó ni miró ningún artefacto ni resultado parcial antes de relanzar: la decisión se tomó solo por el estado mostrado en la página. El usuario relanzó con "Re-run all jobs"; GitHub conservó el shard 15 ya terminado del intento 1. El muestreo es determinista (semilla 42 por lote), por lo que repetir un shard da el mismo resultado.
+
+Resultado de la auditoría de resultados: cálculos reproducidos sin discrepancias; sin señales de fuga. Resultado primario (post corte, McNemar con Holm): **no significativo** (Kronos 56,8 % vs 50,9 % «siempre sube», p Holm 0,086).
