@@ -140,7 +140,13 @@ jobs:
           key: hf-kt002-901c26c1-0e011738-1d952420
       - name: Verificar datos sellados
         run: echo "$DATOS_SHA256  data/kt003/btcusdt_1h.csv.gz" | sha256sum -c -
-      - run: python tools/kt003_historico.py shard data/kt003/btcusdt_1h.csv.gz ${{ matrix.shard }} 16 shard-${{ matrix.shard }}.csv
+      - name: Pronosticar shard (hasta 3 intentos si falla la descarga o carga de modelos)
+        run: |
+          for t in 1 2 3; do
+            python tools/kt003_historico.py shard data/kt003/btcusdt_1h.csv.gz ${{ matrix.shard }} 16 shard-${{ matrix.shard }}.csv && exit 0
+            echo "Intento $t fallo; reintento en $((60*t)) s"; sleep $((60*t))
+          done
+          exit 1
       - if: matrix.shard == 0
         run: pip freeze > pip_freeze.txt
       - uses: actions/upload-artifact@v4
