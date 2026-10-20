@@ -11,13 +11,13 @@
     "variante": "KT-002",
     "cambio": "Sin cambios de modelo: misma configuración de KT-001, ahora con velas reales BTCUSDT 1h cada hora",
     "datos": "Reales, prospectivos desde 2026-10-20",
-    "estado": "Registrada; esperando la primera corrida en GitHub (0 pronósticos al 2026-10-20 14:30 UTC)"
+    "estado": "Activa: predicción cada hora en GitHub Actions desde 2026-10-20"
   },
   {
     "fecha": "2026-10-20",
     "variante": "KT-003",
     "cambio": "Sin cambios de modelo: misma configuración, aplicada a velas históricas 2017–2026 (una base diaria)",
     "datos": "Históricos; antes de 2024-07 contaminados por el entrenamiento de Kronos",
-    "estado": "Registrada; en auditoría, no ejecutada"
+    "estado": "Terminada y auditada: Kronos 56,8 % vs 50,9 % post corte, no significativo con Holm (p 0,086)"
   }
 ]

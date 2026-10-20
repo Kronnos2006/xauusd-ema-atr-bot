@@ -1,6 +1,22 @@
 # Estado actual y próximos pasos
 
-Índice: [[Bienvenido]]
+Índice: [[00 Inicio]] · [[Bienvenido]]
+
+## Actualización 2026-10-20 — modelos fundacionales en BTC
+
+**Qué corre ahora**
+- [[KT-002 — Acierto prospectivo BTC|KT-002]]: cada hora en GitHub Actions, predice la dirección de BTC a 4 h con Kronos, TimesFM y KT-001 y puntúa al vencer. Descriptivo, sin órdenes.
+- Vigía de Actions (cada 5 h) y auditoría diaria del desconfiado (6:33 a. m.), con notificaciones. Ver [[Automatizaciones]].
+- Panel en vivo con BTC y las predicciones encima. Ver [[Guía de uso]].
+
+**Qué se cerró**
+- [[KT-003 — Diagnóstico histórico BTC|KT-003]] (2017–2026, 2928 días): Kronos 56,8 % vs 50,9 % de «siempre sube» después del corte, **no significativo con Holm** (p 0,086). TimesFM 48,7 %. Sin fuga ni memorización; los movimientos previstos son menores que el costo de operar.
+
+**Qué está pendiente**
+- Propuestas del [[Agentes del proyecto#Mejorador|mejorador]]: KT-004 (confirmar Kronos con datos prospectivos de KT-002) y KT-005 (ajuste de TimesFM). La primera versión de KT-004 fue rechazada por el desconfiado y se está corrigiendo. Ninguna se ejecuta sin el OK del usuario.
+- Revisión cruzada de Codex sobre KT-002/KT-003, pendiente.
+- La PAUSA ACTIVA para hipótesis de trading sigue vigente.
+
 
 ## PAUSA ACTIVA (reafirmada 2026-08-06)
 
