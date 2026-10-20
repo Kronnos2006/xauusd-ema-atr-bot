@@ -174,6 +174,13 @@ def cmd_shard(data_csv, i, n, out_csv):
                 raise ValueError('Salida de modelo invalida')
             row = kt2.build_row(c, float(kp.close.iloc[-1]), float(tp[-1]), pd.Timestamp(datetime.now(timezone.utc)), 0.0)
             rows.append(row)
+        if start == 0 and str(i) == '0':
+            torch.manual_seed(42)
+            with torch.inference_mode():
+                kps2 = pred.predict_batch([c[cols] for c in ctxs], xs, ys, pred_len=HORIZON, T=1., top_p=.9, sample_count=20, verbose=False)
+                point2, _ = tfm.forecast(horizon=HORIZON, inputs=[c.close.to_numpy(np.float32) for c in ctxs])
+            same = all(a.equals(b) for a, b in zip(kps, kps2)) and bool(np.array_equal(point, point2))
+            Path('reproducibilidad.json').write_text(json.dumps(dict(lote=[c.open_time.iloc[-1].isoformat() for c in ctxs], identico=same), indent=2))
         print(f'shard {i}/{n}: {len(rows)}/{len(mine)} en {time.perf_counter() - t0:.0f} s', flush=True)
     pd.DataFrame(rows, columns=kt2.COLUMNS).to_csv(out_csv, index=False)
 
@@ -207,10 +214,13 @@ def cmd_unir(data_csv, *shards):
         ar = sub.actual_ret.astype(float)
         nz = ar[ar != 0]
         b = dict(n=int(len(sub)), siempre_sube=stat(int((nz > 0).sum()), int(len(nz))))
+        up = (sub.actual_ret.astype(float) > 0).astype(int).where(sub.actual_ret.astype(float) != 0)
         for m in kt2.MODELS:
             h = sub[f'{m}_hit']
             h = h[h.isin(['0', '1'])].astype(int)
+            both = h.index.intersection(up.dropna().index)
             b[m] = stat(int(h.sum()), int(len(h)))
+            b[m]['mcnemar_vs_sube'] = kt2.mcnemar(h[both], up[both].astype(int))
         return b
 
     def stat(k, n):
@@ -232,7 +242,8 @@ def cmd_unir(data_csv, *shards):
         if not b:
             continue
         lines += [f'## {title} — n={b["n"]}', '', f'- Kronos: {f(b["kronos"])}', f'- TimesFM: {f(b["timesfm"])}',
-                  f'- KT-001 50/50: {f(b["kt001"])}', f'- Referencia «siempre sube»: {f(b["siempre_sube"])}', '']
+                  f'- KT-001 50/50: {f(b["kt001"])}', f'- Referencia «siempre sube»: {f(b["siempre_sube"])}',
+                  '- McNemar vs «siempre sube» (p): ' + ', '.join(f'{m} {b[m]["mcnemar_vs_sube"]["p"]}' for m in kt2.MODELS), '']
     lines += ['## Por año (KT-001 / siempre sube)', '']
     for y, b in summary['por_anio'].items():
         lines.append(f'- {y}: {f(b["kt001"])} / {f(b["siempre_sube"])}')

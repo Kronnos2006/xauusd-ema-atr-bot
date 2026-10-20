@@ -8,8 +8,7 @@ on:
   push:
     branches: [master]
     paths:
-      - tools/kt003_historico.py
-      - .github/workflows/kt003.yml
+      - data/kt003/lanzar.txt   # se lanza solo al crear/editar este archivo, nunca al fusionar codigo
 
 permissions:
   contents: write
@@ -76,7 +75,10 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: shard-${{ matrix.shard }}
-          path: shard-${{ matrix.shard }}.csv
+          path: |
+            shard-${{ matrix.shard }}.csv
+            reproducibilidad.json
+          if-no-files-found: ignore
 
   unir:
     needs: pronosticar
@@ -95,6 +97,7 @@ jobs:
         run: |
           python tools/kt003_historico.py unir art/datos/btcusdt_1h.csv.gz art/shard-*/shard-*.csv
           cp art/datos/manifiesto_datos.json data/kt003/
+          cp art/shard-0/reproducibilidad.json data/kt003/ || echo '{"identico": null}' > data/kt003/reproducibilidad.json
           echo "run_id=${GITHUB_RUN_ID} sha=${GITHUB_SHA}" > data/kt003/ejecucion.txt
       - name: Guardar resultados
         run: |

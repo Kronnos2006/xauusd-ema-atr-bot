@@ -33,3 +33,13 @@ El usuario pidió un backtest de al menos 20 años. Se le explicó que BTCUSDT e
 
 - Código: `tools/kt003_historico.py`. Workflow: `.github/workflows/kt003.yml` (GitHub Actions, 16 tareas en paralelo).
 - Resultados: `data/kt003/predicciones.csv`, `resumen.md`, `resumen.json`, `manifiesto_datos.json`.
+
+## Enmienda A (2026-10-20, antes de ejecutar)
+
+Pedida por el auditor `desconfiado`.
+
+- **Lanzamiento**: el workflow ya no corre al fusionar código; solo al crear `data/kt003/lanzar.txt` o a mano desde Actions.
+- **Prueba pareada**: McNemar exacto de cada modelo contra «siempre sube» sobre las mismas bases, por período y en total.
+- **Dependencia**: las bases son diarias y no se solapan, pero días seguidos comparten régimen de mercado; las p se leen como descriptivas, no como prueba de edge.
+- **Reproducibilidad**: el shard 0 repite su primer lote con la misma semilla y guarda `data/kt003/reproducibilidad.json`.
+- **Conteo de intentos**: misma configuración que KT-001/KT-002; no es una variante nueva ni un intento financiero.
