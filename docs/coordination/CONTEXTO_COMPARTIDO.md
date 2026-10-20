@@ -1,5 +1,9 @@
 # Contexto compartido
 
+## Auditoria desconfiado y arranque KT-002 (2026-10-20 14:30 UTC)
+
+Autor Claude; auditor agente desconfiado; revisor Codex pendiente. La primera auditoria dio DUDAS ABIERTAS: el workflow KT-002 no tuvo ninguna corrida (cron sin ejecutar). Aplicado lo pedido: disparo por push del propio script, McNemar exacto vs siempre sube, conteo de horas omitidas, chequeo de reproducibilidad en la primera corrida, Enmienda A del registro KT-002 (antes del primer dato), cambios.json corregido, CLAUDE.md con las tareas descriptivas autorizadas. KT-003 sigue en la rama kt003-diseno; su workflow se lanza solo a mano. Auditoria diaria programada 6:33 Costa Rica con notificacion al usuario.
+
 ## KT-002 prospectivo en GitHub Actions (2026-10-20, Costa Rica)
 
 Autor Claude; revisor Codex pendiente. El usuario pide medir el acierto con datos reales sin depender de su PC. Elige prueba prospectiva y evaluar Kronos, TimesFM y KT-001 por separado. Registro previo, escrito antes de recolectar datos, en docs/KT-002_registro_prospectivo.md. Workflow .github/workflows/kt002.yml, cada hora, BTCUSDT 1h, 400 velas cerradas, horizonte 4h, misma configuracion y revisiones que KT-001. Script tools/kt002_prospectivo.py. Salida data/kt002/ (predicciones.csv, resumen.md/json). La logica de puntuacion se probo localmente con velas sinteticas y modelos simulados; la inferencia real solo corre en Actions porque este entorno no llega a Hugging Face ni a Binance. Es descriptivo: sin ordenes, MT5, costos ni rentabilidad, sin cambio de N canonico y sin abrir reservas. Las velas posteriores al 2026-10-20 quedan expuestas para cualquier holdout BTC futuro.

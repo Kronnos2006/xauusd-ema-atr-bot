@@ -51,3 +51,14 @@ Las velas posteriores al 2026-10-20 quedan vistas por esta prueba. Si más adela
 - Código: `tools/kt002_prospectivo.py`. Workflow: `.github/workflows/kt002.yml`.
 - Datos: `data/kt002/predicciones.csv` (una fila por pronóstico, se completa al vencer). Resumen: `data/kt002/resumen.md` y `resumen.json`.
 - Para detenerla: desactivar el workflow en GitHub (Actions → KT-002 → Disable).
+
+## Enmienda A (2026-10-20 14:30 UTC, antes del primer dato)
+
+Pedida por el auditor `desconfiado`. Se agrega cuando todavía hay 0 pronósticos, así que no está influida por resultados.
+
+- **Prueba pareada**: cada modelo se compara con «siempre sube» sobre las mismas filas con McNemar exacto (binomial bilateral sobre los casos donde solo uno de los dos acierta). Se informa p; con α = 0,05 bilateral, sin corrección para los tres modelos, que se leen como descriptivos.
+- **Dependencia**: la lectura principal sigue siendo el subconjunto sin solape (una base cada 4 h). Aun ahí puede haber autocorrelación de régimen; por eso ninguna p se interpreta como prueba de edge, solo como señal para registrar un estudio confirmatorio aparte.
+- **Horas omitidas**: el resumen cuenta las horas sin pronóstico entre el primero y el último (corridas que GitHub no hizo o que fallaron). No se rellenan después.
+- **Reproducibilidad**: en la primera corrida se pronostica dos veces la misma base y se guarda `data/kt002/reproducibilidad.json`.
+- **Conteo de intentos**: KT-001 (técnica, sintética), KT-002 (prospectiva) y KT-003 (diagnóstico histórico) usan la misma configuración; no son variantes de modelo distintas. Ninguna es un intento financiero ni cambia el N canónico.
+- **Arranque**: el cron horario no se ejecutó (0 corridas al 14:30 UTC). Se agrega un disparo por push sobre el propio script/workflow para la primera corrida.

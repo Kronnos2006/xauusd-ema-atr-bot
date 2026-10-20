@@ -188,6 +188,18 @@ def wilson(k, n, z=1.959963984540054):
     return round(c - h, 4), round(c + h, 4)
 
 
+def mcnemar(model_hit, up_hit):
+    """Prueba pareada exacta (binomial bilateral) modelo vs «siempre sube» sobre las mismas filas."""
+    b = int(((model_hit == 1) & (up_hit == 0)).sum())  # solo el modelo acierta
+    c = int(((model_hit == 0) & (up_hit == 1)).sum())  # solo «siempre sube» acierta
+    n = b + c
+    if n == 0:
+        return dict(solo_modelo=b, solo_sube=c, p=None)
+    k = min(b, c)
+    p = min(1.0, 2 * sum(math.comb(n, i) for i in range(k + 1)) / 2 ** n)
+    return dict(solo_modelo=b, solo_sube=c, p=round(p, 4))
+
+
 def summarize(preds, now):
     scored = preds[(preds.actual_ret.notna()) & (preds.actual_ret != '')].copy()
     hours = pd.to_datetime(scored.base_open_utc, utc=True).dt.hour
@@ -200,13 +212,20 @@ def summarize(preds, now):
                      siempre_sube=dict(n=int(len(nz)), aciertos=int((nz > 0).sum()),
                                        tasa=round(float((nz > 0).mean()), 4) if len(nz) else None,
                                        ic95=wilson(int((nz > 0).sum()), int(len(nz)))))
+        up = (sub.actual_ret.astype(float) > 0).astype(int).where(sub.actual_ret.astype(float) != 0)
         for m in MODELS:
             h = sub[f'{m}_hit']
             h = h[h.isin(['0', '1'])].astype(int)
+            both = h.index.intersection(up.dropna().index)
             block[m] = dict(n=int(len(h)), aciertos=int(h.sum()),
                             tasa=round(float(h.mean()), 4) if len(h) else None,
-                            ic95=wilson(int(h.sum()), int(len(h))))
+                            ic95=wilson(int(h.sum()), int(len(h))),
+                            mcnemar_vs_sube=mcnemar(h[both], up[both].astype(int)))
         out[name] = block
+    if len(preds):
+        b = pd.to_datetime(preds.base_open_utc, utc=True)
+        esperadas = int((b.max() - b.min()) / HOUR) + 1
+        out['horas_omitidas'] = esperadas - int(b.nunique())  # corridas que GitHub no hizo o fallaron
     (OUT / 'resumen.json').write_text(json.dumps(out, indent=2), encoding='utf-8')
 
     def fmt(b):
@@ -217,13 +236,16 @@ def summarize(preds, now):
     lines = ['# KT-002 — acierto direccional prospectivo (BTCUSDT 1h, 4h)', '',
              f"Actualizado {now.strftime('%Y-%m-%d %H:%M')} UTC. Pronósticos: {out['pronosticos']}, "
              f"vencidos: {out['vencidos']}.", '',
-             'Descriptivo. No mide rentabilidad ni costos. Interpretar solo **sin solape**.', '']
+             'Descriptivo. No mide rentabilidad ni costos. Interpretar solo **sin solape**.',
+             f"Horas omitidas desde el primer pronóstico: {out.get('horas_omitidas', 0)}.", '']
     for name, title in (('sin_solape', 'Sin solape (base cada 4 h)'),
                         ('todos_solapados', 'Todos (ventanas solapadas, no independientes)')):
         b = out[name]
         lines += [f'## {title}', '', f"- Kronos: {fmt(b['kronos'])}",
                   f"- TimesFM: {fmt(b['timesfm'])}", f"- KT-001 50/50: {fmt(b['kt001'])}",
-                  f"- Referencia «siempre sube»: {fmt(b['siempre_sube'])}", '']
+                  f"- Referencia «siempre sube»: {fmt(b['siempre_sube'])}",
+                  '- Prueba pareada vs «siempre sube» (McNemar exacto, p): ' + ', '.join(
+                      f"{lbl} {b[m]['mcnemar_vs_sube']['p']}" for lbl, m in (('Kronos', 'kronos'), ('TimesFM', 'timesfm'), ('KT-001', 'kt001'))), '']
     (OUT / 'resumen.md').write_text('\n'.join(lines), encoding='utf-8')
     return out
 
@@ -249,6 +271,11 @@ def main():
         print(f'Ya existe pronostico para base {base_iso}; solo se puntua.')
     else:
         k_close, t_close = forecast(ctx)
+        repro = OUT / 'reproducibilidad.json'
+        if not repro.exists():
+            k2, t2 = forecast(ctx)
+            repro.write_text(json.dumps(dict(base_open_utc=base_iso, kronos=[float(k_close), float(k2)], timesfm=[float(t_close), float(t2)],
+                                             identico=bool(k_close == k2 and t_close == t2)), indent=2), encoding='utf-8')
         row = build_row(ctx, k_close, t_close, now, time.perf_counter() - started)
         preds = pd.concat([preds, pd.DataFrame([row], columns=COLUMNS)], ignore_index=True)
         print(f"Pronostico base {base_iso}: kronos {row['kronos_ret']}, "

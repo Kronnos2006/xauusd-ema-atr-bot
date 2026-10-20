@@ -33,3 +33,12 @@ Cualquier hipótesis nueva pasa primero por `.claude/skills/hypothesis-gate/SKIL
 Leer CLAUDE.md y docs/coordination/CONTEXTO_COMPARTIDO.md antes de trabajar. Mantener objetivo, decisiones, cambios, evidencia y pendientes en ese registro. No asumir acceso al historial privado del otro agente.
 Un agente propone o implementa; el otro revisa. Identificar autor y revisor, documentar desacuerdos y no aprobar sin evidencia. Evitar editar simultaneamente los mismos archivos.
 Usar exclusivamente Claude y Codex. La coordinacion entre asistentes no autoriza nuevos backtests, hipotesis, cambios en loggers/tareas programadas ni operaciones MT5.
+
+## Tareas descriptivas activas autorizadas por el usuario (2026-10-20)
+
+La PAUSA ACTIVA sigue vigente para hipótesis y estrategias. El usuario autorizó explícitamente dos mediciones **descriptivas** de Kronos/TimesFM en BTCUSDT, sin órdenes, costos ni capital y sin cambiar el N canónico:
+
+- **KT-002**: workflow horario en GitHub Actions (`.github/workflows/kt002.yml`) que escribe en `data/kt002/`. Registro: `docs/KT-002_registro_prospectivo.md`.
+- **KT-003**: diagnóstico histórico 2017–2026 (`.github/workflows/kt003.yml`), solo se lanza a mano. Registro: `docs/KT-003_registro_historico.md`.
+
+Auditor: agente `desconfiado` (`.claude/agents/desconfiado.md`), con una auditoría diaria programada que notifica al usuario.
