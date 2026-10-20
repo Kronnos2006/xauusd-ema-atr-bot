@@ -32,7 +32,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: modo
-        run: echo "modo=$(tr -d '[:space:]' < data/kt003/lanzar.txt)" >> "$GITHUB_OUTPUT"
+        run: echo "modo=$(head -1 data/kt003/lanzar.txt | tr -d '[:space:]')" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
@@ -64,8 +64,9 @@ jobs:
           git checkout -q FETCH_HEAD
       - name: Dependencias (versiones de KT-001)
         run: |
-          pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/cpu
-          pip install -r docs/evidencia/KT-001/requirements-resolved.txt
+          set -o pipefail
+          mkdir -p data/kt003
+          { pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/cpu && pip install -r docs/evidencia/KT-001/requirements-resolved.txt; } 2>&1 | tail -40 > data/kt003/prueba_deps.log
       - uses: actions/cache@v4
         with:
           path: .hf-cache
@@ -76,8 +77,10 @@ jobs:
           path: datos-out
       - name: Equivalencias y tiempos
         run: |
+          set +e
           mkdir -p data/kt003
-          python tools/kt003_historico.py prueba datos-out/btcusdt_1h.csv.gz data/kt003/prueba.json
+          python tools/kt003_historico.py prueba datos-out/btcusdt_1h.csv.gz data/kt003/prueba.json > data/kt003/prueba.log 2>&1
+          echo "exit=$?" >> data/kt003/prueba.log
           cp datos-out/manifiesto_datos.json data/kt003/
           cp datos-out/btcusdt_1h.csv.gz data/kt003/
           for r in NeoQuasar/Kronos-small/revision/901c26c1332695a2a8f243eb2f37243a37bea320 google/timesfm-2.5-200m-pytorch/revision/1d952420fba87f3c6dee4f240de0f1a0fbc790e3; do
@@ -85,6 +88,7 @@ jobs:
           done > data/kt003/checkpoints_fechas.jsonl
           echo "modo=prueba run_id=${GITHUB_RUN_ID} sha=${GITHUB_SHA}" > data/kt003/ejecucion.txt
       - name: Guardar
+        if: always()
         run: |
           git config user.name "kt003-bot"
           git config user.email "kt003-bot@users.noreply.github.com"
