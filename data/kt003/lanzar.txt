@@ -1,2 +1,2 @@
 prueba
-# intento 2: con registro del error
+# intento 3: fechas ISO corregidas
