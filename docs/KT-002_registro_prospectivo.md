@@ -62,3 +62,7 @@ Pedida por el auditor `desconfiado`. Se agrega cuando todavía hay 0 pronóstico
 - **Reproducibilidad**: en la primera corrida se pronostica dos veces la misma base y se guarda `data/kt002/reproducibilidad.json`.
 - **Conteo de intentos**: KT-001 (técnica, sintética), KT-002 (prospectiva) y KT-003 (diagnóstico histórico) usan la misma configuración; no son variantes de modelo distintas. Ninguna es un intento financiero ni cambia el N canónico.
 - **Arranque**: el cron horario no se ejecutó (0 corridas al 14:30 UTC). Se agrega un disparo por push sobre el propio script/workflow para la primera corrida.
+
+## Cambio operativo (2026-10-20 17:05 UTC)
+
+El cron horario de GitHub no generó ninguna corrida en casi 3 horas. Se cambia solo la forma de ejecutar, no el cálculo: cada corrida del workflow queda activa ~4 h 45 min y ejecuta el mismo script en el minuto 7 de cada hora; un despertador externo (tarea programada de Claude cada 5 h) toca `data/kt002/despertar.txt` para relanzarlo. Las horas que se pierdan entre corridas se cuentan como horas omitidas. Ya había resultados de 1 pronóstico, todavía sin vencer; nada de lo observado motiva este cambio.
