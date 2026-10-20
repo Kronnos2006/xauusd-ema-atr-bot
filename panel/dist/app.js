@@ -58,7 +58,7 @@ function cards(){
     $('forecast-table').append(tr);
   });
   const report=result.report;
-  const entries={'Tipo de datos':'Sintéticos · KT-001','Contexto':'400 velas de 1 hora','Horizonte':'4 horas','Kronos':'20 trayectorias · T=1 · top_p=0,9','TimesFM':'2.5 · 200M · mediana','Pesos':'50 % Kronos / 50 % TimesFM','Dispositivo':'CPU · 4 hilos','Semilla':String(report.seed),'Rentabilidad':'No evaluada','Resultado':report.status};
+  const entries={'Tipo de datos':'Sintéticos · KT-001','Contexto':'400 velas de 1 hora','Horizonte':'4 horas','Kronos':'20 trayectorias · T=1 · top_p=0,9','TimesFM':'2.5 · 200M · mediana','Pesos':'50 % Kronos / 50 % TimesFM','Dispositivo':'CPU · '+(report.torch_threads||4)+' hilos','Semilla':String(report.seed),'Rentabilidad':'No evaluada','Resultado':report.status};
   fillDl('parameters',entries);fillDl('revisions',report.revisions);
   for(const [name,hash] of Object.entries(report.sha256||{})){
     const dt=document.createElement('dt');dt.textContent='SHA256 · '+name.split('@')[0].split('/').at(-1);

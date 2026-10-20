@@ -1,0 +1,10 @@
+[Unit]
+Description=Copia verificada local del registro Kronos
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/kronos-project
+EnvironmentFile=%h/kronos.env
+ExecStart=%h/kronos-project/tools/kronos-env/bin/python %h/kronos-project/deploy/oracle/backup.py
+NoNewPrivileges=true
+UMask=0077

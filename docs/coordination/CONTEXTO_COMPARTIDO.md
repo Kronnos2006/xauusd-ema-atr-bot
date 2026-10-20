@@ -1,5 +1,15 @@
 # Contexto compartido
 
+## Preparacion Oracle Always Free (2026-10-19, Costa Rica)
+
+Regresion sintetica final Windows con dos hilos: PASS_TECHNICAL_ONLY en36.04s, 400 velas/4futuros,20trayectorias, seed42 y revisiones intactas. Evidencia docs/evidencia/oracle-preparacion/smoke-windows-2hilos.json. Nueve tests y sintaxis Bash/JS correctos; no se ejecuta instalador apt/systemd ni prueba ARM local. Docker daemon Linux no disponible; no se inicio ni modifico Docker/WSL. Preparacion completa para revisar, pendiente cuenta/VM y validacion remota; no migracion completada.
+
+Usuario autoriza avanzar con Oracle gratuito y confirma no tener cuenta. Se abre signup.oraclecloud.com para que complete datos/verificacion/condiciones personalmente. Busqueda de plugin no encontro gestor OCI pertinente; no hay config OCI/SSH configurada para este despliegue. No cuenta creada, VM, cargos, claves nuevas ni despliegue remoto. Cuenta/capacidad/region y acceso siguen pendientes del usuario.
+
+Autor Codex; revisor Claude pendiente. Nueva rama codex/oracle-always-free conserva rama del panel. Paquete deploy/oracle/: requisitos fijos, bootstrap Ubuntu24.04 ARM con chequeos RAM/disco, upstreams fijados (sparse TimesFM), servicio privado por loopback, timer de backup local y guia de migracion. Copia externa aun pendiente; backup local no se presenta como respaldo fuera de la VM. Versiones torch2.14.1/numpy2.5.4/pandas3.0.6/safetensors0.6.2 tienen ruedas PyPI cp312/aarch64 verificadas por metadatos; falta prueba real ARM. Docker Linux local no activo, no se afirma prueba en Linux.
+
+Panel portable: KRONOS_PYTHON, KRONOS_DATA_DIR, HF_HOME y numero de hilos configurables. Autoemision opt-in KRONOS_AUTO_FORECAST=1 despues de +4h resuelto, sin solapar ni cambiar parametros, backoff15min; por defecto0 y NO se activa en el servidor Windows actual. Sigue cada60s y requiere clock/velas cerradas. Registros ordenados por emision; parada graceful deja terminar tarea activa. Nueve tests aislados pasan (portabilidad/no solapamiento/backoff/backup verificado y cuatro tests de registro previos), Bash -n y JS syntax check correctos. Regresion sintetica offline con dos hilos en Windows en curso; no sustituye ARM. No nuevas hipotesis/backtests, ordenes, MT5 ni cambios de tareas Windows. Instalacion en nube solo despues de validar gratuidad y recursos concretos.
+
 ## Organizacion, rama y respaldo (2026-10-19, Costa Rica)
 
 Publicacion completada: 187ede9ac7fb018243ba553bc7a92cf9182131da en origin/codex/kronos-timesfm-panel-control, SHA remoto igual al local; master remoto sigue en f8ae687fd523b45bdde08eca7691181d688026f7. Cuatro tests pasan, 13 hashes del manifiesto coinciden con archivos locales y blobs preparados en Git, revision basica de secretos sin coincidencias. Sin despliegue en nube. Esta nota documenta el resultado y reemplaza el estado de preparacion inferior.

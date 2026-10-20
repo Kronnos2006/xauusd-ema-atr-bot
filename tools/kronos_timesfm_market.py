@@ -7,7 +7,7 @@ import sys
 import time
 
 ROOT=Path(__file__).resolve().parent
-os.environ['HF_HOME']=str(ROOT/'kronos-cache')
+os.environ.setdefault('HF_HOME',str(ROOT/'kronos-cache'))
 sys.path.insert(0,str(ROOT/'kronos-upstream'))
 import numpy as np
 import pandas as pd
@@ -19,7 +19,7 @@ from model import Kronos,KronosTokenizer,KronosPredictor
 def main(directory):
     def event(stage,message):print('@PANEL '+json.dumps(dict(stage=stage,message=message)),flush=True)
     context=json.loads((directory/'context.json').read_text(encoding='utf-8'))
-    started=time.perf_counter();torch.manual_seed(42);torch.set_num_threads(4)
+    started=time.perf_counter();torch.manual_seed(42);torch.set_num_threads(int(os.environ.get('KRONOS_TORCH_THREADS','4')))
     revisions={'NeoQuasar/Kronos-small':'901c26c1332695a2a8f243eb2f37243a37bea320',
         'NeoQuasar/Kronos-Tokenizer-base':'0e0117387f39004a9016484a186a908917e22426',
         'google/timesfm-2.5-200m-pytorch':'1d952420fba87f3c6dee4f240de0f1a0fbc790e3'}
@@ -58,7 +58,7 @@ def main(directory):
     event('verify','Guardando salida previa a los cierres objetivo')
     result=dict(forecast=output,revisions=revisions,weights=[.5,.5],seed=42,kronos_samples=20,
         kronos_paths=values.tolist(),elapsed_seconds=round(time.perf_counter()-started,2),
-        probability_status='NO_CALIBRADA',profitability_evaluated=False)
+        probability_status='NO_CALIBRADA',profitability_evaluated=False,torch_threads=torch.get_num_threads())
     (directory/'generated.json').write_text(json.dumps(result,indent=2,allow_nan=False),encoding='utf-8')
     event('done','Pronosticos generados; pendientes de registro prospectivo')
 

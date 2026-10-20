@@ -1,0 +1,10 @@
+[Unit]
+Description=Copia diaria del registro Kronos
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+Unit=kronos-backup.service
+
+[Install]
+WantedBy=timers.target

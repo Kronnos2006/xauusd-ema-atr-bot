@@ -14,7 +14,9 @@ import sys
 import threading
 import time
 import uuid
+import signal
 from market import MarketLedger
+from config import model_python, data_directory
 
 BASE = Path(__file__).resolve().parent
 PROJECT = BASE.parent
@@ -34,47 +36,67 @@ def load_result(directory, source):
 
 
 class Engine:
-    def __init__(self):
+    def __init__(self, start_monitor=True):
         self.lock = threading.Lock()
         self.job = dict(status='idle', stage=None, events=[])
         self.result = load_result(PROJECT/'docs/evidencia/KT-001', 'evidencia_guardada')
-        self.ready = (PROJECT/'tools/kronos-env/Scripts/python.exe').is_file()
-        self.market = MarketLedger(BASE/'market-records')
+        self.python = model_python()
+        self.ready = self.python.is_file()
+        self.data_dir = data_directory()
+        self.market = MarketLedger(self.data_dir/'market-records')
+        self.auto = os.environ.get('KRONOS_AUTO_FORECAST','0')=='1'
+        self.next_auto_attempt = 0
         self.stop = threading.Event()
-        threading.Thread(target=self.monitor, daemon=True).start()
+        self.worker = None
+        if start_monitor:threading.Thread(target=self.monitor, daemon=True).start()
+
+    def auto_tick(self):
+        if not self.auto or not self.ready or time.monotonic()<self.next_auto_attempt:
+            return
+        with self.lock:
+            if self.job['status']=='running':return
+        records=self.market.records()
+        if any(len(record['evaluations'])<4 for record in records):return
+        # Una emision por ventana de cuatro horas, sin ajustar parametros.
+        if records and int(time.time()*1000)<records[-1]['forecast'][-1]['target_close_ms']+5000:return
+        self.next_auto_attempt=time.monotonic()+900
+        self.start('market')
 
     def monitor(self):
         while not self.stop.wait(60):
             try:
                 self.market.reconcile()
+                self.auto_tick()
             except Exception:
                 pass  # El error queda visible en el estado del registro.
 
     def snapshot(self):
         with self.lock:
             return dict(job=json.loads(json.dumps(self.job)), result=self.result,
-                        engine_available=self.ready)
+                        engine_available=self.ready,auto_forecast=self.auto)
 
     def start(self, kind='synthetic'):
         with self.lock:
+            if self.stop.is_set():return False,'Servidor deteniendose'
             if self.job['status'] == 'running':
                 return False, 'Ya hay una ejecucion en curso'
             if not self.ready:
                 return False, 'Falta el entorno Python local de los modelos'
             self.job = dict(id=uuid.uuid4().hex[:12], kind=kind,status='running', stage='starting',
                             started_at=datetime.now(timezone.utc).isoformat(), events=[])
-        threading.Thread(target=self.work, daemon=True).start()
+        self.worker=threading.Thread(target=self.work, daemon=True)
+        self.worker.start()
         return True, 'started'
 
     def work(self):
         with self.lock:
             job_id = self.job['id']
             kind = self.job['kind']
-        directory = (BASE/'market-records' if kind=='market' else BASE/'runtime')/job_id
+        directory = (self.data_dir/'market-records' if kind=='market' else self.data_dir/'runtime')/job_id
         directory.mkdir(parents=True, exist_ok=True)
         env = os.environ.copy()
         env.update(HF_HUB_OFFLINE='1', PYTHONUTF8='1', PYTHONUNBUFFERED='1')
-        command = [str(PROJECT/'tools/kronos-env/Scripts/python.exe'), '-X', 'utf8',
+        command = [str(self.python), '-X', 'utf8',
                    '-u', str(PROJECT/'tools/kronos_timesfm_smoke.py'),
                    '--output-dir', str(directory), '--progress']
         process = None
@@ -84,7 +106,7 @@ class Engine:
                     self.job['stage']='input'
                     self.job['events'].append(dict(stage='input',message='Consultando 400 velas BTCUSDT cerradas en Binance'))
                 self.market.prepare(directory)
-                command=[str(PROJECT/'tools/kronos-env/Scripts/python.exe'),'-X','utf8','-u',
+                command=[str(self.python),'-X','utf8','-u',
                     str(PROJECT/'tools/kronos_timesfm_market.py'),'--directory',str(directory)]
             process = subprocess.Popen(command, cwd=PROJECT, env=env, stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT, text=True, encoding='utf-8',
@@ -112,7 +134,7 @@ class Engine:
             if returncode:
                 # Detalle tecnico local; el navegador recibe mensaje resumido.
                 (directory/'error.txt').write_text(''.join(output), encoding='utf-8')
-                raise RuntimeError('La inferencia no termino. Revisa panel/runtime/'+job_id+'/error.txt')
+                raise RuntimeError('La inferencia no termino. Revisa '+str(directory/'error.txt'))
             if kind=='market':
                 self.market.seal(directory)
                 result=None
@@ -155,7 +177,12 @@ class Handler(BaseHTTPRequestHandler):
         if path == '/api/export':
             return self.send(200, self.server.engine.snapshot()['result'])
         if path == '/api/market':
-            try:return self.send(200,self.server.engine.market.snapshot())
+            try:
+                snapshot=self.server.engine.market.snapshot()
+                snapshot['automatic_forecasts']=self.server.engine.auto
+                if self.server.engine.auto:
+                    snapshot['monitoring']+=' Generacion automatica activada: nueva emision al resolver la ventana previa, sin solapar.'
+                return self.send(200,snapshot)
             except Exception as error:return self.send(500,dict(error=str(error)))
         files = {'/':'index.html', '/index.html':'index.html', '/app.js':'app.js', '/market.js':'market.js', '/style.css':'style.css'}
         if path not in files:
@@ -193,9 +220,17 @@ if __name__ == '__main__':
     args = parser.parse_args()
     server = ThreadingHTTPServer(('127.0.0.1', args.port), Handler)
     server.engine = Engine()
+    def request_stop(signum, frame):
+        server.engine.stop.set()
+        threading.Thread(target=server.shutdown,daemon=True).start()
+    signal.signal(signal.SIGTERM,request_stop)
     print(f'Panel Kronos + TimesFM: http://127.0.0.1:{args.port}', flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
+        pass
+    finally:
         server.engine.stop.set()
+        if server.engine.worker is not None:
+            server.engine.worker.join(timeout=290)
         server.server_close()

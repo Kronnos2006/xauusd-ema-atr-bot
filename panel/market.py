@@ -107,7 +107,7 @@ class MarketLedger:
                     raise ValueError('Huella de evaluacion inconsistente')
                 evaluations.append(checked['assessment'])
             result.append(dict(**data, sha256=obj['sha256'], evaluations=evaluations))
-        return result
+        return sorted(result,key=lambda record:record['issued_ms'])
 
     def snapshot(self):
         with self.lock:

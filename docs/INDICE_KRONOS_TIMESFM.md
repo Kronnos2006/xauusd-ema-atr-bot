@@ -6,6 +6,7 @@ Actualizado 2026-10-19 Costa Rica. Autor Codex; revision independiente Claude pe
 
 - [Panel local: uso, ejecucion y seguimiento](../panel/README.md)
 - [Opciones gratuitas y limites](ALOJAMIENTO_GRATUITO.md)
+- [Paquete Oracle: instalacion y estado pendiente](../deploy/oracle/README.md)
 - [Contexto compartido y decisiones](coordination/CONTEXTO_COMPARTIDO.md)
 
 ## Experimentos separados
@@ -21,6 +22,7 @@ Antecedentes: [preparacion y diagnostico de potencia](Kronos_BTC_preparacion.md)
 
 - `master`: historial previo del proyecto, conservado.
 - `codex/kronos-timesfm-panel-control`: panel, KT-001/KT-002, pruebas, evidencia y guia de almacenamiento gratuito. No se fusiona automaticamente con master.
+- `codex/oracle-always-free`: adaptacion portable y paquete para la futura VM. No significa que exista despliegue.
 - `panel/`: servidor, control prospectivo, interfaz `dist/`, tests y capturas.
 - `tools/`: ejecutores de inferencia y exportador de instantaneas.
 - `docs/evidencia/KT-001/`: salida sintetica inicial.

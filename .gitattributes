@@ -1,2 +1,5 @@
 # Las copias verificadas conservan bytes exactos y hashes entre Windows/Linux.
 docs/evidencia/panel-snapshots/** -text whitespace=cr-at-eol
+deploy/oracle/*.sh text eol=lf
+deploy/oracle/*.service text eol=lf
+deploy/oracle/*.timer text eol=lf

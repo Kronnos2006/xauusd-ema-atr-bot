@@ -1,0 +1,10 @@
+# Versiones usadas localmente; ruedas ARM cp312 verificadas en PyPI.
+torch==2.14.1
+numpy==2.5.4
+pandas==3.0.6
+einops==0.8.1
+huggingface_hub==0.33.1
+safetensors==0.6.2
+tqdm==4.67.1
+setuptools==84.2.0
+wheel==0.45.1

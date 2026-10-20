@@ -1,0 +1,19 @@
+[Unit]
+Description=Kronos TimesFM - registro prospectivo BTCUSDT
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/kronos-project
+EnvironmentFile=%h/kronos.env
+ExecStart=%h/kronos-project/tools/kronos-env/bin/python %h/kronos-project/panel/server.py --port 8765
+Restart=on-failure
+RestartSec=30
+TimeoutStopSec=330
+KillMode=control-group
+NoNewPrivileges=true
+UMask=0077
+
+[Install]
+WantedBy=default.target

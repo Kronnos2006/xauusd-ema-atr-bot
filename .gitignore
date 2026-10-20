@@ -47,4 +47,8 @@ MQL5/Experts/bot/senales.csv
 MQL5/Experts/bot/_to_delete/
 panel/runtime/
 panel/market-records/
+panel/huggingface/
+panel/backups/
+panel/arm-smoke/
+deploy/oracle/kronos.env
 

@@ -9,7 +9,7 @@ import subprocess
 from datetime import datetime, timezone
 
 ROOT = Path(__file__).resolve().parent
-os.environ['HF_HOME'] = str(ROOT / 'kronos-cache')
+os.environ.setdefault('HF_HOME', str(ROOT / 'kronos-cache'))
 sys.path.insert(0, str(ROOT / 'kronos-upstream'))
 
 import numpy as np
@@ -45,7 +45,7 @@ def main(output_dir=None, progress=False):
     started = time.perf_counter()
     event('input', 'Preparando 400 velas sinteticas horarias')
     torch.manual_seed(42)
-    torch.set_num_threads(4)
+    torch.set_num_threads(int(os.environ.get('KRONOS_TORCH_THREADS','4')))
     n, horizon = 400, 4
     t = np.arange(n)
     close = 100 + .02*t + np.sin(t/5)
@@ -116,6 +116,7 @@ def main(output_dir=None, progress=False):
         input_rows=n, horizon=horizon, interval='1h', weights=[.5, .5], seed=42,
         kronos_samples=20, timesfm_estimator='median', revisions=revisions, sha256=hashes,
         elapsed_seconds=round(time.perf_counter()-started, 2), profitability_evaluated=False,
+        torch_threads=torch.get_num_threads(),
         created_at=datetime.now(timezone.utc).isoformat())
     (out/'report.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
     frozen = subprocess.check_output([sys.executable, '-m', 'pip', 'freeze'], text=True)
