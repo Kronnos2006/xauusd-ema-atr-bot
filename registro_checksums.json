@@ -1,17 +1,17 @@
 {
   "dfii10.csv": {
-    "sha256": "586e16121e3987e5cec107642016ae96fee6100707e2dcf5294e14d3a0661239",
-    "tamano_bytes": 98319,
-    "ultima_verificacion": "2026-07-27T21:42:19.567910"
+    "sha256": "27c9d016621dfd5ddac5e628764d9dca8595e5b6b8584d433f86ba58ab6e814d",
+    "tamano_bytes": 98591,
+    "ultima_verificacion": "2026-08-19T21:27:45.414325"
   },
   "dxy_sintetico.csv": {
     "sha256": "4d720340817fb9bd124146af673d016cc36851ccd508d72db260115dedd43f39",
     "tamano_bytes": 553567,
-    "ultima_verificacion": "2026-07-27T21:42:19.587891"
+    "ultima_verificacion": "2026-08-19T21:27:45.444769"
   },
   "t10y2y.csv": {
     "sha256": "6c867967745c064b622b3f7e46606fcd7dfae3069060635ab2b3ffd41c3ea384",
     "tamano_bytes": 209213,
-    "ultima_verificacion": "2026-07-27T21:42:19.579354"
+    "ultima_verificacion": "2026-08-19T21:27:45.429156"
   }
 }

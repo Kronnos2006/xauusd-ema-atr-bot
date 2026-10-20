@@ -29,3 +29,20 @@ XAUUSD EMA/ATR/.obsidian/
 data_snapshots/
 experiments/
 
+# Kronos: dependencias y pesos locales de la prueba tecnica
+tools/kronos-upstream/
+tools/kronos-env/
+tools/kronos-cache/
+tools/kronos-output/
+tools/timesfm-upstream/
+tools/ensemble-output/
+
+# Estado de ejecucion local y respaldos operativos
+docs/coordination/AI_ORCHESTRATOR_EVENTS.ndjson
+docs/coordination/AI_ORCHESTRATOR_STATUS.json
+docs/coordination/AI_SYNC_LOG.md
+docs/coordination/AI_SYNC_STATE.json
+docs/coordination/hydra-metrics.json
+MQL5/Experts/bot/senales.csv
+MQL5/Experts/bot/_to_delete/
+

@@ -27,3 +27,9 @@ El vault de investigación (Obsidian) sigue en `XAUUSD EMA/ATR/` como **registro
 ## Disciplina obligatoria antes de cualquier backtest nuevo (no cambia con el marco, ni durante la pausa)
 
 Cualquier hipótesis nueva pasa primero por `.claude/skills/hypothesis-gate/SKILL.md`: Fase 0 (triage de frecuencia + power analysis, con datos reales, no estimados) antes de escribir código; Fase 1 (frase falsable + regla de corte + folds derivados de la distribución real) antes de tocar el pipeline. No completar los puntos de Fase 1 por cuenta propia si el usuario no los dio explícitamente — frenar y pedirlos. Walk-forward anclado (TRAIN elige parámetros, TEST confirma una sola vez), piso de 30 trades/fold, t-stat con y sin el fold dominante, DSR ≥ 0.95 contando todas las variantes de grilla realmente probadas.
+
+## Coordinacion compartida Claude y Codex
+
+Leer CLAUDE.md y docs/coordination/CONTEXTO_COMPARTIDO.md antes de trabajar. Mantener objetivo, decisiones, cambios, evidencia y pendientes en ese registro. No asumir acceso al historial privado del otro agente.
+Un agente propone o implementa; el otro revisa. Identificar autor y revisor, documentar desacuerdos y no aprobar sin evidencia. Evitar editar simultaneamente los mismos archivos.
+Usar exclusivamente Claude y Codex. La coordinacion entre asistentes no autoriza nuevos backtests, hipotesis, cambios en loggers/tareas programadas ni operaciones MT5.
