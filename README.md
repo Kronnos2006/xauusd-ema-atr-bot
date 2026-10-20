@@ -1,4 +1,14 @@
-XAUUSD EMA/ATR — Proyecto de validación de estrategia
+# Investigacion cuantitativa: archivo historico y Kronos × TimesFM
+
+## Trabajo actual · 2026-10-19
+
+El panel local Kronos × TimesFM y el control prospectivo BTCUSDT se encuentran en la rama `codex/kronos-timesfm-panel-control`. [Indice completo y copias de evidencia](docs/INDICE_KRONOS_TIMESFM.md) · [Iniciar el panel](panel/README.md) · [Opciones gratuitas](docs/ALOJAMIENTO_GRATUITO.md).
+
+KT-001 verifica inferencia sintetica. KT-002 registra pronosticos antes de sus cierres y los contrasta descriptivamente con el mercado. Ninguno demuestra rentabilidad; sin ordenes ni capital real. Revision independiente pendiente. Los marcos de trading historicos siguen cerrados. Las secciones siguientes se conservan como documentacion historica; no describen el estado mas reciente ni certifican loggers activos.
+
+---
+
+XAUUSD EMA/ATR — Proyecto de validación de estrategia (archivo historico)
 
 Proyecto de investigación sistemática sobre si existe un edge operable en XAUUSD (oro) vía MetaTrader 5, con foco en la validación estadística honesta antes de considerar cualquier capital real. No ejecuta órdenes. No hay capital real involucrado en ningún punto de este proyecto.
 

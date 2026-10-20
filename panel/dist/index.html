@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kronos × TimesFM — Laboratorio visual</title><link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script><script src="/market.js" defer></script></head>
+<body>
+<aside class="sidebar">
+  <a class="brand" href="/" aria-label="Inicio"><span class="brandmark">k<span>·</span></span><span>KRONOS<small>RESEARCH LAB</small></span></a>
+  <div class="workspace-label">ESPACIO DE INVESTIGACIÓN</div>
+  <div class="nav-item selected"><span>◈</span> Laboratorio visual <span class="nav-dot"></span></div>
+  <button class="nav-item" id="guide-nav"><span>⌘</span> Cómo funciona</button>
+  <button class="nav-item" id="details-nav"><span>▤</span> Datos y evidencia</button>
+  <div class="side-project"><span class="eyebrow">EXPERIMENTO ACTIVO</span><strong>Dos modelos.<br>Una perspectiva.</strong><p>Kronos-small<br>TimesFM 2.5 · 200M</p><span class="chip side-chip">KT-001 / KT-002 · pesos fijos</span></div>
+  <div class="side-bottom"><span class="status-dot"></span> Motor local · CPU<small>Investigación en simulación</small></div>
+</aside>
+<main>
+  <header class="topbar"><div><span class="muted">Investigación</span><span class="slash">/</span><strong>Laboratorio visual</strong></div><div class="top-right"><span class="local-label">● LOCAL</span><span class="avatar">KT</span></div></header>
+  <div class="content">
+    <section class="page-heading"><div><div class="eyebrow">MODELOS DE SERIES TEMPORALES <span class="tiny-dot">•</span> KT-001 / KT-002</div><h1>El futuro, desde dos perspectivas<span>.</span></h1><p>Observa cómo cada modelo interpreta el mismo contexto y cómo se unen sus pronósticos.</p></div><button id="run" class="button primary"><span class="run-icon">▶</span> Ejecutar demo sintética</button></section>
+    <section class="card market-panel" id="market-panel">
+      <div class="card-heading"><div><div class="eyebrow">KT-002 · REGISTRO PROSPECTIVO</div><h2>Control cruzado con el mercado real</h2><p>BTCUSDT Spot · Binance · solo velas cerradas · sin órdenes</p></div><div class="market-actions"><button id="market-check" class="button">Revisar cierres</button><button id="market-run" class="button primary">Crear predicción BTC</button></div></div>
+      <div class="market-intro">Primero se registra el pronóstico. Después de cada cierre, se contrasta con lo ocurrido. La dirección, el error de precio y el aporte se puntúan por separado.</div>
+      <div class="market-stats"><div><span>EMISIONES REGISTRADAS</span><strong id="market-count">0</strong></div><div><span>RESUELTAS A +4 H</span><strong id="market-resolved">0</strong></div><div><span>ACIERTOS DE DIRECCIÓN · +4 H</span><strong id="market-hits">Sin resultados</strong></div><div><span>ERROR MEDIO · +4 H</span><strong id="market-mae">Pendiente</strong></div></div>
+      <div class="market-status" id="market-status" aria-live="polite">Cargando registro…</div>
+      <div class="market-current"><label>Emisión <select id="market-record"><option>Sin predicciones</option></select></label><span id="market-issued">El ensayo sintético de abajo no se evalúa contra el mercado.</span></div>
+      <div class="market-chart"><svg id="market-chart" viewBox="0 0 900 220" role="img" aria-label="Comparación de pronósticos BTC con cierres reales"></svg></div>
+      <div class="table-wrap"><table><thead><tr><th>CIERRE OBJETIVO · COSTA RICA</th><th>KRONOS</th><th>TIMESFM</th><th>50 / 50</th><th>REAL</th><th>ESTADO</th></tr></thead><tbody id="market-table"></tbody></table></div>
+      <div class="market-analysis"><div><h3>Qué acertó, qué falló y qué aportó</h3><div id="market-diagnosis">El análisis aparecerá al vencer cada horizonte. No se inventan causas ni se rellenan cierres futuros.</div></div><div><h3>Probabilidades y mejoras</h3><div id="market-probability">Frecuencia simulada de Kronos e intervalo nominal de TimesFM; todavía sin calibración para BTC.</div><ul id="market-suggestions"></ul></div></div>
+      <div class="market-foot" id="market-monitor">Seguimiento cada 60 s mientras este servidor local permanezca activo. Las mejoras se proponen; no se aplican automáticamente.</div>
+    </section>
+    <div class="source-banner"><div class="source-symbol">∿</div><div><strong>Laboratorio de abajo: datos sintéticos · ejecución real de los modelos</strong><span>Una serie de prueba para entender el proceso. Los precios están en unidades de demostración.</span></div><span class="banner-tag">SIN DATOS DE MERCADO</span></div>
+    <section class="metrics" aria-label="Pronósticos a cuatro horas">
+      <article class="metric"><div class="metric-top"><span><i class="model-dot kronos"></i>Kronos-small</span><span class="model-label">20 trayectorias</span></div><div class="metric-value" id="k-value">—</div><div class="metric-foot"><span id="k-return">—</span><small>Cierre previsto · +4 h</small></div><svg class="spark" id="k-spark" viewBox="0 0 120 35" aria-hidden="true"></svg></article>
+      <article class="metric"><div class="metric-top"><span><i class="model-dot timesfm"></i>TimesFM 2.5</span><span class="model-label">Mediana</span></div><div class="metric-value" id="t-value">—</div><div class="metric-foot"><span id="t-return">—</span><small>Cierre previsto · +4 h</small></div><svg class="spark" id="t-spark" viewBox="0 0 120 35" aria-hidden="true"></svg></article>
+      <article class="metric featured"><div class="metric-top"><span><i class="model-dot ensemble"></i>Combinación</span><span class="weight-badge">50 / 50</span></div><div class="metric-value" id="e-value">—</div><div class="metric-foot"><span id="e-return">—</span><small>Cierre previsto · +4 h</small></div><svg class="spark" id="e-spark" viewBox="0 0 120 35" aria-hidden="true"></svg></article>
+    </section>
+    <div class="main-grid">
+      <section class="chart-card card">
+        <div class="card-heading"><div><h2>Del contexto al pronóstico</h2><p>400 velas de entrada <span>→</span> 4 horas de horizonte</p></div><label class="select-wrap"><span class="sr-only">Contexto visible</span><select id="window"><option value="24">Últimas 24 h</option><option value="72">Últimas 72 h</option><option value="400">Contexto completo</option><option value="8">Detalle del pronóstico</option></select></label></div>
+        <div class="chart-legend"><span><i class="line-key history"></i>Contexto sintético</span><label><input type="checkbox" id="show-k" checked><i class="line-key kronos"></i>Kronos</label><label><input type="checkbox" id="show-t" checked><i class="line-key timesfm"></i>TimesFM</label><label><input type="checkbox" id="show-e" checked><i class="line-key ensemble"></i>Combinación</label></div>
+        <div class="chart-container" id="chart-box"><svg id="chart" viewBox="0 0 900 340" role="img" aria-label="Histórico sintético y cuatro pasos de pronóstico por modelo"></svg><div class="tooltip" id="tooltip" hidden></div></div>
+        <div class="chart-caption"><span>PRECIOS EN UNIDADES DE DEMOSTRACIÓN</span><span><span class="status-dot"></span><span id="source-caption">Cargando evidencia…</span></span></div>
+        <div class="replay-bar"><button class="button replay" id="play"><span>▶</span> Paso a paso</button><label class="slider-label" for="horizon">Horizonte</label><input id="horizon" type="range" min="0" max="4" value="4" step="1" aria-label="Horas de pronóstico visibles"><output id="horizon-value">+4 h</output><button class="icon-button" id="reset" title="Mostrar todo" aria-label="Mostrar los cuatro pasos">↺</button></div>
+        <div id="guide-note" class="guide-note" aria-live="polite">Mueve el cursor sobre el gráfico para inspeccionar cada punto.</div>
+      </section>
+      <section class="flow-card card" id="flow"><div class="card-heading"><div><h2>Así funciona</h2><p>El recorrido de una predicción</p></div><span class="flow-icon">⌘</span></div>
+        <div class="steps">
+          <button class="step" data-step="input"><span class="step-number">01</span><span><strong>Un contexto compartido</strong><small>400 velas horarias sintéticas</small></span><span class="step-check">✓</span></button>
+          <button class="step" data-step="kronos"><span class="step-number orange">02</span><span><strong>Kronos observa las velas</strong><small>OHLC + volumen → 20 trayectorias</small></span><span class="step-check">✓</span></button>
+          <button class="step" data-step="timesfm"><span class="step-number blue">03</span><span><strong>TimesFM observa el cierre</strong><small>Mismos 400 pasos → 4 cierres</small></span><span class="step-check">✓</span></button>
+          <button class="step" data-step="combine"><span class="step-number green">04</span><span><strong>Un promedio transparente</strong><small>Retornos previstos · 50 % / 50 %</small></span><span class="step-check">✓</span></button>
+          <button class="step" data-step="verify"><span class="step-number">05</span><span><strong>Verificar y guardar</strong><small>Fechas, valores y huellas SHA256</small></span><span class="step-check">✓</span></button>
+        </div>
+        <div class="step-detail" id="step-detail" aria-live="polite"><span class="eyebrow">UNA COMBINACIÓN EXPLÍCITA</span><p>Dos modelos reciben el mismo pasado. Sus predicciones se alinean por hora y se combinan con pesos fijos.</p><code>r = 0,5 × r<sub>K</sub> + 0,5 × r<sub>T</sub></code></div>
+      </section>
+    </div>
+    <section class="execution card" id="execution"><div class="execution-icon">⌁</div><div class="execution-copy"><strong id="execution-title">Evidencia verificada disponible</strong><span id="execution-message">Puedes explorar el resultado guardado o volver a ejecutar los dos modelos.</span></div><div class="execution-meta"><strong id="duration">—</strong><span id="run-time">Última ejecución guardada</span></div></section>
+    <div class="bottom-grid">
+      <section class="card table-card"><div class="card-heading"><div><h2>Cuatro horas, punto por punto</h2><p>Cada columna corresponde a una salida del modelo.</p></div><button id="export" class="text-button">Descargar JSON <span>↗</span></button></div><div class="table-wrap"><table><thead><tr><th>HORIZONTE</th><th><i class="model-dot kronos"></i>KRONOS</th><th><i class="model-dot timesfm"></i>TIMESFM</th><th><i class="model-dot ensemble"></i>COMBINACIÓN</th><th>RETORNO PREVISTO</th></tr></thead><tbody id="forecast-table"></tbody></table></div></section>
+      <section class="card formula-card"><span class="eyebrow">¿CÓMO SE CALCULA?</span><h2>El mismo punto de partida.</h2><p>Cada retorno se mide desde el último cierre de entrada, <strong id="base-close">—</strong>. El promedio se convierte de nuevo a precio.</p><div class="formula"><span id="formula-k">—</span><b>× ½</b><span>+</span><span id="formula-t">—</span><b>× ½</b><strong id="formula-result">= —</strong></div><small>Ejemplo del horizonte +4 h. Es una proyección, no un retorno obtenido.</small></section>
+    </div>
+    <details class="evidence card" id="evidence"><summary><span>Datos, parámetros y evidencia técnica</span><span class="muted">Ver detalle ↗</span></summary><div class="evidence-body"><div><h3>Entrada y ejecución</h3><dl id="parameters"></dl></div><div><h3>Revisiones de los modelos</h3><dl id="revisions"></dl></div></div></details>
+    <footer><span>KRONOS × TIMESFM <span class="tiny-dot">·</span> Laboratorio visual local</span><p>Control prospectivo descriptivo y laboratorio sintético. Sin órdenes ni validación de rentabilidad.</p></footer>
+  </div>
+</main>
+<div id="toast" role="status" hidden></div>
+</body></html>

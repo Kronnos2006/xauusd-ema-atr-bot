@@ -1,0 +1,72 @@
+{
+  "created_at": "2026-10-20T03:34:53.600409+00:00",
+  "files": [
+    {
+      "path": "market-records/4cf8761595ad/context.json",
+      "bytes": 229981,
+      "sha256": "1b909c13c673994353268330acdb50a73e77eda10da0f8556f3aff1f236d82ca"
+    },
+    {
+      "path": "market-records/4cf8761595ad/forecast.json",
+      "bytes": 4698,
+      "sha256": "90c4216cf2c17160d8605200d12b0fa1b2d553cbe2e83afd21f2329a76164b94"
+    },
+    {
+      "path": "market-records/4cf8761595ad/generated.json",
+      "bytes": 3677,
+      "sha256": "23c75cfacac28ff24d2dcf99bb4a47b71a269625cde5fb7a6004eb8bb0948d88"
+    },
+    {
+      "path": "runtime/1d84be717b62/model_revisions.json",
+      "bytes": 240,
+      "sha256": "942f0677049988b80a5505ed81896cf59d74a302534d3c9279241a971fa53dff"
+    },
+    {
+      "path": "runtime/1d84be717b62/report.json",
+      "bytes": 1159,
+      "sha256": "44251a8efa0c3d6c0421dad02c23337e02d092f8635e2e8dbe5aa3e38cbc3c66"
+    },
+    {
+      "path": "runtime/1d84be717b62/requirements-resolved.txt",
+      "bytes": 579,
+      "sha256": "aaf0aa2a0942812a18e7fdfe8516c44e0aa14df95059ac729f09f608f1eac949"
+    },
+    {
+      "path": "runtime/1d84be717b62/synthetic_ensemble.csv",
+      "bytes": 466,
+      "sha256": "7a2642a372034370c672b1250209c94c440ea7c17c075db4f4a5a9b17bd0cc7f"
+    },
+    {
+      "path": "runtime/1d84be717b62/synthetic_input.csv",
+      "bytes": 53336,
+      "sha256": "82074376f38bf605837d3b3a74e7681562a0d356a150b1acb6245b43f23d4570"
+    },
+    {
+      "path": "runtime/90319b19e28c/model_revisions.json",
+      "bytes": 240,
+      "sha256": "942f0677049988b80a5505ed81896cf59d74a302534d3c9279241a971fa53dff"
+    },
+    {
+      "path": "runtime/90319b19e28c/report.json",
+      "bytes": 1159,
+      "sha256": "e003d8087f77612de9ba9e8ef41751543f2c598e67a1bb5ba25e27cbc69f2329"
+    },
+    {
+      "path": "runtime/90319b19e28c/requirements-resolved.txt",
+      "bytes": 579,
+      "sha256": "aaf0aa2a0942812a18e7fdfe8516c44e0aa14df95059ac729f09f608f1eac949"
+    },
+    {
+      "path": "runtime/90319b19e28c/synthetic_ensemble.csv",
+      "bytes": 466,
+      "sha256": "7a2642a372034370c672b1250209c94c440ea7c17c075db4f4a5a9b17bd0cc7f"
+    },
+    {
+      "path": "runtime/90319b19e28c/synthetic_input.csv",
+      "bytes": 53336,
+      "sha256": "82074376f38bf605837d3b3a74e7681562a0d356a150b1acb6245b43f23d4570"
+    }
+  ],
+  "scope": "Registro BTC y corridas tecnicas existentes al capturar; no respaldo de pesos/entornos",
+  "limitations": "Una instantanea no guarda resultados posteriores ni certifica fecha externamente"
+}

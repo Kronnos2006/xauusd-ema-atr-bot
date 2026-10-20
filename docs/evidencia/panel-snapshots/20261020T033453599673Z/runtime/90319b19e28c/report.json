@@ -1,0 +1,28 @@
+{
+  "status": "PASS_TECHNICAL_ONLY",
+  "variant": "KT-001",
+  "data": "synthetic",
+  "input_rows": 400,
+  "horizon": 4,
+  "interval": "1h",
+  "weights": [
+    0.5,
+    0.5
+  ],
+  "seed": 42,
+  "kronos_samples": 20,
+  "timesfm_estimator": "median",
+  "revisions": {
+    "NeoQuasar/Kronos-small": "901c26c1332695a2a8f243eb2f37243a37bea320",
+    "NeoQuasar/Kronos-Tokenizer-base": "0e0117387f39004a9016484a186a908917e22426",
+    "google/timesfm-2.5-200m-pytorch": "1d952420fba87f3c6dee4f240de0f1a0fbc790e3"
+  },
+  "sha256": {
+    "NeoQuasar/Kronos-small@901c26c1332695a2a8f243eb2f37243a37bea320/model.safetensors": "b082dfcbd8e8c142a725c8bbb99781802f38fec81210e13479effb32b3c3e020",
+    "NeoQuasar/Kronos-Tokenizer-base@0e0117387f39004a9016484a186a908917e22426/model.safetensors": "59d85f6af76a2c3b8240ea06cb21db4213b4eeca053f246b23e29cf832fc6bee",
+    "google/timesfm-2.5-200m-pytorch@1d952420fba87f3c6dee4f240de0f1a0fbc790e3/model.safetensors": "2f776efe6245e42b24bc4153ffdf61810140210e4bd3b01fb21f7aa779ab6ce8"
+  },
+  "elapsed_seconds": 30.22,
+  "profitability_evaluated": false,
+  "created_at": "2026-10-20T03:11:08.150800+00:00"
+}

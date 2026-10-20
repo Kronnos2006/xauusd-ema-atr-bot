@@ -45,4 +45,6 @@ docs/coordination/AI_SYNC_STATE.json
 docs/coordination/hydra-metrics.json
 MQL5/Experts/bot/senales.csv
 MQL5/Experts/bot/_to_delete/
+panel/runtime/
+panel/market-records/
 

@@ -1,0 +1,2 @@
+# Las copias verificadas conservan bytes exactos y hashes entre Windows/Linux.
+docs/evidencia/panel-snapshots/** -text whitespace=cr-at-eol

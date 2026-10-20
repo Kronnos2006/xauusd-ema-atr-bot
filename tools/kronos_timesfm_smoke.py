@@ -6,6 +6,7 @@ import time
 import json
 import hashlib
 import subprocess
+from datetime import datetime, timezone
 
 ROOT = Path(__file__).resolve().parent
 os.environ['HF_HOME'] = str(ROOT / 'kronos-cache')
@@ -36,8 +37,13 @@ def combine(kronos_close, timesfm_close, last_close):
     return result
 
 
-def main():
+def main(output_dir=None, progress=False):
+    def event(stage, message):
+        if progress:
+            print('@PANEL ' + json.dumps(dict(stage=stage, message=message)), flush=True)
+
     started = time.perf_counter()
+    event('input', 'Preparando 400 velas sinteticas horarias')
     torch.manual_seed(42)
     torch.set_num_threads(4)
     n, horizon = 400, 4
@@ -55,7 +61,7 @@ def main():
         'NeoQuasar/Kronos-Tokenizer-base': '0e0117387f39004a9016484a186a908917e22426',
         'google/timesfm-2.5-200m-pytorch': '1d952420fba87f3c6dee4f240de0f1a0fbc790e3',
     }
-    out = ROOT / 'ensemble-output'
+    out = Path(output_dir) if output_dir else ROOT / 'ensemble-output'
     out.mkdir(exist_ok=True)
     lock = out / 'model_revisions.json'
     if lock.exists():
@@ -63,6 +69,7 @@ def main():
             raise ValueError('Model revision lock differs from KT-001')
     else:
         lock.write_text(json.dumps(revisions, indent=2), encoding='utf-8')
+    event('kronos', 'Cargando Kronos-small y generando 20 trayectorias')
     tokenizer = KronosTokenizer.from_pretrained('NeoQuasar/Kronos-Tokenizer-base',
         revision=revisions['NeoQuasar/Kronos-Tokenizer-base'])
     model = Kronos.from_pretrained('NeoQuasar/Kronos-small',
@@ -73,6 +80,7 @@ def main():
                                T=1., top_p=.9, sample_count=20, verbose=False)
     assert kp.shape == (horizon, 6) and np.isfinite(kp.to_numpy()).all()
     assert kp.index.equals(index)
+    event('timesfm', 'Kronos completo. Cargando TimesFM 2.5 y pronosticando cierres')
     tfm = timesfm.TimesFM_2p5_200M_torch.from_pretrained(
         'google/timesfm-2.5-200m-pytorch',
         revision=revisions['google/timesfm-2.5-200m-pytorch'], torch_compile=False)
@@ -84,6 +92,7 @@ def main():
     assert point.shape == (1, horizon), point.shape
     assert quantiles.shape == (1, horizon, 10), quantiles.shape
     assert np.isfinite(point).all() and np.isfinite(quantiles).all()
+    event('combine', 'TimesFM completo. Alineando fechas y combinando retornos 50/50')
     combined = combine(kp.close, pd.Series(point[0], index=index), close[-1])
     np.testing.assert_allclose(combined.ensemble_close,
                                (combined.kronos_close + combined.timesfm_close)/2)
@@ -96,6 +105,7 @@ def main():
         raise AssertionError('Misaligned forecasts accepted')
     combined.to_csv(out / 'synthetic_ensemble.csv', index_label='timestamp')
     frame.assign(timestamp=stamps.iloc[:n].to_numpy()).to_csv(out / 'synthetic_input.csv', index=False)
+    event('verify', 'Verificando salidas y SHA256 de los tres pesos')
     hashes = {}
     for repo, revision in revisions.items():
         path = Path(snapshot_download(repo, revision=revision, local_files_only=True))
@@ -105,12 +115,19 @@ def main():
     report = dict(status='PASS_TECHNICAL_ONLY', variant='KT-001', data='synthetic',
         input_rows=n, horizon=horizon, interval='1h', weights=[.5, .5], seed=42,
         kronos_samples=20, timesfm_estimator='median', revisions=revisions, sha256=hashes,
-        elapsed_seconds=round(time.perf_counter()-started, 2), profitability_evaluated=False)
+        elapsed_seconds=round(time.perf_counter()-started, 2), profitability_evaluated=False,
+        created_at=datetime.now(timezone.utc).isoformat())
     (out/'report.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
     frozen = subprocess.check_output([sys.executable, '-m', 'pip', 'freeze'], text=True)
     (out/'requirements-resolved.txt').write_text(frozen, encoding='utf-8')
+    event('done', 'Inferencia sintetica completada y verificada')
     print(json.dumps({k:v for k,v in report.items() if k not in ('sha256',)}, indent=2))
 
 
 if __name__ == '__main__':
-    main()
+    import argparse
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--output-dir', type=Path)
+    parser.add_argument('--progress', action='store_true')
+    args = parser.parse_args()
+    main(args.output_dir, args.progress)
