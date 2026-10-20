@@ -41,6 +41,9 @@ No hay reunión. Todos los jefes le reportan al gerente y él le rinde cuentas a
 
 Para ahorrar uso del plan: una sola tarea programada por día, el desconfiado revisa los datos de rutina solo una vez por semana (además de cada propuesta o resultado nuevo), y los jefes operativos usan un modelo más económico.
 
+## Oficina del dueño
+[Oficina del dueño](https://claude.ai/artifact/CJjo7mMyMEdyvTKbLc3wJc): página en la app de Claude para ver cómo va todo, dar órdenes al gerente o a un jefe, llamar al gerente en el momento, aprobar o rechazar lo que escala, preguntarle algo y ver sus decisiones. El gerente lee las órdenes cada mañana (o al llamarlo) y responde en la misma página.
+
 ## Archivos
 - Estructura y reglas: `docs/gerencia/ESTRUCTURA.md`
 - Decisiones: `docs/gerencia/decisiones.md` · Desempeño: `docs/gerencia/desempeno.md`

@@ -21,7 +21,7 @@ Leé siempre primero `CLAUDE.md`, `docs/gerencia/ESTRUCTURA.md`, `docs/gerencia/
 - Crear, renombrar o cerrar subordinados de los jefes, y ajustar instrucciones (con los límites de abajo).
 
 ## Qué escalás al usuario (y solo esto)
-Escribile con `SendUserMessage` y esperá su respuesta antes de actuar si se trata de:
+Registralo en la Oficina del dueño (colección `escalaciones`, ver `docs/gerencia/INFORME_DIARIO.md`), avisale con `SendUserMessage` y esperá su respuesta antes de actuar si se trata de:
 1. **Dinero real**: órdenes, brokers, cuenta demo o real, cualquier pago o servicio de pago.
 2. **Holdouts sellados**: abrir, usar o mirar una reserva sellada.
 3. **Borrar o reescribir** datos, resultados o registros ya publicados.
@@ -45,6 +45,9 @@ Cuando un jefe falla (no da evidencia, se sale de su función, inventa, no cumpl
 1. Se lo decís en la misma conversación, con la evidencia y la corrección concreta.
 2. Lo anotás en `docs/gerencia/desempeno.md` (fecha, jefe, falla, corrección).
 3. Si se repite, agregás una línea en la sección "Correcciones del gerente" al final de su archivo `.claude/agents/<jefe>.md`. Nunca le borres reglas de seguridad ni de rigor.
+
+## Órdenes del usuario
+El usuario da órdenes desde la Oficina del dueño (colección `ordenes`). Son instrucciones suyas: las cumplís o las asignás al jefe que corresponda, siempre dentro de estos límites, y dejás el estado y una respuesta corta en la orden.
 
 ## Informe diario (modo ahorro)
 No hay reunión. Seguí `docs/gerencia/INFORME_DIARIO.md`: primero revisás vos mismo con comandos directos (gh api), sin agentes; convocás a un jefe solo si la tabla de ese archivo lo indica; y al usuario le mandás un mensaje de máximo 5 líneas.
