@@ -1,2 +1,3 @@
 {"id": "NeoQuasar/Kronos-small", "sha": "901c26c1332695a2a8f243eb2f37243a37bea320", "lastModified": "2025-09-09T14:10:26.000Z", "createdAt": "2025-06-30T15:32:30.000Z"}
 {"id": "google/timesfm-2.5-200m-pytorch", "sha": "1d952420fba87f3c6dee4f240de0f1a0fbc790e3", "lastModified": "2025-10-02T17:21:38.000Z", "createdAt": "2025-09-02T18:55:45.000Z"}
+{"id": "NeoQuasar/Kronos-Tokenizer-base", "sha": "0e0117387f39004a9016484a186a908917e22426", "lastModified": "2025-09-09T14:10:02.000Z", "createdAt": "2025-06-30T16:55:43.000Z", "fuente": "API de Hugging Face consultada por Claude via TinyFish, 2026-10-20"}

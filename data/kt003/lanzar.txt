@@ -1,2 +1,2 @@
-prueba
-# intento 3: fechas ISO corregidas
+completo
+# aprobado por desconfiado tras Enmienda D (99695a5)
