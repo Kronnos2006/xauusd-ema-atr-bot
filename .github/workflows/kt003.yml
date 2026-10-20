@@ -19,20 +19,28 @@ concurrency:
   cancel-in-progress: false
 
 env:
+  DATOS_SHA256: c3ccfb0a077574b9aa9611e0589c01ed1f679adb9caa38889ffd7f1b36f2cc61  # CSV sellado por la prueba (run 39447082961)
   HF_HOME: ${{ github.workspace }}/.hf-cache
   KRONOS_SRC: ${{ github.workspace }}/tools/kronos-upstream
 
 jobs:
-  datos:
+  modo:
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
     outputs:
       modo: ${{ steps.modo.outputs.modo }}
     steps:
       - uses: actions/checkout@v4
       - id: modo
         run: echo "modo=$(head -1 data/kt003/lanzar.txt | tr -d '[:space:]')" >> "$GITHUB_OUTPUT"
+
+  datos:
+    needs: modo
+    if: needs.modo.outputs.modo == 'prueba'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
@@ -45,7 +53,6 @@ jobs:
 
   prueba:
     needs: datos
-    if: needs.datos.outputs.modo == 'prueba'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -83,7 +90,7 @@ jobs:
           echo "exit=$?" >> data/kt003/prueba_log.txt
           cp datos-out/manifiesto_datos.json data/kt003/
           cp datos-out/btcusdt_1h.csv.gz data/kt003/
-          for r in NeoQuasar/Kronos-small/revision/901c26c1332695a2a8f243eb2f37243a37bea320 google/timesfm-2.5-200m-pytorch/revision/1d952420fba87f3c6dee4f240de0f1a0fbc790e3; do
+          for r in NeoQuasar/Kronos-small/revision/901c26c1332695a2a8f243eb2f37243a37bea320 NeoQuasar/Kronos-Tokenizer-base/revision/0e0117387f39004a9016484a186a908917e22426 google/timesfm-2.5-200m-pytorch/revision/1d952420fba87f3c6dee4f240de0f1a0fbc790e3; do
             curl -s "https://huggingface.co/api/models/$r" | python -c "import json,sys;d=json.load(sys.stdin);print(json.dumps({'id':d.get('id'),'sha':d.get('sha'),'lastModified':d.get('lastModified'),'createdAt':d.get('createdAt')}))"
           done > data/kt003/checkpoints_fechas.jsonl
           echo "modo=prueba run_id=${GITHUB_RUN_ID} sha=${GITHUB_SHA}" > data/kt003/ejecucion.txt
@@ -101,8 +108,8 @@ jobs:
           exit 1
 
   pronosticar:
-    needs: datos
-    if: needs.datos.outputs.modo == 'completo'
+    needs: modo
+    if: needs.modo.outputs.modo == 'completo'
     runs-on: ubuntu-latest
     timeout-minutes: 340
     strategy:
@@ -131,22 +138,23 @@ jobs:
         with:
           path: .hf-cache
           key: hf-kt002-901c26c1-0e011738-1d952420
-      - uses: actions/download-artifact@v4
-        with:
-          name: datos
-          path: datos-out
-      - run: python tools/kt003_historico.py shard datos-out/btcusdt_1h.csv.gz ${{ matrix.shard }} 16 shard-${{ matrix.shard }}.csv
+      - name: Verificar datos sellados
+        run: echo "$DATOS_SHA256  data/kt003/btcusdt_1h.csv.gz" | sha256sum -c -
+      - run: python tools/kt003_historico.py shard data/kt003/btcusdt_1h.csv.gz ${{ matrix.shard }} 16 shard-${{ matrix.shard }}.csv
+      - if: matrix.shard == 0
+        run: pip freeze > pip_freeze.txt
       - uses: actions/upload-artifact@v4
         with:
           name: shard-${{ matrix.shard }}
           path: |
             shard-${{ matrix.shard }}.csv
             reproducibilidad.json
+            pip_freeze.txt
           if-no-files-found: ignore
 
   unir:
-    needs: [datos, pronosticar]
-    if: needs.datos.outputs.modo == 'completo' && github.ref == 'refs/heads/master'
+    needs: [modo, pronosticar]
+    if: needs.modo.outputs.modo == 'completo' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -160,9 +168,10 @@ jobs:
           path: art
       - name: Unir y resumir
         run: |
+          echo "$DATOS_SHA256  data/kt003/btcusdt_1h.csv.gz" | sha256sum -c -
           test -f art/shard-0/reproducibilidad.json || { echo "Falta reproducibilidad.json"; exit 1; }
-          python tools/kt003_historico.py unir art/datos/btcusdt_1h.csv.gz art/shard-*/shard-*.csv
-          cp art/datos/manifiesto_datos.json art/datos/btcusdt_1h.csv.gz art/shard-0/reproducibilidad.json data/kt003/
+          python tools/kt003_historico.py unir data/kt003/btcusdt_1h.csv.gz art/shard-*/shard-*.csv
+          cp art/shard-0/reproducibilidad.json art/shard-0/pip_freeze.txt data/kt003/
           echo "modo=completo run_id=${GITHUB_RUN_ID} sha=${GITHUB_SHA}" > data/kt003/ejecucion.txt
       - name: Guardar resultados
         run: |

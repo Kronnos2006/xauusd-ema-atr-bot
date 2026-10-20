@@ -1,5 +1,9 @@
 # Contexto compartido
 
+## KT-003 prueba superada y Enmienda D (2026-10-20, Costa Rica)
+
+Autor Claude; auditor desconfiado (revision de la prueba: DUDAS ABIERTAS con 2 bloqueos MEDIOS, sin ALTOS); revisor Codex pendiente. Prueba (run 39447082961): 2928 bases, 404 saltadas, 842 post corte, 43 velas desalineadas excluidas, predict = predict_batch, ~65 min por shard. Bloqueos resueltos en Enmienda D: el modo completo usa el CSV sellado con hash verificado; corte descriptivo desde 2025-10-03 declarado antes de resultados. Se declara que el autor vio tasas de referencias triviales en un ensayo de la union con pronosticos aleatorios.
+
 ## KT-003 Enmienda B y corrida de prueba (2026-10-20, Costa Rica)
 
 Autor Claude; auditor desconfiado (2a revision del diseno: DUDAS ABIERTAS, sin look-ahead); revisor Codex pendiente. El usuario acepta explicitamente que KT-003 exponga toda la historia BTC 2017-2026. Enmienda B escrita antes de cualquier dato: Holm sobre 3 modelos en post corte como resultado primario, MDE 4,8 pts, hashes y CSV versionado, persistencia como referencia, guardas de rama y de conjunto de bases. Se lanza primero el modo prueba (datos, equivalencia predict/predict_batch, tiempos, fechas de checkpoints), sin pronosticar el diagnostico; el modo completo espera la revision del auditor.

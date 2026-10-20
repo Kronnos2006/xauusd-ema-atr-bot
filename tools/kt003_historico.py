@@ -33,7 +33,8 @@ HOUR = pd.Timedelta(hours=1)
 VISION = 'https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/'
 API = 'https://data-api.binance.vision/api/v3/klines'
 FIRST_MONTH = pd.Timestamp('2017-08-01')
-CUTOFF = pd.Timestamp('2024-07-01', tz='UTC')  # Kronos declara preentrenamiento hasta junio 2024
+CUTOFF = pd.Timestamp('2024-07-01', tz='UTC')
+TFM_CUTOFF = pd.Timestamp('2025-10-03', tz='UTC')  # dia siguiente a la ultima modificacion de TimesFM 2.5 en HF  # Kronos declara preentrenamiento hasta junio 2024
 BASE_HOUR_UTC = 0
 BATCH = 8
 OUT = REPO / 'data' / 'kt003'
@@ -269,13 +270,19 @@ def cmd_unir(data_csv, *shards):
         for m in kt2.MODELS:
             preds.at[i, f'{m}_hit'] = kt2.sign_hit(float(preds.at[i, f'{m}_ret']), ar)
         preds.at[i, 'scored_utc'] = now.isoformat()
+    span = (df.close_time - df.open_time).set_axis(df.open_time)
+    cortas = set(span[span < pd.Timedelta(minutes=59)].index)
+    preds['vela_recortada'] = ''
     preds['persist_ret'] = ''
     for i in preds.index:
         bt = pd.Timestamp(preds.at[i, 'base_open_utc'])
+        tg = pd.Timestamp(preds.at[i, 'target_open_utc'])
+        preds.at[i, 'vela_recortada'] = '1' if {bt, tg, bt - HOUR * HORIZON} & cortas else '0'
         preds.at[i, 'persist_ret'] = kt2.num(float(close[bt]) / float(close[bt - HOUR * HORIZON]) - 1)
     preds = preds.sort_values('base_open_utc').reset_index(drop=True)
     base = pd.to_datetime(preds.base_open_utc, utc=True)
     preds['periodo'] = np.where(base < CUTOFF, 'dentro_entrenamiento', 'post_corte')
+    tfm_corte = base >= TFM_CUTOFF  # descriptivo (Enmienda D): posterior a la publicacion de TimesFM 2.5
     preds.to_csv(OUT / 'predicciones.csv', index=False)
 
     def block(sub):
@@ -306,7 +313,9 @@ def cmd_unir(data_csv, *shards):
     summary = dict(variant='KT-003', generado_utc=now.isoformat(), bases_saltadas_por_huecos=skipped,
                    velas_desalineadas_excluidas=df.attrs['velas_desalineadas'],
                    profitability_evaluated=False, total=block(preds),
+                   velas_recortadas_en_bases=int((preds.vela_recortada == '1').sum()),
                    por_periodo={p: block(g) for p, g in preds.groupby('periodo')},
+                   descriptivo_desde_2025_10_03=block(preds[tfm_corte.to_numpy()]),
                    por_anio={str(y): block(g) for y, g in preds.groupby(base.dt.year)})
     (OUT / 'resumen.json').write_text(json.dumps(summary, indent=2), encoding='utf-8')
     f = lambda s: f"{s['aciertos']}/{s['n']} = {s['tasa'] * 100:.1f} % (IC95 {s['ic95'][0] * 100:.1f}–{s['ic95'][1] * 100:.1f})" if s['n'] else 'sin datos'
@@ -315,6 +324,7 @@ def cmd_unir(data_csv, *shards):
              '"Dentro del entrenamiento" no mide predicción: Kronos ya vio esos datos.', '']
     for title, b in [('Después del corte (desde 2024-07-01)', summary['por_periodo'].get('post_corte')),
                      ('Dentro del entrenamiento (hasta 2024-06-30)', summary['por_periodo'].get('dentro_entrenamiento')),
+                     ('Descriptivo: desde 2025-10-03 (tras publicar TimesFM 2.5; potencia baja)', summary['descriptivo_desde_2025_10_03']),
                      ('Total', summary['total'])]:
         if not b:
             continue

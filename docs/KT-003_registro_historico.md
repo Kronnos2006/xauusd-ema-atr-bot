@@ -61,3 +61,14 @@ Pedida por el auditor `desconfiado` en su segunda revisión del diseño.
 
 - **Datos**: 80 308 velas, 0 duplicados, 0 velas OHLC inválidas. Hay 43 velas de febrero de 2018 desalineadas de la hora (apertura en :28:14, caída de Binance); se excluyen y se cuentan. Con eso quedan 28 huecos y 2928 bases válidas (404 saltadas por huecos en su contexto); post corte: 842, sin saltos.
 - **Fechas de los checkpoints en Hugging Face** (registradas por la prueba): Kronos-small creado 2025-06-30 y modificado 2025-09-09; TimesFM 2.5 creado 2025-09-02. Que los pesos se publiquen después de junio de 2024 no prueba que se hayan entrenado con datos posteriores, pero **no se puede certificar que el período post corte esté fuera del entrenamiento**, sobre todo para TimesFM. El resultado post corte se lee como "probablemente menos contaminado", no como fuera de muestra.
+
+## Enmienda D (2026-10-20, antes de cualquier pronóstico del diagnóstico)
+
+Pedida por el auditor `desconfiado` tras revisar la corrida de prueba.
+
+- **Datos sellados**: el modo completo usa `data/kt003/btcusdt_1h.csv.gz` del repo (SHA-256 `c3ccfb0a077574b9aa9611e0589c01ed1f679adb9caa38889ffd7f1b36f2cc61`, el de la prueba) y aborta si el hash no coincide. No vuelve a descargar. Resultado esperado: 2928 bases, 842 post corte.
+- **Corte descriptivo adicional, declarado ahora**: desde 2025-10-03 (día siguiente a la última modificación de TimesFM 2.5 en Hugging Face). n ≈ 383, MDE ≈ 7,2 puntos (≈ 8,3 con Holm). Solo descriptivo, sin inferencia: su potencia es baja. No se agregará ningún otro corte después de ver resultados.
+- **Fechas de checkpoints**: Kronos-Tokenizer-base creado 2025-06-30, modificado 2025-09-09 (además de las de la Enmienda C).
+- **Velas recortadas**: hay 11 velas que cierran antes de completar la hora (caídas de Binance). Ninguna es base, objetivo ni referencia de persistencia de una base válida; el resumen igual las cuenta (`velas_recortadas_en_bases`). Se corrige la observación del auditor sobre 2021-04-25: ese día no es base porque su contexto incluye el hueco del 2021-04-20.
+- **Versiones**: el shard 0 guarda `pip freeze` en `data/kt003/pip_freeze.txt`.
+- **Exposición declarada**: al probar la unión de resultados sobre los datos reales con pronósticos aleatorios (sin modelos), el autor vio las tasas de las referencias triviales («siempre sube» y «persistencia») por período y año. No son hipótesis ni cambian ninguna regla de esta prueba; se deja constancia.
