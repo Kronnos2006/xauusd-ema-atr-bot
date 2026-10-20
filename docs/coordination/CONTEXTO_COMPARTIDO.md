@@ -1,5 +1,9 @@
 # Contexto compartido
 
+## KT-002 prospectivo en GitHub Actions (2026-10-20, Costa Rica)
+
+Autor Claude; revisor Codex pendiente. El usuario pide medir el acierto con datos reales sin depender de su PC. Elige prueba prospectiva y evaluar Kronos, TimesFM y KT-001 por separado. Registro previo, escrito antes de recolectar datos, en docs/KT-002_registro_prospectivo.md. Workflow .github/workflows/kt002.yml, cada hora, BTCUSDT 1h, 400 velas cerradas, horizonte 4h, misma configuracion y revisiones que KT-001. Script tools/kt002_prospectivo.py. Salida data/kt002/ (predicciones.csv, resumen.md/json). La logica de puntuacion se probo localmente con velas sinteticas y modelos simulados; la inferencia real solo corre en Actions porque este entorno no llega a Hugging Face ni a Binance. Es descriptivo: sin ordenes, MT5, costos ni rentabilidad, sin cambio de N canonico y sin abrir reservas. Las velas posteriores al 2026-10-20 quedan expuestas para cualquier holdout BTC futuro.
+
 ## Publicacion solicitada (2026-10-19, Costa Rica)
 
 Commit local 38a0531 creado. Integracion de origin/master 5ca75e4: unico conflicto en registro_checksums.json, hashes/tamaños identicos; conservadas fechas remotas mas recientes (2026-08-19 21:33 frente a 21:27), sin recalcular ni certificar datos. Cambios remotos de rutas de loggers/monitor preservados como historial existente, sin ejecutar ni modificar tareas. Evidencia KT-001 versionada; requirements publicado usa URL Git con revision TimesFM fija en lugar de ruta absoluta local. Publicacion autorizada por el usuario; revision funcional independiente sigue pendiente.
