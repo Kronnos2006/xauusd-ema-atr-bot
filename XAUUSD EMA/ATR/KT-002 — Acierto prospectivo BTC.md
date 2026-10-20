@@ -32,7 +32,7 @@ Medición **descriptiva** y **prospectiva**: cada hora, los modelos predicen hac
 - Datos útiles: unos 100 resultados sin solape (~17 días) para una idea general; unos 780 (~4 meses) para distinguir 55 % de 50 %.
 
 ## Incidentes y cambios operativos
-- **El cron horario de GitHub no se disparó** durante casi 3 horas. Desde el 2026-10-20 17:05 UTC cada corrida queda activa ~4 h 45 min y repite el script cada hora; el [[Automatizaciones#Tareas programadas de Claude|vigía]] la relanza si se para. El cálculo no cambió.
+- **El cron horario de GitHub no se disparó** durante casi 3 horas. Desde el 2026-10-20 17:05 UTC cada corrida queda activa ~4 h 45 min y repite el script cada hora; si se para, el [[Automatizaciones#Tareas programadas de Claude\|gerente]] la relanza en su informe diario. El cálculo no cambió.
 - Mientras corría KT-003, KT-002 esperó en cola y se perdieron horas, que quedan contadas como omitidas.
 
 ## Documentos
