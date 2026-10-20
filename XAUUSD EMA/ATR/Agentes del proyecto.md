@@ -15,7 +15,7 @@ Asistentes especializados de Claude con instrucciones propias, guardadas en `.cl
 - **Rol:** auditor escéptico. Asume que hay un error hasta que la evidencia muestre lo contrario. No escribe código del proyecto.
 - **Revisa:** fuga de información, contaminación del modelo, datos, holdouts, pruebas múltiples, muestras dependientes, potencia, costos, robustez y reproducibilidad.
 - **Responde:** APROBADO / RECHAZADO / DUDAS ABIERTAS, con lo que verificó, los problemas por gravedad, las ejecuciones que pide y lo que no pudo verificar.
-- **Programado:** participa como Jefe de Auditoría en la reunión diaria de las 6:57 a. m. ([[Gerencia y mesa directiva]]).
+- **Programado:** el gerente lo convoca cuando hay propuestas o resultados nuevos, y una vez por semana para revisar los datos ([[Gerencia y mesa directiva]]).
 - Archivo: `.claude/agents/desconfiado.md`
 
 ## Mejorador

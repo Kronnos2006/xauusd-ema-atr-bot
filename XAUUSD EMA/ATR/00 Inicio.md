@@ -24,7 +24,7 @@ Punto de entrada de la bóveda. Desde acá se llega a todo.
 - [[Kronos y TimesFM]] — los modelos, versiones fijadas y la combinación KT-001.
 - [[KT-002 — Acierto prospectivo BTC]] — acierto de dirección en vivo, cada hora.
 - [[KT-003 — Diagnóstico histórico BTC]] — 2928 días de BTC (2017–2026).
-- [[Gerencia y mesa directiva]] — el gerente, los jefes de área y la reunión diaria.
+- [[Gerencia y mesa directiva]] — el gerente, los jefes de área y el informe diario.
 - [[Agentes del proyecto]] — desconfiado, mejorador y vigía de datos.
 - [[Automatizaciones]] — GitHub Actions, tareas programadas y panel.
 

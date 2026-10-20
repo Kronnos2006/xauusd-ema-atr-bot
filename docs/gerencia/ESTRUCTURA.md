@@ -15,7 +15,7 @@ Usuario (dueño del proyecto)
         └── (subordinados de cada jefe: .claude/agents/<area>-<tarea>.md)
 ```
 
-Cada nivel le rinde cuentas al de arriba con evidencia. El de arriba puede pedir explicaciones, corregir y registrar llamados de atención. Los subordinados siguen la misma regla con su jefe.
+Todos los jefes le reportan al gerente, y el gerente le rinde cuentas al usuario. Cada nivel le rinde cuentas al de arriba con evidencia. El de arriba puede pedir explicaciones, corregir y registrar llamados de atención. Los subordinados siguen la misma regla con su jefe.
 
 ## Funciones únicas (no se pisan)
 
@@ -45,4 +45,4 @@ Cada nivel le rinde cuentas al de arriba con evidencia. El de arriba puede pedir
 ## Registros
 - `docs/gerencia/decisiones.md`: cada decisión del gerente.
 - `docs/gerencia/desempeno.md`: llamados de atención y correcciones.
-- `XAUUSD EMA/ATR/Reuniones/`: actas de la reunión diaria.
+- `docs/gerencia/INFORME_DIARIO.md`: cómo el gerente revisa y rinde cuentas cada día (modo ahorro, sin reunión).

@@ -32,8 +32,7 @@ Cómo usar el proyecto en el día a día, sin tener que acordarse de los detalle
 - `data/kt003/resumen.md`: resultado del diagnóstico histórico (KT-003).
 
 **Notificaciones al celular.** Llegan a la app de Claude de cada teléfono donde esté abierta la cuenta del proyecto:
-- *Reunión diaria de la mesa directiva*, todos los días a las 6:57 a. m., con el resumen del gerente.
-- *Vigía de Actions*, solo si algo se cayó y no pudo arreglarlo.
+- *Gerente: informe diario*, todos los días a las 6:52 a. m., en 5 líneas o menos.
 
 ---
 
@@ -42,8 +41,7 @@ Cómo usar el proyecto en el día a día, sin tener que acordarse de los detalle
 | Proceso | Qué hace | Dónde | Cada cuánto |
 |---|---|---|---|
 | KT-002 | Predice si BTC sube o baja en 4 h y puntúa al vencer | GitHub Actions | Cada hora (minuto 7 UTC) |
-| Vigía de Actions | Revisa los workflows; relanza solo lo parado o fallido | Tarea programada de Claude | Cada 5 h |
-| Reunión diaria | El gerente reúne a los jefes, decide y envía el resumen | Tarea programada de Claude | 6:57 a. m. Costa Rica |
+| Informe del gerente | Revisa todo, relanza lo parado, decide y te rinde cuentas | Tarea programada de Claude | 6:52 a. m. Costa Rica |
 | Loggers MT5 (histórico) | EMA M15 y DFII10, solo lectura | Task Scheduler de la PC | Ver [[Infraestructura]] |
 
 Detalle técnico en [[Automatizaciones]].

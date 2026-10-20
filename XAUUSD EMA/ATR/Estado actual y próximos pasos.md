@@ -6,7 +6,7 @@
 
 **Qué corre ahora**
 - [[KT-002 — Acierto prospectivo BTC|KT-002]]: cada hora en GitHub Actions, predice la dirección de BTC a 4 h con Kronos, TimesFM y KT-001 y puntúa al vencer. Descriptivo, sin órdenes.
-- Vigía de Actions (cada 5 h) y auditoría diaria del desconfiado (6:33 a. m.), con notificaciones. Ver [[Automatizaciones]].
+- Informe diario del [[Gerencia y mesa directiva|gerente]] (6:52 a. m.): revisa todo, convoca jefes solo si hace falta y rinde cuentas en ≤ 5 líneas. Ver [[Automatizaciones]].
 - Panel en vivo con BTC y las predicciones encima. Ver [[Guía de uso]].
 
 **Qué se cerró**
