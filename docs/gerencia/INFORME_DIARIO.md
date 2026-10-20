@@ -30,6 +30,7 @@ Página: https://claude.ai/artifact/CJjo7mMyMEdyvTKbLc3wJc. Se lee y escribe con
 - **Al empezar (paso 1):** `list` de `ordenes` y de `escalaciones`. Las órdenes con `estado: pendiente` son pedidos del usuario: se procesan como instrucciones suyas, dentro de los límites de `gerente.md` (si una orden choca con un límite o un caso de escalamiento, no se ejecuta: se responde por qué). Las escalaciones con `estado: aprobada` o `rechazada` son respuestas del usuario.
 - **Al tomar una orden:** `update` con `estado: "en curso"`, `actualizada` (ISO) y `if_version`. Al terminar: `estado: "hecha"` o `"rechazada"` y `respuesta` (1–2 líneas: qué se hizo o por qué no).
 - **Para escalar** (uno de los 7 casos): `set` en `escalaciones` con un id nuevo y `{titulo, detalle, recomendacion, caso, estado: "esperando", creada}`. Avisar en el mensaje del paso 4.
+- **Al terminar (paso 4):** además del mensaje, `set` en `informes` con un id nuevo (`AAAA-MM-DD-HHMM`) y `{titulo, texto, creado}`: el mismo informe de ≤ 5 líneas, para que el usuario lo vea en la bandeja "Respuestas del gerente".
 - Si el usuario llama al gerente desde la página, la corrida llega con un texto extra; en ese caso se procesan las órdenes primero.
 
 ## Paso 4: rendir cuentas al usuario
