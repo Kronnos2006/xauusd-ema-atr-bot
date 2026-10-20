@@ -1,0 +1,40 @@
+Using cached huggingface_hub-0.33.1-py3-none-any.whl (515 kB)
+Using cached idna-3.20-py3-none-any.whl (69 kB)
+Using cached markupsafe-3.0.4-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (23 kB)
+Using cached networkx-3.7-py3-none-any.whl (2.1 MB)
+Using cached numpy-2.5.4-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.7 MB)
+Using cached packaging-26.3-py3-none-any.whl (129 kB)
+Using cached pandas-3.0.6-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (10.8 MB)
+Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+Using cached pyyaml-6.0.3-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (801 kB)
+Using cached requests-2.34.2-py3-none-any.whl (73 kB)
+Using cached urllib3-2.8.0-py3-none-any.whl (135 kB)
+Using cached safetensors-0.6.2-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (485 kB)
+Using cached setuptools-84.2.0-py3-none-any.whl (875 kB)
+Using cached six-1.17.0-py2.py3-none-any.whl (11 kB)
+Using cached tqdm-4.67.1-py3-none-any.whl (78 kB)
+Using cached tzdata-2026.5-py2.py3-none-any.whl (347 kB)
+Using cached hf_xet-1.7.0-cp38-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (4.2 MB)
+Installing collected packages: urllib3, tzdata, tqdm, six, setuptools, safetensors, PyYAML, packaging, numpy, networkx, MarkupSafe, idna, hf-xet, fsspec, filelock, einops, colorama, charset-normalizer, certifi, requests, python-dateutil, pandas, huggingface-hub, timesfm
+  Attempting uninstall: setuptools
+    Found existing installation: setuptools 78.1.0
+    Uninstalling setuptools-78.1.0:
+      Successfully uninstalled setuptools-78.1.0
+  Attempting uninstall: networkx
+    Found existing installation: networkx 3.6.1
+    Uninstalling networkx-3.6.1:
+      Successfully uninstalled networkx-3.6.1
+  Attempting uninstall: MarkupSafe
+    Found existing installation: MarkupSafe 3.0.3
+    Uninstalling MarkupSafe-3.0.3:
+      Successfully uninstalled MarkupSafe-3.0.3
+  Attempting uninstall: fsspec
+    Found existing installation: fsspec 2026.7.0
+    Uninstalling fsspec-2026.7.0:
+      Successfully uninstalled fsspec-2026.7.0
+  Attempting uninstall: filelock
+    Found existing installation: filelock 3.32.3
+    Uninstalling filelock-3.32.3:
+      Successfully uninstalled filelock-3.32.3
+
+Successfully installed MarkupSafe-3.0.4 PyYAML-6.0.3 certifi-2026.10.19 charset-normalizer-3.5.2 colorama-0.4.6 einops-0.8.1 filelock-4.2.4 fsspec-2026.9.0 hf-xet-1.7.0 huggingface-hub-0.33.1 idna-3.20 networkx-3.7 numpy-2.5.4 packaging-26.3 pandas-3.0.6 python-dateutil-2.9.0.post0 requests-2.34.2 safetensors-0.6.2 setuptools-84.2.0 six-1.17.0 timesfm-3.0.2 tqdm-4.67.1 tzdata-2026.5 urllib3-2.8.0

@@ -1,13 +1,14 @@
 {
   "fuente": "data.binance.vision (ZIP mensuales con CHECKSUM) + API publica para el mes en curso",
-  "descargado_utc": "2026-10-20T15:13:48.804343+00:00",
+  "descargado_utc": "2026-10-20T15:18:07.266667+00:00",
   "filas": 80308,
   "primera": "2017-08-17T04:00:00+00:00",
   "ultima": "2026-10-20T14:00:00+00:00",
   "duplicados_eliminados": 0,
-  "huecos": 29,
-  "horas_faltantes": 127,
+  "huecos": 28,
+  "horas_faltantes": 170,
   "velas_ohlc_invalidas": 0,
+  "velas_desalineadas_excluidas": 43,
   "archivos": [
     {
       "archivo": "BTCUSDT-1h-2017-08.zip",
@@ -561,11 +562,11 @@
     },
     {
       "archivo": "API klines desde 2026-10",
-      "sha256": "ec2a58e7714a8238cceea1a1e9d0219b17fb035c266bbbb27f7a19b41fe5e6ba",
+      "sha256": "3a30ec1f4e4dec0473564f4d3b4d4d2f204935ce2f5566d5946f478fef775bb9",
       "filas": 472
     }
   ],
-  "sha256_csv_gz": "d12ae867d9374bdb7e2f9a6c923428d741d9bd6d0714d2d4aa66700b56423943",
+  "sha256_csv_gz": "c3ccfb0a077574b9aa9611e0589c01ed1f679adb9caa38889ffd7f1b36f2cc61",
   "sha256_csv_contenido": "8b2384b706387ac29fa5033e90492dd8f2b641a2b850d967e5c6c2655be4a373",
   "velas_volumen_cero": 4
 }
