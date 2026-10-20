@@ -1,0 +1,109 @@
+name: KT-003 diagnostico historico BTC
+
+# Registro previo: docs/KT-003_registro_historico.md
+# Diagnostico: sin ordenes, MT5, costos ni capital.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - tools/kt003_historico.py
+      - .github/workflows/kt003.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kt003
+  cancel-in-progress: false
+
+env:
+  HF_HOME: ${{ github.workspace }}/.hf-cache
+  KRONOS_SRC: ${{ github.workspace }}/tools/kronos-upstream
+
+jobs:
+  datos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: pip install pandas==3.0.6 numpy==2.5.4 requests==2.34.2
+      - run: python tools/kt003_historico.py datos datos-out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: datos
+          path: datos-out/
+
+  pronosticar:
+    needs: datos
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: docs/evidencia/KT-001/requirements-resolved.txt
+      - name: Codigo Kronos fijado
+        run: |
+          mkdir -p "$KRONOS_SRC" && cd "$KRONOS_SRC"
+          git init -q
+          git remote add origin https://github.com/shiyu-coder/Kronos
+          git fetch -q --depth 1 origin 67b630e67f6a18c9e9be918d9b4337c960db1e9a
+          git checkout -q FETCH_HEAD
+      - name: Dependencias (versiones de KT-001)
+        run: |
+          pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/cpu
+          pip install -r docs/evidencia/KT-001/requirements-resolved.txt
+      - uses: actions/cache@v4
+        with:
+          path: .hf-cache
+          key: hf-kt002-901c26c1-0e011738-1d952420
+      - uses: actions/download-artifact@v4
+        with:
+          name: datos
+          path: datos-out
+      - run: python tools/kt003_historico.py shard datos-out/btcusdt_1h.csv.gz ${{ matrix.shard }} 16 shard-${{ matrix.shard }}.csv
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shard-${{ matrix.shard }}
+          path: shard-${{ matrix.shard }}.csv
+
+  unir:
+    needs: pronosticar
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: pip install pandas==3.0.6 numpy==2.5.4 requests==2.34.2
+      - uses: actions/download-artifact@v4
+        with:
+          path: art
+      - name: Unir y resumir
+        run: |
+          python tools/kt003_historico.py unir art/datos/btcusdt_1h.csv.gz art/shard-*/shard-*.csv
+          cp art/datos/manifiesto_datos.json data/kt003/
+          echo "run_id=${GITHUB_RUN_ID} sha=${GITHUB_SHA}" > data/kt003/ejecucion.txt
+      - name: Guardar resultados
+        run: |
+          git config user.name "kt003-bot"
+          git config user.email "kt003-bot@users.noreply.github.com"
+          git add data/kt003
+          git commit -q -m "KT-003: resultados del diagnostico historico (run ${GITHUB_RUN_ID})"
+          for i in 1 2 3; do
+            git pull -q --rebase origin master && git push -q origin HEAD:master && exit 0
+            sleep 10
+          done
+          exit 1
