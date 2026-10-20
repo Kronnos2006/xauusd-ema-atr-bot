@@ -108,13 +108,14 @@ def cmd_datos(out_dir):
     df = df[df.close_time < now]  # solo velas cerradas
     dup = int(df.open_time.duplicated().sum())
     df = df.drop_duplicates('open_time').sort_values('open_time').reset_index(drop=True)
-    gaps = df.open_time.diff().dropna()
+    desal = df.open_time != df.open_time.dt.floor('h')
+    gaps = df.open_time[~desal].diff().dropna()
     bad_ohlc = int(((df.high < df[['open', 'close']].max(axis=1)) | (df.low > df[['open', 'close']].min(axis=1)) | (df[['open', 'high', 'low', 'close']] <= 0).any(axis=1)).sum())
     report = dict(fuente='data.binance.vision (ZIP mensuales con CHECKSUM) + API publica para el mes en curso',
                   descargado_utc=now.isoformat(), filas=len(df), primera=df.open_time.iloc[0].isoformat(),
                   ultima=df.open_time.iloc[-1].isoformat(), duplicados_eliminados=dup,
                   huecos=int((gaps != HOUR).sum()), horas_faltantes=int(((gaps - HOUR) / HOUR).clip(lower=0).sum()),
-                  velas_ohlc_invalidas=bad_ohlc, archivos=manifest)
+                  velas_ohlc_invalidas=bad_ohlc, velas_desalineadas_excluidas=int(desal.sum()), archivos=manifest)
     if api_rows:
         manifest[-1]['sha256'] = hashlib.sha256(json.dumps(api_rows).encode()).hexdigest()
     csv_path = out_dir / 'btcusdt_1h.csv.gz'
@@ -127,7 +128,12 @@ def cmd_datos(out_dir):
 
 
 def load(path):
-    df = pd.read_csv(path, parse_dates=['open_time', 'close_time'])
+    df = pd.read_csv(path)
+    for col in ('open_time', 'close_time'):
+        df[col] = pd.to_datetime(df[col], utc=True, format='ISO8601')
+    aligned = df.open_time == df.open_time.dt.floor('h')
+    df = df[aligned].reset_index(drop=True)  # velas fuera de la hora (caida de Binance 2018-02): se excluyen
+    df.attrs['velas_desalineadas'] = int((~aligned).sum())
     return df
 
 
@@ -233,7 +239,7 @@ def cmd_prueba(data_csv, out_json):
             pred.predict_batch([cc[cols] for cc in ctxs], xs, ys, pred_len=HORIZON, T=1., top_p=.9, sample_count=20, verbose=False)
         tiempos.append(round(time.perf_counter() - t0, 1))
     lotes_por_shard = math.ceil(len(idx) / 16 / BATCH)
-    rep = dict(bases=len(idx), bases_saltadas=skipped, post_corte=int((b >= cut).sum()),
+    rep = dict(bases=len(idx), bases_saltadas=skipped, velas_desalineadas_excluidas=df.attrs['velas_desalineadas'], post_corte=int((b >= cut).sum()),
                primera=b.min().isoformat(), ultima=b.max().isoformat(), shards_cubren_todo=shards_ok,
                predict_vs_batch_max_dif=diff, predict_vs_batch_identico=bool(single.equals(batch)),
                segundos_por_lote=tiempos, lotes_por_shard=lotes_por_shard,
@@ -298,6 +304,7 @@ def cmd_unir(data_csv, *shards):
         return dict(aciertos=k, n=n, tasa=round(k / n, 4) if n else None, ic95=[lo, hi])
 
     summary = dict(variant='KT-003', generado_utc=now.isoformat(), bases_saltadas_por_huecos=skipped,
+                   velas_desalineadas_excluidas=df.attrs['velas_desalineadas'],
                    profitability_evaluated=False, total=block(preds),
                    por_periodo={p: block(g) for p, g in preds.groupby('periodo')},
                    por_anio={str(y): block(g) for y, g in preds.groupby(base.dt.year)})

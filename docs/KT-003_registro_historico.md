@@ -56,3 +56,8 @@ Pedida por el auditor `desconfiado` en su segunda revisión del diseño.
 - **Workflow**: solo corre desde `master`; `unir` exige que el conjunto de bases pronosticadas sea igual al esperado y falla si falta `reproducibilidad.json`.
 - **Corrida de prueba previa**: con `lanzar.txt = prueba` se descargan y sellan los datos, se cuentan bases y saltos, se compara `predict` contra `predict_batch` con la misma semilla, se miden tiempos por lote y se registran las fechas de los checkpoints en Hugging Face. No se pronostica el diagnóstico. El modo `completo` solo se lanza después de que el auditor revise esa salida.
 - Precisión de redacción: el contexto son 400 velas que terminan en la vela base (399 previas + la base).
+
+## Enmienda C (2026-10-20, tras la corrida de prueba y antes de cualquier pronóstico)
+
+- **Datos**: 80 308 velas, 0 duplicados, 0 velas OHLC inválidas. Hay 43 velas de febrero de 2018 desalineadas de la hora (apertura en :28:14, caída de Binance); se excluyen y se cuentan. Con eso quedan 28 huecos y 2928 bases válidas (404 saltadas por huecos en su contexto); post corte: 842, sin saltos.
+- **Fechas de los checkpoints en Hugging Face** (registradas por la prueba): Kronos-small creado 2025-06-30 y modificado 2025-09-09; TimesFM 2.5 creado 2025-09-02. Que los pesos se publiquen después de junio de 2024 no prueba que se hayan entrenado con datos posteriores, pero **no se puede certificar que el período post corte esté fuera del entrenamiento**, sobre todo para TimesFM. El resultado post corte se lee como "probablemente menos contaminado", no como fuera de muestra.
