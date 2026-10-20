@@ -11,7 +11,9 @@ Usuario (dueño del proyecto)
     ├── Jefe de Auditoría       .claude/agents/desconfiado.md
     ├── Jefe de Datos           .claude/agents/vigia-datos.md
     ├── Jefe de Operaciones     .claude/agents/jefe-operaciones.md
-    └── Jefe de Documentación   .claude/agents/jefe-documentacion.md
+    ├── Jefe de Documentación   .claude/agents/jefe-documentacion.md
+    └── Jefe de Innovación      .claude/agents/jefe-innovacion.md
+        └── Noticias            .claude/agents/innovacion-noticias.md
         └── (subordinados de cada jefe: .claude/agents/<area>-<tarea>.md)
 ```
 
@@ -26,6 +28,7 @@ Todos los jefes le reportan al gerente, y el gerente le rinde cuentas al usuario
 | Datos | vigia-datos | Verifica los datos recogidos (huecos, duplicados, hashes, coherencia) | Editar datos |
 | Operaciones | jefe-operaciones | Mantiene funcionando workflows, tareas programadas y panel | Interpretar resultados |
 | Documentación | jefe-documentacion | Bóveda de Obsidian, README, bitácora y actas | Decidir |
+| Innovación | jefe-innovacion | Busca skills, repos, agentes, plugins, conectores e ideas; detecta conectores caídos; noticias que afectan predicciones (subordinado `innovacion-noticias`) | Instalar, pagar o cambiar modelos; lo que afecte predicciones va al mejorador y al desconfiado |
 
 ## Quién decide qué
 

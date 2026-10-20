@@ -20,7 +20,11 @@ flowchart TD
   G --> D[Datos<br/>vigia-datos]
   G --> O[Operaciones<br/>jefe-operaciones]
   G --> C[Documentación<br/>jefe-documentacion]
+  G --> N[Innovación<br/>jefe-innovacion]
+  N --> NN[Noticias<br/>innovacion-noticias]
 ```
+
+**Innovación** (desde 2026-10-20): busca skills, repos, agentes, plugins, conectores e ideas; detecta conectores que fallan; su subordinado vigila noticias que pueden afectar las predicciones. Solo propone: decide el gerente, y lo que toque modelos pasa por el mejorador y el desconfiado. No instala ni paga nada. Revisa los lunes.
 Cada nivel rinde cuentas al de arriba con evidencia; el de arriba pide explicaciones, corrige y registra llamados de atención. Los jefes pueden tener subordinados con la misma regla.
 
 ## Qué decide el gerente solo
@@ -40,4 +44,4 @@ Para ahorrar uso del plan: una sola tarea programada por día, el desconfiado re
 ## Archivos
 - Estructura y reglas: `docs/gerencia/ESTRUCTURA.md`
 - Decisiones: `docs/gerencia/decisiones.md` · Desempeño: `docs/gerencia/desempeno.md`
-- Agentes: `.claude/agents/gerente.md`, `jefe-operaciones.md`, `jefe-documentacion.md` (más `mejorador`, `desconfiado`, `vigia-datos`)
+- Agentes: `.claude/agents/gerente.md`, `jefe-operaciones.md`, `jefe-documentacion.md`, `jefe-innovacion.md`, `innovacion-noticias.md` (más `mejorador`, `desconfiado`, `vigia-datos`)

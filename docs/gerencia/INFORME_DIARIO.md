@@ -17,6 +17,8 @@ Con comandos directos, sin clonar el repo completo:
 | Hay una propuesta nueva o corregida, o terminó un experimento | desconfiado | Solo ese día |
 | Revisión de rutina de los datos de KT-002 | desconfiado | Una vez por semana (lunes) |
 | El desconfiado aprobó algo o pidió cambios a una propuesta | mejorador | Solo ese día |
+| Revisión de herramientas, conectores y noticias | jefe-innovacion | Una vez por semana (lunes), o si un conector falla |
+| El jefe-innovacion propone algo | el gerente decide; si toca modelos o mediciones, primero mejorador → desconfiado | Al recibir la propuesta |
 | Se tomó una decisión o cambió el estado de algo | jefe-documentacion | Solo ese día, al final |
 Si todo está normal, el gerente no convoca a nadie.
 
