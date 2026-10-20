@@ -39,9 +39,9 @@ from datetime import datetime, timezone
 
 import pandas as pd
 
-DIR_PROYECTO = r"C:\Users\josem\OneDrive\Documents\rxt21\Nueva carpeta"
-BACKTEST_PATH = DIR_PROYECTO + r"\Backtest ema v4.py"
-HIPOTESIS_PATH = DIR_PROYECTO + r"\hipotesis_macro_dfii10.py"
+DIR_PROYECTO = os.path.dirname(os.path.abspath(__file__))
+BACKTEST_PATH = os.path.join(DIR_PROYECTO, "Backtest ema v4.py")
+HIPOTESIS_PATH = os.path.join(DIR_PROYECTO, "hipotesis_macro_dfii10.py")
 
 CSV_SALIDA = os.path.join(DIR_PROYECTO, "senal_macro_dfii10_live.csv")
 LOG_ERRORES = os.path.join(DIR_PROYECTO, "senal_macro_dfii10_live.log")

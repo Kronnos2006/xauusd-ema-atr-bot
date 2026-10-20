@@ -20,7 +20,8 @@ import pandas as pd
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-RUTA_REGISTRO = r"C:\Users\josem\OneDrive\Documents\rxt21\Nueva carpeta\registro_checksums.json"
+DIR_PROYECTO = os.path.dirname(os.path.abspath(__file__))
+RUTA_REGISTRO = os.path.join(DIR_PROYECTO, "registro_checksums.json")
 
 
 # ============================================================
@@ -153,9 +154,9 @@ def verificar_revision_fred(series_id, fechas_muestra, dias_vintage=10):
 if __name__ == "__main__":
     print("=== Registrando checksums de los archivos macro en uso ===\n")
     archivos = [
-        r"C:\Users\josem\OneDrive\Documents\rxt21\Nueva carpeta\historial\dfii10.csv",
-        r"C:\Users\josem\OneDrive\Documents\rxt21\Nueva carpeta\historial\t10y2y.csv",
-        r"C:\Users\josem\OneDrive\Documents\rxt21\Nueva carpeta\historial\dxy_sintetico.csv",
+        os.path.join(DIR_PROYECTO, "historial", "dfii10.csv"),
+        os.path.join(DIR_PROYECTO, "historial", "t10y2y.csv"),
+        os.path.join(DIR_PROYECTO, "historial", "dxy_sintetico.csv"),
     ]
     for archivo in archivos:
         if os.path.exists(archivo):

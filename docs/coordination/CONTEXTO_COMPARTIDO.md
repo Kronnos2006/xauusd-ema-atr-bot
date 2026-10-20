@@ -2,6 +2,8 @@
 
 ## Publicacion solicitada (2026-10-19, Costa Rica)
 
+Commit local 38a0531 creado. Integracion de origin/master 5ca75e4: unico conflicto en registro_checksums.json, hashes/tamaños identicos; conservadas fechas remotas mas recientes (2026-08-19 21:33 frente a 21:27), sin recalcular ni certificar datos. Cambios remotos de rutas de loggers/monitor preservados como historial existente, sin ejecutar ni modificar tareas. Evidencia KT-001 versionada; requirements publicado usa URL Git con revision TimesFM fija en lugar de ruta absoluta local. Publicacion autorizada por el usuario; revision funcional independiente sigue pendiente.
+
 Usuario solicita subir todo el proyecto al repo. Autor Codex; revision independiente pendiente. Destino: origin, Kronnos2006/xauusd-ema-atr-bot, rama master. Alcance: snapshot de cambios previos y nuevos, incluida eliminacion local preexistente del CSV EURUSD, codigo MQL5/Experts/bot, documentos, estudio PDF y herramientas sinteticas. Revision basica de patrones de secretos sin coincidencias, sin afirmar auditoria exhaustiva. Excluidos entornos/pesos/clones descargados y estado operativo local de coordinacion, senales.csv y respaldo _to_delete. Evidencia sintetica copiada a docs/evidencia/KT-001 para publicarla sin caches. Fetch encontro tres commits remotos previos; integrar preservando historial sin force push. No ejecutar scripts de trading, loggers, tareas, reservas ni backtests. Registro documental de preparacion de publicacion; resultado se verifica contra HEAD remoto al terminar.
 
 ## Integracion Kronos + TimesFM (2026-10-19, Costa Rica)

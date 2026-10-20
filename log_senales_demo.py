@@ -46,8 +46,8 @@ from datetime import datetime, timezone
 
 import pandas as pd
 
-BACKTEST_PATH = r"C:\Users\josem\OneDrive\Documents\rxt21\Nueva carpeta\Backtest ema v4.py"
-DIR_PROYECTO = os.path.dirname(BACKTEST_PATH)
+DIR_PROYECTO = os.path.dirname(os.path.abspath(__file__))
+BACKTEST_PATH = os.path.join(DIR_PROYECTO, "Backtest ema v4.py")
 CSV_SALIDA = os.path.join(DIR_PROYECTO, "senales_demo_live.csv")
 LOG_ERRORES = os.path.join(DIR_PROYECTO, "senales_demo_live.log")
 
