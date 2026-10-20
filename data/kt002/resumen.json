@@ -1,0 +1,116 @@
+{
+  "variant": "KT-002",
+  "updated_utc": "2026-10-20T14:34:36.726264+00:00",
+  "pronosticos": 1,
+  "vencidos": 0,
+  "profitability_evaluated": false,
+  "todos_solapados": {
+    "n_vencidos": 0,
+    "siempre_sube": {
+      "n": 0,
+      "aciertos": 0,
+      "tasa": null,
+      "ic95": [
+        null,
+        null
+      ]
+    },
+    "kronos": {
+      "n": 0,
+      "aciertos": 0,
+      "tasa": null,
+      "ic95": [
+        null,
+        null
+      ],
+      "mcnemar_vs_sube": {
+        "solo_modelo": 0,
+        "solo_sube": 0,
+        "p": null
+      }
+    },
+    "timesfm": {
+      "n": 0,
+      "aciertos": 0,
+      "tasa": null,
+      "ic95": [
+        null,
+        null
+      ],
+      "mcnemar_vs_sube": {
+        "solo_modelo": 0,
+        "solo_sube": 0,
+        "p": null
+      }
+    },
+    "kt001": {
+      "n": 0,
+      "aciertos": 0,
+      "tasa": null,
+      "ic95": [
+        null,
+        null
+      ],
+      "mcnemar_vs_sube": {
+        "solo_modelo": 0,
+        "solo_sube": 0,
+        "p": null
+      }
+    }
+  },
+  "sin_solape": {
+    "n_vencidos": 0,
+    "siempre_sube": {
+      "n": 0,
+      "aciertos": 0,
+      "tasa": null,
+      "ic95": [
+        null,
+        null
+      ]
+    },
+    "kronos": {
+      "n": 0,
+      "aciertos": 0,
+      "tasa": null,
+      "ic95": [
+        null,
+        null
+      ],
+      "mcnemar_vs_sube": {
+        "solo_modelo": 0,
+        "solo_sube": 0,
+        "p": null
+      }
+    },
+    "timesfm": {
+      "n": 0,
+      "aciertos": 0,
+      "tasa": null,
+      "ic95": [
+        null,
+        null
+      ],
+      "mcnemar_vs_sube": {
+        "solo_modelo": 0,
+        "solo_sube": 0,
+        "p": null
+      }
+    },
+    "kt001": {
+      "n": 0,
+      "aciertos": 0,
+      "tasa": null,
+      "ic95": [
+        null,
+        null
+      ],
+      "mcnemar_vs_sube": {
+        "solo_modelo": 0,
+        "solo_sube": 0,
+        "p": null
+      }
+    }
+  },
+  "horas_omitidas": 0
+}

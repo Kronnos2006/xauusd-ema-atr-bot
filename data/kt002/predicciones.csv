@@ -1,0 +1,2 @@
+run_utc,base_open_utc,base_close,target_open_utc,kronos_close4,timesfm_close4,kt001_close4,kronos_ret,timesfm_ret,kt001_ret,actual_close4,actual_ret,kronos_hit,timesfm_hit,kt001_hit,scored_utc,elapsed_s
+2026-10-20T14:34:36.726264+00:00,2026-10-20T13:00:00+00:00,82149.2,2026-10-20T17:00:00+00:00,81979.0234375,82062.0625,82020.54296875,-0.0020715547138621115,-0.0010607224416062655,-0.0015661385777341885,,,,,,,60.3
