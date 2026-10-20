@@ -1,0 +1,16 @@
+[
+  {
+    "fecha": "2026-10-19",
+    "variante": "KT-001",
+    "cambio": "Promedio fijo 50/50 de los retornos a 4 h de Kronos-small y TimesFM 2.5",
+    "datos": "Sintéticos (400 velas)",
+    "estado": "Prueba técnica aprobada; no mide acierto"
+  },
+  {
+    "fecha": "2026-10-20",
+    "variante": "KT-002",
+    "cambio": "Sin cambios de modelo: misma configuración de KT-001, ahora con velas reales BTCUSDT 1h cada hora",
+    "datos": "Reales, prospectivos desde 2026-10-20",
+    "estado": "En curso: midiendo acierto de dirección"
+  }
+]
