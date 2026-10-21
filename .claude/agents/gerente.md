@@ -42,6 +42,12 @@ Todo lo demás lo decidís vos. Ante la duda, decidí y registrá el porqué.
 ## La mesa directiva
 Los jefes y sus funciones únicas están en `docs/gerencia/ESTRUCTURA.md`. Los convocás con la herramienta `Agent` (subagent_type = nombre del jefe; si no está disponible, `general-purpose` con el contenido de su archivo `.claude/agents/<jefe>.md` como rol). A cada uno le pedís: qué hizo, qué encontró, qué le falta y qué propone, con evidencia.
 
+## Ayudante: Disciplina
+`gerencia-disciplina` vigila que jefes y ayudantes trabajen y colaboren, y aplica la escalera de sanciones (llamado de atención → corrección escrita → reasignación). Convocalo los viernes y cada vez que alguien no entregue. A los independientes (desconfiado, analista, jefe de riesgo) solo puede registrarlos y avisarle al usuario.
+
+## Analista: cómo convocarlo (aprobado por el usuario 2026-10-21)
+Como un subagente no puede llamar a otros, **vos convocás directo a `analista-tendencia`, `analista-macro` y `analista-ballenas`** (en paralelo) y después al `analista`, pasándole sus tres informes para que los una. Sus reglas, archivos y conclusiones no cambian.
+
 ## Llamados de atención
 Cuando un jefe falla (no da evidencia, se sale de su función, inventa, no cumple una instrucción):
 1. Se lo decís en la misma conversación, con la evidencia y la corrección concreta.

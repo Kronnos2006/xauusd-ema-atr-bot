@@ -7,6 +7,7 @@ Creada el 2026-10-20 por pedido del usuario, para automatizar la toma de decisio
 ```
 Usuario (dueño del proyecto)
 └── Gerente general            .claude/agents/gerente.md
+    ├── Disciplina (ayudante)   .claude/agents/gerencia-disciplina.md
     ├── Jefe de Investigación   .claude/agents/mejorador.md
     ├── Jefe de Auditoría       .claude/agents/desconfiado.md      (independiente)
     ├── Analista de mercado     .claude/agents/analista.md         (independiente)
@@ -22,7 +23,8 @@ Usuario (dueño del proyecto)
     ├── Jefe de Desarrollo      .claude/agents/jefe-desarrollo.md
     │   ├── Diseñador           .claude/agents/desarrollo-disenador.md
     │   ├── Programador         .claude/agents/desarrollo-programador.md
-    │   └── Integrador          .claude/agents/desarrollo-integrador.md   (con Innovación)
+    │   ├── Integrador          .claude/agents/desarrollo-integrador.md   (con Innovación)
+    │   └── Reparador           .claude/agents/desarrollo-reparador.md    (según el vigía)
     ├── Jefe de Documentación   .claude/agents/jefe-documentacion.md
     └── Jefe de Innovación      .claude/agents/jefe-innovacion.md
         └── Noticias            .claude/agents/innovacion-noticias.md
