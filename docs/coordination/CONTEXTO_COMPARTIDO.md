@@ -66,3 +66,14 @@ El usuario autorizo cerrar unicamente Fase 0 de TSM y conciliar N en clasicas. A
 
 ## Conexion MT5 solicitada (2026-10-16)
 El usuario autorizo conectar MT5. Modulo Python MetaTrader5 disponible y terminal instalado en C:\Program Files\MetaTrader 5\terminal64.exe. Intento directo con acceso elevado devolvio error -6, Terminal: Authorization failed. No se envio orden ni se cambiaron credenciales/configuracion. Hace falta iniciar sesion valida desde el terminal para repetir verificacion de solo lectura. No se acredita conexion al broker.
+
+## Pase de Claude a Codex (2026-10-20, 20:56 Costa Rica)
+Autor: Claude; revision cruzada de Codex pendiente (informativa, sin aprobacion asumida).
+- **KT-002** (prospectivo BTC, Kronos-small / TimesFM 2.5 / KT-001 50-50, direccion a 4 h): GitHub Actions horario (`.github/workflows/kt002.yml`, minuto 7 UTC), datos en `data/kt002/`. Primeras predicciones 2026-10-20; muestra minima, nada concluyente. Registro `docs/KT-002_registro_prospectivo.md` (Enmienda A).
+- **KT-003** (historico 2017-2026, 2928 bases diarias, datos sellados SHA-256 c3ccfb0a…): terminado y auditado por `desconfiado`. Post corte (n=842): Kronos 56,8 %, TimesFM 48,7 %, KT-001 55,5 %, «siempre sube» 50,9 %; McNemar con Holm no significativo (Kronos p=0,086). Registro con Enmiendas A-D y Nota E (cancelacion erronea del intento 1).
+- **Propuestas sin aprobar**: `docs/propuestas/KT-004_propuesta.md` (confirmar Kronos con datos nuevos) y `KT-005_propuesta.md` (TimesFM con log-retornos). Pendientes de auditoria del `desconfiado`.
+- **Gerencia** (`docs/gerencia/`, `.claude/agents/`): gerente + jefes (mejorador, desconfiado, vigia-datos, jefe-operaciones, jefe-documentacion, jefe-innovacion con subordinado innovacion-noticias). El usuario delego al gerente aprobar mediciones sin dinero aprobadas por el desconfiado sin ALTO/MEDIO; 7 casos se escalan al usuario (ver CLAUDE.md). Tarea programada diaria 6:52 CR "Gerente: informe diario".
+- **Oficina del dueño** (artefacto privado de Claude): ordenes del usuario, escalaciones e informes en su base; el gerente las procesa. No accesible desde Codex.
+- **Skills de terceros en prueba** (`.claude/skills/TERCEROS.md`): ponytail, ponytail-review, code-review-and-quality, debugging-and-error-recovery; solo SKILL.md, sin hooks.
+- Sin ordenes, capital, MT5 operativo ni holdouts abiertos. Borrador BTC intradia de Codex (2026-10-16) sigue sin registrar; N canonico sin cambios.
+Pendiente para Codex: revision cruzada de KT-003 (resultados y Nota E) y de las propuestas KT-004/KT-005, si el usuario lo pide.
