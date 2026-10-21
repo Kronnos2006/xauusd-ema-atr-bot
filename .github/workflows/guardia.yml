@@ -1,7 +1,7 @@
 name: Guardia (vigía sin costo de Claude)
 
 # Hace el trabajo mecánico del vigía de datos sin gastar tokens de Claude:
-#  - cada hora: si KT-002 está parado, lo despierta; si una corrida falló, relanza solo lo fallido;
+#  - cada hora: mantiene KT-002 solapado (nueva corrida en cola cada ~4 h) y lo relanza si la última falló;
 #    si hay una corrida viva pero sin registros hace más de 2 h, abre un aviso (issue "guardia").
 #  - una vez al día: guarda velas de BTC (1d y 4h) y el régimen de tendencia con reglas fijas
 #    en data/mercado/, para que el analista no dependa de Binance desde Claude.
@@ -43,11 +43,16 @@ jobs:
           edad_reg=$(( (ahora - $(date -d "$reg" +%s)) / 60 ))
           echo "vivas=$vivas ultima=$ult_id ($ult_conc) min_desde_registro=$edad_reg"
           accion="ninguna"
-          if [ "$ult_conc" = "failure" ] || [ "$ult_conc" = "timed_out" ]; then
-            gh run rerun "$ult_id" -R "$REPO" --failed && accion="relanzadas tareas fallidas de $ult_id" || accion="no se pudo relanzar $ult_id"
-          elif [ "$vivas" = "0" ] && [ $(( ahora - ult_ini )) -gt $(( 290*60 )) ]; then
+          enc=$(gh run list -R "$REPO" -w kt002.yml --json status --jq '[.[]|select(.status=="queued")]|length')
+          # Solape cada ~4 h: si no hay ninguna en cola y la ultima se creo hace >240 min, se encola otra
+          # (aunque haya una en curso: espera en el grupo kt002 y arranca apenas termina). Si la ultima fallo
+          # y no queda nada vivo, se lanza una nueva (no rerun: evita 4 h 45 con checkout viejo).
+          motivo=""
+          if [ "$enc" = "0" ] && [ $(( ahora - ult_ini )) -gt $(( 240*60 )) ]; then motivo="solape 4 h"
+          elif [ "$vivas" = "0" ] && { [ "$ult_conc" = "failure" ] || [ "$ult_conc" = "timed_out" ]; }; then motivo="ultima $ult_id termino en $ult_conc"; fi
+          if [ -n "$motivo" ]; then
             # Un push hecho con el token de Actions no dispara otros workflows: se usa workflow_dispatch.
-            gh workflow run kt002.yml -R "$REPO" --ref master && accion="despertador (KT-002 relanzado)" || accion="no se pudo relanzar KT-002"
+            gh workflow run kt002.yml -R "$REPO" --ref master && accion="KT-002 relanzado ($motivo)" || accion="no se pudo relanzar KT-002 ($motivo)"
           fi
           if [ "$vivas" != "0" ] && [ "$edad_reg" -gt 130 ]; then
             accion="$accion; falla silenciosa: corrida viva sin registro hace ${edad_reg} min"
