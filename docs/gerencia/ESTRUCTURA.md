@@ -8,7 +8,11 @@ Creada el 2026-10-20 por pedido del usuario, para automatizar la toma de decisio
 Usuario (dueño del proyecto)
 └── Gerente general            .claude/agents/gerente.md
     ├── Jefe de Investigación   .claude/agents/mejorador.md
-    ├── Jefe de Auditoría       .claude/agents/desconfiado.md
+    ├── Jefe de Auditoría       .claude/agents/desconfiado.md      (independiente)
+    ├── Analista de mercado     .claude/agents/analista.md         (independiente)
+    │   ├── Tendencia           .claude/agents/analista-tendencia.md
+    │   ├── Macro               .claude/agents/analista-macro.md
+    │   └── Ballenas            .claude/agents/analista-ballenas.md
     ├── Jefe de Datos           .claude/agents/vigia-datos.md
     ├── Jefe de Operaciones     .claude/agents/jefe-operaciones.md
     ├── Jefe de Documentación   .claude/agents/jefe-documentacion.md
@@ -25,6 +29,7 @@ Todos los jefes le reportan al gerente, y el gerente le rinde cuentas al usuario
 |---|---|---|---|
 | Investigación | mejorador | Estudia resultados y propone variantes nuevas pre-registradas | Aprobarse a sí mismo; tocar lo que ya corre |
 | Auditoría | desconfiado | Audita diseños y resultados; aprueba o rechaza con evidencia | Escribir código del proyecto |
+| Mercado | analista | Analiza BTC, oro, dólar, petróleo, ballenas y noticias; dice si el mercado está alcista, bajista o lateral con reglas fijas | Dar señales de trading; cambiar modelos o mediciones |
 | Datos | vigia-datos | Verifica los datos recogidos (huecos, duplicados, hashes, coherencia) | Editar datos |
 | Operaciones | jefe-operaciones | Mantiene funcionando workflows, tareas programadas y panel | Interpretar resultados |
 | Documentación | jefe-documentacion | Bóveda de Obsidian, README, bitácora y actas | Decidir |
@@ -44,6 +49,8 @@ Todos los jefes le reportan al gerente, y el gerente le rinde cuentas al usuario
 7. un colapso que no se arregló tras 2 intentos distintos.
 
 **Independencia del auditor:** el gerente puede corregir al desconfiado por cómo trabaja (falta de evidencia, salirse de su función), pero no puede bajarle la vara ni hacerlo aprobar.
+
+**Independencia del analista (decisión del usuario, 2026-10-21):** misma autoridad que el desconfiado. El gerente lo convoca y lee sus informes, pero no puede cambiar sus reglas, sus ayudantes, sus conclusiones ni sus archivos sin permiso explícito del usuario. Un desacuerdo con el analista se le plantea al usuario.
 
 ## Registros
 - `docs/gerencia/decisiones.md`: cada decisión del gerente.

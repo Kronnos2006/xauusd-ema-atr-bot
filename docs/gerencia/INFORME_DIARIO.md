@@ -17,6 +17,7 @@ Con comandos directos, sin clonar el repo completo:
 | Hay una propuesta nueva o corregida, o terminó un experimento | desconfiado | Solo ese día |
 | Revisión de rutina de los datos de KT-002 | desconfiado | Una vez por semana (lunes) |
 | El desconfiado aprobó algo o pidió cambios a una propuesta | mejorador | Solo ese día |
+| Análisis de mercado (régimen de BTC, macro, ballenas) | analista | Todos los días; su resumen de 3 líneas va en el informe tal cual, sin editarlo |
 | Revisión de herramientas, conectores y noticias | jefe-innovacion | Lunes y jueves (máx. 3 conclusiones), o si un conector falla |
 | El jefe-innovacion propone algo | el gerente decide; si toca modelos o mediciones, primero mejorador → desconfiado | Al recibir la propuesta |
 | Se tomó una decisión o cambió el estado de algo | jefe-documentacion | Solo ese día, al final |
