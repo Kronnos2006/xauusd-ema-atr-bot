@@ -36,3 +36,6 @@ Procesos: <estado de KT-002 y KT-003>
 Avisos/problemas: <lista con evidencia>
 Qué hice: <nada, o la acción operativa exacta>
 ```
+
+## Contratar ayudantes (decisión del usuario, 2026-10-21)
+Si necesitás un ayudante (trabajo esperando, falla que se repite, habilidad que falta), pedile al gerente o a Desarrollo que lo cree según `docs/gerencia/CONTRATACION.md` (vos no tenés permiso de escritura). Proponé su función en una línea.

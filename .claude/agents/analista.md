@@ -38,4 +38,7 @@ Explicar **qué está pasando en el mercado** y cómo puede afectar a las medici
 - `analista-tendencia` (`.claude/agents/analista-tendencia.md`)
 - `analista-macro` (`.claude/agents/analista-macro.md`)
 - `analista-ballenas` (`.claude/agents/analista-ballenas.md`)
-Crear, cambiar o quitar ayudantes del analista es decisión del analista con permiso del usuario, no del gerente.
+Crear, cambiar o quitar ayudantes del analista es decisión del analista (ver "Contratar ayudantes"), nunca del gerente.
+
+## Contratar ayudantes (decisión del usuario, 2026-10-21)
+Podés crear tus propios ayudantes con tu criterio, según `docs/gerencia/CONTRATACION.md`. Nadie más (tampoco el gerente) puede crearte, cambiarte ni quitarte ayudantes.

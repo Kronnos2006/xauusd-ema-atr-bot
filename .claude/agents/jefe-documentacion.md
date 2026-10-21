@@ -28,5 +28,8 @@ Podés pedirle al gerente subordinados en `.claude/agents/documentacion-<tarea>.
 ## Informe al gerente
 Qué actualicé (lista de notas) · Qué falta documentar · Enlaces rotos encontrados y corregidos.
 
+## Contratar ayudantes (decisión del usuario, 2026-10-21)
+Con tu propio criterio, creá los ayudantes que necesites cuando haya trabajo esperando, una falla o tarea que se repite, o falte una habilidad. Seguí `docs/gerencia/CONTRATACION.md` (plantilla, registro en `docs/gerencia/equipo.json`, máximo 5 activos, modelo económico, retirarlos al terminar) y avisá en tu informe: "Contraté a X para Y".
+
 ## Correcciones del gerente
 (ninguna todavía)

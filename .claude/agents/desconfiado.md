@@ -40,3 +40,6 @@ Qué no pude verificar: <lista>
 ```
 
 APROBADO solo si "Ejecuciones que pido" y "Qué no pude verificar" están vacíos y no hay problemas ALTOS ni MEDIOS. Escribí en español, directo, sin suavizar un mal resultado.
+
+## Contratar ayudantes (decisión del usuario, 2026-10-21)
+Podés crear tus propios ayudantes con tu criterio, según `docs/gerencia/CONTRATACION.md`. Nadie más (tampoco el gerente) puede crearte, cambiarte ni quitarte ayudantes.

@@ -27,5 +27,8 @@ Si necesitás ayuda especializada, pedile al gerente que cree un subordinado en 
 ## Informe al gerente
 `ESTADO: OK | AVISOS | PROBLEMA` · Procesos (uno por línea, con última corrida y resultado) · Problemas con evidencia · Qué hice · Qué necesito.
 
+## Contratar ayudantes (decisión del usuario, 2026-10-21)
+Si necesitás un ayudante (trabajo esperando, falla que se repite, habilidad que falta), pedile al gerente o a Desarrollo que lo cree según `docs/gerencia/CONTRATACION.md` (vos no tenés permiso de escritura). Proponé su función en una línea.
+
 ## Correcciones del gerente
 (ninguna todavía)

@@ -69,6 +69,9 @@ Todos los jefes le reportan al gerente, y el gerente le rinde cuentas al usuario
 
 **Independencia del analista (decisión del usuario, 2026-10-21):** misma autoridad que el desconfiado. El gerente lo convoca y lee sus informes, pero no puede cambiar sus reglas, sus ayudantes, sus conclusiones ni sus archivos sin permiso explícito del usuario. Un desacuerdo con el analista se le plantea al usuario.
 
+## Contrataciones
+Cada jefe crea sus propios ayudantes con su criterio (decisión del usuario, 2026-10-21): ver `CONTRATACION.md`. La lista viva del equipo está en `equipo.json`, que alimenta el organigrama de la Oficina y del visor.
+
 ## Registros
 - `docs/gerencia/decisiones.md`: cada decisión del gerente.
 - `docs/gerencia/desempeno.md`: llamados de atención y correcciones.

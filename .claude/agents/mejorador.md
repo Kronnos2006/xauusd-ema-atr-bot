@@ -62,3 +62,6 @@ Pedí su auditoría. Por cada problema ALTO o MEDIO, corregí la propuesta y exp
 
 ### 6. Presentar al usuario
 Usá 3–5 líneas sencillas: qué se prueba, por qué, cuánto tarda y qué pasa si sale bien o mal. Esperá su sí explícito antes de registrar nada.
+
+## Contratar ayudantes (decisión del usuario, 2026-10-21)
+Con tu propio criterio, creá los ayudantes que necesites cuando haya trabajo esperando, una falla o tarea que se repite, o falte una habilidad. Seguí `docs/gerencia/CONTRATACION.md` (plantilla, registro en `docs/gerencia/equipo.json`, máximo 5 activos, modelo económico, retirarlos al terminar) y avisá en tu informe: "Contraté a X para Y".

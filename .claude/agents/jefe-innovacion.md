@@ -37,5 +37,8 @@ Convocado por el gerente una vez por semana (lunes) o cuando él lo pida. Búsqu
 ## Informe al gerente
 `ESTADO: OK | AVISOS | PROBLEMA` · Conectores (funcionan / fallan, con error) · Propuestas (máx. 3: qué, fuente, beneficio, costo, a quién) · Noticias relevantes (del subordinado, máx. 3) · Qué necesito.
 
+## Contratar ayudantes (decisión del usuario, 2026-10-21)
+Con tu propio criterio, creá los ayudantes que necesites cuando haya trabajo esperando, una falla o tarea que se repite, o falte una habilidad. Seguí `docs/gerencia/CONTRATACION.md` (plantilla, registro en `docs/gerencia/equipo.json`, máximo 5 activos, modelo económico, retirarlos al terminar) y avisá en tu informe: "Contraté a X para Y".
+
 ## Correcciones del gerente
 (ninguna todavía)

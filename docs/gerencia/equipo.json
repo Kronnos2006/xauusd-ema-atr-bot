@@ -1,0 +1,363 @@
+{
+ "actualizado": "2026-10-21",
+ "areas": {
+  "dir": {
+   "nombre": "Dirección",
+   "color": "#1f4fd1"
+  },
+  "inv": {
+   "nombre": "Investigación",
+   "color": "#7a4fd1"
+  },
+  "aud": {
+   "nombre": "Auditoría",
+   "color": "#c2412d"
+  },
+  "dat": {
+   "nombre": "Datos",
+   "color": "#0f8a80"
+  },
+  "ops": {
+   "nombre": "Operaciones",
+   "color": "#b07400"
+  },
+  "doc": {
+   "nombre": "Documentación",
+   "color": "#4b6a2e"
+  },
+  "inn": {
+   "nombre": "Innovación",
+   "color": "#c23d8a"
+  },
+  "dev": {
+   "nombre": "Desarrollo",
+   "color": "#3d5a80"
+  },
+  "rie": {
+   "nombre": "Riesgo",
+   "color": "#8a1c1c"
+  },
+  "por": {
+   "nombre": "Portafolio",
+   "color": "#5b4b8a"
+  },
+  "mer": {
+   "nombre": "Mercado",
+   "color": "#0b6fa8"
+  }
+ },
+ "miembros": [
+  {
+   "clave": "gerente",
+   "nombre": "Gerente general",
+   "area": "dir",
+   "reporta_a": null,
+   "que_hace": "Decide el día a día, reparte el trabajo entre los jefes, los corrige y te rinde cuentas. Solo te pregunta los 7 casos que decidís vos.",
+   "cuando": "Todos los días 6:30 a. m. y cuando lo llamás",
+   "modelo": "El de tu cuenta (Opus)",
+   "iniciales": "G",
+   "independiente": false,
+   "creado_por": "usuario",
+   "estado": "activo"
+  },
+  {
+   "clave": "gerencia-disciplina",
+   "nombre": "Disciplina",
+   "area": "dir",
+   "reporta_a": "gerente",
+   "que_hace": "Vigila que jefes y ayudantes trabajen y se ayuden entre sí. Si no, aplica sanciones con evidencia: llamado de atención, corrección escrita, reasignación. A los independientes solo los reporta.",
+   "cuando": "Viernes, y cuando alguien no entrega",
+   "modelo": "Sonnet (económico)",
+   "iniciales": "Ds",
+   "independiente": false,
+   "creado_por": "usuario",
+   "estado": "activo"
+  },
+  {
+   "clave": "mejorador",
+   "nombre": "Mejorador",
+   "area": "inv",
+   "reporta_a": "gerente",
+   "que_hace": "Estudia los resultados de Kronos y TimesFM y propone mejoras como variantes nuevas con registro previo. Nunca descarta un modelo.",
+   "cuando": "Cuando hay resultados nuevos o una auditoría pide cambios",
+   "modelo": "El de tu cuenta",
+   "iniciales": "M",
+   "independiente": false,
+   "creado_por": "usuario",
+   "estado": "activo"
+  },
+  {
+   "clave": "desconfiado",
+   "nombre": "Desconfiado",
+   "area": "aud",
+   "reporta_a": "gerente",
+   "que_hace": "Audita propuestas y resultados. Aprueba o rechaza con evidencia; nadie le puede bajar la vara ni obligarlo a aprobar.",
+   "cuando": "Lunes (rutina) y con cada propuesta o resultado",
+   "modelo": "El de tu cuenta",
+   "iniciales": "D",
+   "independiente": true,
+   "creado_por": "usuario",
+   "estado": "activo"
+  },
+  {
+   "clave": "analista",
+   "nombre": "Analista de mercado",
+   "area": "mer",
+   "reporta_a": "gerente",
+   "que_hace": "Analiza BTC, oro, dólar, petróleo, ballenas y noticias, y dice si el mercado está alcista, bajista o lateral con reglas fijas. Independiente como el desconfiado: el gerente no puede cambiarlo sin tu permiso. No da señales de trading.",
+   "cuando": "Todos los días, en el informe de las 6:30",
+   "modelo": "El de tu cuenta",
+   "iniciales": "A",
+   "independiente": true,
+   "creado_por": "usuario",
+   "estado": "activo"
+  },
+  {
+   "clave": "analista-tendencia",
+   "nombre": "Vigía de tendencia",
+   "area": "mer",
+   "reporta_a": "analista",
+   "que_hace": "Está pendiente de si BTC está alcista, bajista o lateral (medias de 50 y 200 días, reglas fijas).",
+   "cuando": "Cuando lo convoca el analista",
+   "modelo": "Sonnet (económico)",
+   "iniciales": "T",
+   "independiente": true,
+   "creado_por": "usuario",
+   "estado": "activo"
+  },
+  {
+   "clave": "analista-macro",
+   "nombre": "Vigía macro",
+   "area": "mer",
+   "reporta_a": "analista",
+   "que_hace": "Oro, dólar, petróleo, tasas y calendario (Fed, inflación, empleo).",
+   "cuando": "Cuando lo convoca el analista",
+   "modelo": "Sonnet (económico)",
+   "iniciales": "Ma",
+   "independiente": true,
+   "creado_por": "usuario",
+   "estado": "activo"
+  },
+  {
+   "clave": "analista-ballenas",
+   "nombre": "Vigía de ballenas",
+   "area": "mer",
+   "reporta_a": "analista",
+   "que_hace": "Movimientos grandes de BTC entre wallets y exchanges, y flujos de los ETF.",
+   "cuando": "Cuando lo convoca el analista",
+   "modelo": "Sonnet (económico)",
+   "iniciales": "B",
+   "independiente": true,
+   "creado_por": "usuario",
+   "estado": "activo"
+  },
+  {
+   "clave": "vigia-datos",
+   "nombre": "Vigía de datos",
+   "area": "dat",
+   "reporta_a": "gerente",
+   "que_hace": "Revisa que los datos recogidos estén completos: huecos, duplicados, hashes. Solo relanza lo parado o fallido.",
+   "cuando": "Cuando faltan horas o algo no cuadra",
+   "modelo": "Sonnet (económico)",
+   "iniciales": "V",
+   "independiente": false,
+   "creado_por": "usuario",
+   "estado": "activo"
+  },
+  {
+   "clave": "jefe-operaciones",
+   "nombre": "Jefe de Operaciones",
+   "area": "ops",
+   "reporta_a": "gerente",
+   "que_hace": "Que GitHub Actions, las tareas programadas y el panel funcionen. Nunca cancela lo que está trabajando.",
+   "cuando": "Cuando una corrida falla o se para",
+   "modelo": "Sonnet (económico)",
+   "iniciales": "O",
+   "independiente": false,
+   "creado_por": "usuario",
+   "estado": "activo"
+  },
+  {
+   "clave": "jefe-riesgo",
+   "nombre": "Jefe de Riesgo",
+   "area": "rie",
+   "reporta_a": "gerente",
+   "que_hace": "Escribe los límites de pérdida y tamaño antes de cualquier estrategia, mide los costos reales y puede vetar o apagar una simulación. Independiente: el gerente no puede cambiarlo sin tu permiso.",
+   "cuando": "Los martes hasta tener el marco de riesgo; después, con cada simulación",
+   "modelo": "El de tu cuenta",
+   "iniciales": "R",
+   "independiente": true,
+   "creado_por": "usuario",
+   "estado": "activo"
+  },
+  {
+   "clave": "riesgo-costos",
+   "nombre": "Costos",
+   "area": "rie",
+   "reporta_a": "jefe-riesgo",
+   "que_hace": "Mide comisiones, spread y deslizamiento reales, y cuánto tiene que moverse el precio para cubrirlos.",
+   "cuando": "Cuando lo convoca el Jefe de Riesgo",
+   "modelo": "Sonnet (económico)",
+   "iniciales": "C",
+   "independiente": true,
+   "creado_por": "usuario",
+   "estado": "activo"
+  },
+  {
+   "clave": "jefe-portafolio",
+   "nombre": "Jefe de Portafolio",
+   "area": "por",
+   "reporta_a": "gerente",
+   "que_hace": "Lleva el libro de estrategias y diseña portafolios en papel con datos públicos de fondos grandes (13F, ETF), siempre con registro previo y auditorías. Sin dinero.",
+   "cuando": "Los miércoles mientras la simulación esté en diseño",
+   "modelo": "El de tu cuenta",
+   "iniciales": "Pf",
+   "independiente": false,
+   "creado_por": "usuario",
+   "estado": "activo"
+  },
+  {
+   "clave": "portafolio-replica",
+   "nombre": "Réplica de portafolios",
+   "area": "por",
+   "reporta_a": "jefe-portafolio",
+   "que_hace": "Reúne los datos públicos de portafolios grandes con su fecha real de publicación, para no usar información del futuro.",
+   "cuando": "Cuando lo convoca el Jefe de Portafolio",
+   "modelo": "Sonnet (económico)",
+   "iniciales": "Re",
+   "independiente": false,
+   "creado_por": "usuario",
+   "estado": "activo"
+  },
+  {
+   "clave": "portafolio-investigador",
+   "nombre": "Investigador cuantitativo",
+   "area": "por",
+   "reporta_a": "jefe-portafolio",
+   "que_hace": "Propone hipótesis con fundamento y las prepara con datos reales (cuántas operaciones habría, si el efecto supera los costos). Pasan por el jefe de portafolio, el desconfiado y el gerente; los puntos clave los confirmás vos.",
+   "cuando": "Cuando lo convoca el Jefe de Portafolio",
+   "modelo": "El de tu cuenta",
+   "iniciales": "Iq",
+   "independiente": false,
+   "creado_por": "usuario",
+   "estado": "activo"
+  },
+  {
+   "clave": "portafolio-estratega",
+   "nombre": "Estratega",
+   "area": "por",
+   "reporta_a": "jefe-portafolio",
+   "que_hace": "Convierte una hipótesis aprobada en reglas exactas para operar (entrada, salida, tamaño, costos, límites de riesgo), listas para simular en papel. Nunca opera.",
+   "cuando": "Cuando una hipótesis pasa la auditoría",
+   "modelo": "El de tu cuenta",
+   "iniciales": "Es",
+   "independiente": false,
+   "creado_por": "usuario",
+   "estado": "activo"
+  },
+  {
+   "clave": "jefe-desarrollo",
+   "nombre": "Jefe de Desarrollo",
+   "area": "dev",
+   "reporta_a": "gerente",
+   "que_hace": "Cuida que el código esté bien, propone metas para el código e implementa los cambios que decidís vos o el gerente (en ramas y con pruebas). Le pasa el reporte a Documentación y puede crear sus propios ayudantes.",
+   "cuando": "Cuando hay un cambio aprobado o una falla; revisión semanal los viernes",
+   "modelo": "El de tu cuenta",
+   "iniciales": "De",
+   "independiente": false,
+   "creado_por": "usuario",
+   "estado": "activo"
+  },
+  {
+   "clave": "desarrollo-disenador",
+   "nombre": "Diseñador",
+   "area": "dev",
+   "reporta_a": "jefe-desarrollo",
+   "que_hace": "La estética del visor y de los paneles: gráficos, colores, que se lea bien en el celular y en modo oscuro.",
+   "cuando": "Cuando lo convoca el Jefe de Desarrollo",
+   "modelo": "Sonnet (económico)",
+   "iniciales": "Di",
+   "independiente": false,
+   "creado_por": "usuario",
+   "estado": "activo"
+  },
+  {
+   "clave": "desarrollo-programador",
+   "nombre": "Programador",
+   "area": "dev",
+   "reporta_a": "jefe-desarrollo",
+   "que_hace": "Escribe solo el código necesario: el cambio más chico que resuelve todo, reusando lo que ya existe.",
+   "cuando": "Cuando lo convoca el Jefe de Desarrollo",
+   "modelo": "Sonnet (económico)",
+   "iniciales": "P",
+   "independiente": false,
+   "creado_por": "usuario",
+   "estado": "activo"
+  },
+  {
+   "clave": "desarrollo-integrador",
+   "nombre": "Integrador",
+   "area": "dev",
+   "reporta_a": "jefe-desarrollo",
+   "que_hace": "Trabaja con el Jefe de Innovación: implementa las innovaciones aprobadas sin romper nada y dejando cómo deshacerlas.",
+   "cuando": "Cuando hay una innovación aprobada",
+   "modelo": "Sonnet (económico)",
+   "iniciales": "In",
+   "independiente": false,
+   "creado_por": "usuario",
+   "estado": "activo"
+  },
+  {
+   "clave": "desarrollo-reparador",
+   "nombre": "Reparador",
+   "area": "dev",
+   "reporta_a": "jefe-desarrollo",
+   "que_hace": "Repara las fallas que encuentra el vigía (procesos caídos, horas sin registro, errores). Solo arreglos que no cambian lo que se mide.",
+   "cuando": "Cuando el vigía encuentra una falla (revisa cada 2 h)",
+   "modelo": "Sonnet (económico)",
+   "iniciales": "Rp",
+   "independiente": false,
+   "creado_por": "usuario",
+   "estado": "activo"
+  },
+  {
+   "clave": "jefe-documentacion",
+   "nombre": "Jefe de Documentación",
+   "area": "doc",
+   "reporta_a": "gerente",
+   "que_hace": "Mantiene ordenada la bóveda de Obsidian, el README y la bitácora.",
+   "cuando": "Al final, cuando hubo decisiones",
+   "modelo": "Sonnet (económico)",
+   "iniciales": "Do",
+   "independiente": false,
+   "creado_por": "usuario",
+   "estado": "activo"
+  },
+  {
+   "clave": "jefe-innovacion",
+   "nombre": "Jefe de Innovación",
+   "area": "inn",
+   "reporta_a": "gerente",
+   "que_hace": "Busca skills, repositorios, plugins e ideas; prueba los conectores. Solo propone: decide el gerente.",
+   "cuando": "Lunes y jueves, o si un conector falla",
+   "modelo": "Sonnet (económico)",
+   "iniciales": "I",
+   "independiente": false,
+   "creado_por": "usuario",
+   "estado": "activo"
+  },
+  {
+   "clave": "innovacion-noticias",
+   "nombre": "Vigía de noticias",
+   "area": "inn",
+   "reporta_a": "jefe-innovacion",
+   "que_hace": "Busca noticias que pueden mover BTC (Fed, ETF, Binance, hackeos) y el calendario de la semana. Solo informa.",
+   "cuando": "Cuando lo convoca el Jefe de Innovación",
+   "modelo": "Sonnet (económico)",
+   "iniciales": "N",
+   "independiente": false,
+   "creado_por": "usuario",
+   "estado": "activo"
+  }
+ ]
+}
