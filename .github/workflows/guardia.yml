@@ -1,0 +1,102 @@
+name: Guardia (vigía sin costo de Claude)
+
+# Hace el trabajo mecánico del vigía de datos sin gastar tokens de Claude:
+#  - cada hora: si KT-002 está parado, lo despierta; si una corrida falló, relanza solo lo fallido;
+#    si hay una corrida viva pero sin registros hace más de 2 h, abre un aviso (issue "guardia").
+#  - una vez al día: guarda velas de BTC (1d y 4h) y el régimen de tendencia con reglas fijas
+#    en data/mercado/, para que el analista no dependa de Binance desde Claude.
+# No toca la medición de KT-002 (ni tools/kt002_prospectivo.py ni kt002.yml). Sin órdenes ni capital.
+
+on:
+  schedule:
+    - cron: '37 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+  issues: write
+
+concurrency:
+  group: guardia
+  cancel-in-progress: false
+
+jobs:
+  guardia:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Revisar KT-002
+        run: |
+          set -u
+          ahora=$(date +%s)
+          vivas=$(gh run list -R "$REPO" -w kt002.yml --json status --jq '[.[]|select(.status=="in_progress" or .status=="queued")]|length')
+          ult=$(gh run list -R "$REPO" -w kt002.yml -L 1 --json databaseId,status,conclusion,createdAt --jq '.[0]')
+          ult_id=$(echo "$ult" | jq -r .databaseId); ult_conc=$(echo "$ult" | jq -r .conclusion)
+          ult_ini=$(date -d "$(echo "$ult" | jq -r .createdAt)" +%s)
+          reg=$(gh api "repos/$REPO/commits?path=data/kt002/predicciones.csv&per_page=1" --jq '.[0].commit.committer.date')
+          edad_reg=$(( (ahora - $(date -d "$reg" +%s)) / 60 ))
+          echo "vivas=$vivas ultima=$ult_id ($ult_conc) min_desde_registro=$edad_reg"
+          accion="ninguna"
+          if [ "$ult_conc" = "failure" ] || [ "$ult_conc" = "timed_out" ]; then
+            gh run rerun "$ult_id" -R "$REPO" --failed && accion="relanzadas tareas fallidas de $ult_id" || accion="no se pudo relanzar $ult_id"
+          elif [ "$vivas" = "0" ] && [ $(( ahora - ult_ini )) -gt $(( 290*60 )) ]; then
+            # Un push hecho con el token de Actions no dispara otros workflows: se usa workflow_dispatch.
+            gh workflow run kt002.yml -R "$REPO" --ref master && accion="despertador (KT-002 relanzado)" || accion="no se pudo relanzar KT-002"
+          fi
+          if [ "$vivas" != "0" ] && [ "$edad_reg" -gt 130 ]; then
+            accion="$accion; falla silenciosa: corrida viva sin registro hace ${edad_reg} min"
+          fi
+          echo "ACCION=$accion" >> "$GITHUB_ENV"
+          echo "### Guardia: $accion" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Avisar si hay algo que reparar
+        if: contains(env.ACCION, 'falla silenciosa') || contains(env.ACCION, 'no se pudo')
+        run: |
+          gh label create guardia -R "$REPO" --color B60205 --description "Aviso automático de la guardia" 2>/dev/null || true
+          abierto=$(gh issue list -R "$REPO" -l guardia -s open --json number --jq '.[0].number // empty')
+          msg="$(date -u +%Y-%m-%dT%H:%MZ): $ACCION"
+          if [ -n "$abierto" ]; then gh issue comment "$abierto" -R "$REPO" -b "$msg"
+          else gh issue create -R "$REPO" -l guardia -t "Guardia: KT-002 necesita reparación" -b "$msg"; fi
+
+      - name: Velas de BTC y régimen de tendencia (una vez al día)
+        if: github.event_name == 'workflow_dispatch' || github.event.schedule == '37 * * * *'
+        run: |
+          [ "$(date -u +%H)" = "00" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ ! -f data/mercado/tendencia.json ] || exit 0
+          mkdir -p data/mercado
+          python3 - <<'PY'
+          import json, urllib.request, datetime as dt
+          def kl(iv, n):
+              u = f"https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval={iv}&limit={n}"
+              rows = json.load(urllib.request.urlopen(u, timeout=30))
+              now = dt.datetime.now(dt.timezone.utc).timestamp() * 1000
+              return [r for r in rows if r[6] < now]  # solo velas cerradas
+          def ma(x, n): return sum(x[-n:]) / n
+          def regimen(c):
+              m50, m200, m50p = ma(c, 50), ma(c, 200), sum(c[-60:-10]) / 50
+              if c[-1] > m200 and m50 > m200 and m50 > m50p: r = "ALCISTA"
+              elif c[-1] < m200 and m50 < m200 and m50 < m50p: r = "BAJISTA"
+              else: r = "LATERAL"
+              return r, dict(cierre=c[-1], ma50=round(m50, 2), ma200=round(m200, 2), ma50_hace_10=round(m50p, 2))
+          d, h4 = kl("1d", 260), kl("4h", 210)
+          cd, c4 = [float(r[4]) for r in d], [float(r[4]) for r in h4]
+          rd, nd = regimen(cd); r4, n4 = regimen(c4)
+          ret = [cd[i] / cd[i - 1] - 1 for i in range(len(cd) - 30, len(cd))]
+          vol = (sum((x - sum(ret) / 30) ** 2 for x in ret) / 29) ** 0.5 * 365 ** 0.5
+          iso = lambda ms: dt.datetime.fromtimestamp(ms / 1000, dt.timezone.utc).isoformat()
+          out = dict(generado_utc=dt.datetime.now(dt.timezone.utc).isoformat(), fuente="Binance BTCUSDT spot (data-api.binance.vision), solo velas cerradas",
+                     reglas="ALCISTA: cierre>MA200 y MA50>MA200 y MA50 sube vs hace 10; BAJISTA: lo opuesto; LATERAL: otro caso (analista-tendencia.md)",
+                     regimen_diario=rd, diario=dict(nd, ultima_vela=iso(d[-1][0]), ret_7d=round(cd[-1] / cd[-8] - 1, 4), ret_30d=round(cd[-1] / cd[-31] - 1, 4), vol_30d_anual=round(vol, 4)),
+                     regimen_4h=r4, h4=dict(n4, ultima_vela=iso(h4[-1][0])))
+          json.dump(out, open("data/mercado/tendencia.json", "w"), indent=1)
+          json.dump([r[:6] for r in d], open("data/mercado/btc_1d.json", "w"))
+          json.dump([r[:6] for r in h4], open("data/mercado/btc_4h.json", "w"))
+          print(rd, r4)
+          PY
+          git config user.name "guardia-bot"; git config user.email "guardia-bot@users.noreply.github.com"
+          git add data/mercado && git diff --cached --quiet || { git commit -q -m "Mercado: velas y régimen de BTC $(date -u +%Y-%m-%d)"; for i in 1 2 3; do git pull -q --rebase && git push -q && break; sleep 10; done; }

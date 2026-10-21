@@ -2,6 +2,11 @@
 
 Una sola tarea programada por día (6:30 a. m. Costa Rica). Todos los jefes le reportan al gerente y el gerente le rinde cuentas al usuario. No hay reunión: el gerente solo convoca a un jefe cuando hace falta.
 
+## Ahorro de tokens (2026-10-21, pedido del usuario)
+- El trabajo mecánico (revisar KT-002, despertarlo, relanzar lo fallido, guardar velas y régimen de BTC) lo hace la **guardia de GitHub** (`.github/workflows/guardia.yml`, cada hora) sin gastar tokens. El vigía de Claude solo actúa si la guardia abre un aviso (issue con etiqueta `guardia`) o si la guardia dejó de correr.
+- Modelo económico (sonnet) en todos los agentes salvo gerente, desconfiado, mejorador, jefe de riesgo e investigador cuantitativo.
+- Leer resúmenes antes que datos completos; un agente por problema; informes cortos.
+
 ## Paso 1: revisión barata (siempre, sin convocar agentes)
 Con comandos directos, sin clonar el repo completo:
 - `gh api "repos/Kronnos2006/xauusd-ema-atr-bot/actions/workflows/kt002.yml/runs?per_page=3"` y `kt003.yml`: estado de las corridas.
