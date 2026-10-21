@@ -79,3 +79,5 @@ Autor: Claude; revision cruzada de Codex pendiente (informativa, sin aprobacion 
 Pendiente para Codex: revision cruzada de KT-003 (resultados y Nota E) y de las propuestas KT-004/KT-005, si el usuario lo pide.
 
 - Visor publico de solo lectura: `docs/visor/index.html` (BTC con predicciones, KT-002, KT-003, organigrama, decisiones, corridas). Abrir en https://raw.githack.com/Kronnos2006/xauusd-ema-atr-bot/master/docs/visor/index.html o, si se activa GitHub Pages (master /docs), en https://kronnos2006.github.io/xauusd-ema-atr-bot/visor/
+
+- **Portafolio (2026-10-21, autor Claude)**: PF-001 (paraguas), HP-001 (13F "mejores ideas") y HP-002 (flujos de ETF de BTC) con Fase 0 en `docs/portafolio/hipotesis/`; inventario en `docs/portafolio/INVENTARIO_DATOS.md`. Sin resultados ni retornos calculados; 0 variantes probadas. Desconfiado: sin problemas ALTOS ni MEDIOS, triage propone descarte (`docs/auditorias/2026-10-21_HP-001_HP-002.md`). Esperan decisión del usuario. Revisor posible: Codex.

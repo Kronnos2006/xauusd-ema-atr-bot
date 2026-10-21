@@ -1,7 +1,7 @@
 # Libro de estrategias
 
 Lleva: `jefe-portafolio`. Creado 2026-10-21. Sin dinero real ni órdenes.
-Estados: idea · en diseño · registrada · corriendo · descartada · aprobada.
+Estados: idea · en diseño · registrada · corriendo · descartada · aprobada. ("en auditoría" = en diseño con auditoría del desconfiado en curso.)
 
 **Hoy no hay ninguna estrategia aprobada.**
 
@@ -9,7 +9,9 @@ Estados: idea · en diseño · registrada · corriendo · descartada · aprobada
 
 | ID | Nombre | Estado | Fase hypothesis-gate | Auditorías | Por qué / próximo paso |
 |---|---|---|---|---|---|
-| PF-001 | Copia en papel de portafolios grandes (13F / ETF / flujos ETF BTC) con retraso real y costos | en diseño | Fase 0 en borrador (`hipotesis/PF-001_Fase0_borrador.md`) | desconfiado: pendiente · jefe-riesgo: pendiente | Aprobada por el usuario 2026-10-21 solo como diseño. Falta: inventario real de `portafolio-replica`, efecto de referencia, y Fase 1 (frase falsable, regla de corte, folds) que da el usuario. No se calculó ningún resultado. |
+| PF-001 | Copia en papel de portafolios grandes (13F / N-PORT / ETF / flujos ETF BTC) con retraso real y costos. **Paraguas**: sus variantes concretas son HP-001 (pata 13F) y HP-002 (pata flujos ETF BTC) | en auditoría — triage propone descarte | Fase 0 en borrador (`hipotesis/PF-001_Fase0_borrador.md`); inventario entregado (`INVENTARIO_DATOS.md`, parcial: SEC/emisores 403 desde el proxy) | desconfiado: pendiente · jefe-riesgo: pendiente | Aprobada por el usuario 2026-10-21 solo como diseño. Ninguna pata alcanza potencia: 13F MDE 0,78 (HP-001), N-PORT 1,10 (~6,5 años, sin verificar primera mano), ETF diario sin historia (solo prospectivo), flujos BTC 1,68 (HP-002). Si el desconfiado confirma HP-001 y HP-002, PF-001 se cierra como "descartada en Fase 0" sin tocar datos. 0 resultados calculados. |
+| HP-001 | "Best ideas" de gestores grandes vía 13F, con FILING_DATE real (pata 13F de PF-001) | en auditoría — triage propone descarte | Fase 0 escrita (`hipotesis/HP-001_Fase0.md`): MDE 0,78 (13 años XML) vs IR de literatura ajustado 0,15–0,40; 54–307 años necesarios | desconfiado: en curso · jefe-riesgo: no aplica mientras no avance | Autor `portafolio-investigador`, revisó `jefe-portafolio` 2026-10-21 (cuentas verificadas, coherente con PF-001). 0 variantes probadas. Fase 1 no se completa si se confirma el descarte. Pendiente si avanzara: conteo de fondos (requiere acceso a sec.gov) y costos de acciones EE. UU. |
+| HP-002 | Flujos de ETF spot BTC como presión de precio (pata flujos BTC de PF-001) | en auditoría — triage propone descarte | Fase 0 escrita (`hipotesis/HP-002_Fase0.md`): MDE 1,68 (696 días, 2,77 años) vs IR ajustado ~0,35; 64–196 años necesarios; costos BTC 0,30 % ida y vuelta | desconfiado: en curso · jefe-riesgo: no aplica mientras no avance | Autor `portafolio-investigador`, revisó `jefe-portafolio` 2026-10-21 (cuentas verificadas). 0 variantes probadas. No toca KT-002/KT-003. Única salida: medición descriptiva prospectiva, que sería un registro nuevo y decisión aparte. |
 
 ## Mediciones descriptivas (no son estrategias; registro aparte, no las toca Portafolio)
 
