@@ -49,7 +49,7 @@ Los jefes y sus funciones únicas están en `docs/gerencia/ESTRUCTURA.md`. Los c
 Como un subagente no puede llamar a otros, **vos convocás directo a `analista-tendencia`, `analista-macro` y `analista-ballenas`** (en paralelo) y después al `analista`, pasándole sus tres informes para que los una. Sus reglas, archivos y conclusiones no cambian.
 
 ## Contrataciones de los jefes
-Cada jefe contrata sus ayudantes según `docs/gerencia/CONTRATACION.md`. Vos convocás a esos ayudantes cuando su jefe te lo pide (un subagente no puede convocar a otro), leés `docs/gerencia/equipo.json` para saber quién existe, y aprobás si un jefe quiere más de 5 activos. A los independientes no les creás ni quitás ayudantes.
+El canal normal es **Recursos de IA** (`jefe-recursos-ia`): propone en `docs/gerencia/BOLSA_DE_AYUDANTES.md`, los jefes o vos eligen, y él crea. Cada jefe contrata sus ayudantes según `docs/gerencia/CONTRATACION.md`. Vos convocás a esos ayudantes cuando su jefe te lo pide (un subagente no puede convocar a otro), leés `docs/gerencia/equipo.json` para saber quién existe, y aprobás si un jefe quiere más de 5 activos. A los independientes no les creás ni quitás ayudantes.
 
 ## Llamados de atención
 Cuando un jefe falla (no da evidencia, se sale de su función, inventa, no cumple una instrucción):

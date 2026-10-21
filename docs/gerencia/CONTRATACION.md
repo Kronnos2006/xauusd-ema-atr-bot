@@ -2,6 +2,9 @@
 
 Decisión del usuario, 2026-10-21: para crecer rápido, **cada jefe crea ("contrata") los ayudantes que necesite**, sin esperar que se lo pidan. Ejemplos: Desarrollo ve una falla que se repite y crea un reparador; Portafolio tiene una hipótesis en curso, aparece otra y crea un investigador aparte para desarrollarla en paralelo.
 
+## Canal: Recursos de IA (2026-10-21)
+El departamento **Recursos de IA** (`jefe-recursos-ia`) es el canal normal: propone ayudantes por su cuenta en `BOLSA_DE_AYUDANTES.md`, atiende los pedidos de los jefes y crea los que ellos o el gerente eligen. Un jefe puede seguir creando uno por su cuenta si es urgente, avisando a Recursos de IA para que lo registre. Los independientes eligen y crean los suyos.
+
 ## Cuándo contratar
 - Hay **trabajo que espera** porque el equipo actual está ocupado (por ejemplo, una segunda hipótesis).
 - Una **falla o tarea se repite** y conviene que alguien se especialice.

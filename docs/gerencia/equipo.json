@@ -44,6 +44,10 @@
   "mer": {
    "nombre": "Mercado",
    "color": "#0b6fa8"
+  },
+  "rrh": {
+   "nombre": "Recursos de IA",
+   "color": "#2f7d6d"
   }
  },
  "miembros": [
@@ -69,6 +73,19 @@
    "cuando": "Viernes, y cuando alguien no entrega",
    "modelo": "Sonnet (económico)",
    "iniciales": "Ds",
+   "independiente": false,
+   "creado_por": "usuario",
+   "estado": "activo"
+  },
+  {
+   "clave": "jefe-recursos-ia",
+   "nombre": "Recursos de IA",
+   "area": "rrh",
+   "reporta_a": "gerente",
+   "que_hace": "Mantiene el catálogo de ayudantes, propone nuevos cuando ve trabajo acumulado o fallas, atiende los pedidos de los jefes y crea los que ellos o el gerente eligen. Solo provee; no dirige.",
+   "cuando": "Jueves, y cuando un jefe pide un ayudante",
+   "modelo": "Sonnet (económico)",
+   "iniciales": "RH",
    "independiente": false,
    "creado_por": "usuario",
    "estado": "activo"

@@ -25,6 +25,7 @@ Con comandos directos, sin clonar el repo completo:
 | Libro de estrategias y simulación en papel con portafolios grandes (Fase 0) | jefe-portafolio | Una vez por semana (miércoles) mientras esté en diseño |
 | Cumplimiento y colaboración de jefes y ayudantes | gerencia-disciplina | Viernes, y cuando alguien no entregó |
 | El vigía encontró una falla | desarrollo-reparador (lo convoca el vigía) | En el momento |
+| Catálogo de ayudantes, pedidos de ayudantes de los jefes | jefe-recursos-ia | Jueves, y cuando un jefe pide un ayudante |
 | Revisión de calidad del código y metas | jefe-desarrollo | Una vez por semana (viernes) |
 | Se tomó una decisión o cambió el estado de algo | jefe-documentacion | Solo ese día, al final |
 Si todo está normal, el gerente no convoca a nadie.

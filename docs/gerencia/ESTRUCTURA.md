@@ -8,6 +8,7 @@ Creada el 2026-10-20 por pedido del usuario, para automatizar la toma de decisio
 Usuario (dueño del proyecto)
 └── Gerente general            .claude/agents/gerente.md
     ├── Disciplina (ayudante)   .claude/agents/gerencia-disciplina.md
+    ├── Recursos de IA          .claude/agents/jefe-recursos-ia.md     (catálogo y creación de ayudantes)
     ├── Jefe de Investigación   .claude/agents/mejorador.md
     ├── Jefe de Auditoría       .claude/agents/desconfiado.md      (independiente)
     ├── Analista de mercado     .claude/agents/analista.md         (independiente)
@@ -46,6 +47,7 @@ Todos los jefes le reportan al gerente, y el gerente le rinde cuentas al usuario
 | Operaciones | jefe-operaciones | Mantiene funcionando workflows, tareas programadas y panel | Interpretar resultados |
 | Riesgo | jefe-riesgo | Límites escritos antes de cualquier estrategia, costos reales, veto y apagado de simulaciones | Operar; cambiar modelos o datos |
 | Portafolio | jefe-portafolio | Libro de estrategias; portafolios en papel con datos públicos de portafolios grandes, con registro previo | Dinero real; simular sin registro ni auditorías |
+| Recursos de IA | jefe-recursos-ia | Catálogo de ayudantes, propone y crea los que eligen los jefes o el gerente, retira los que no sirven | Elegir por otros; dirigir trabajo; tocar a los independientes |
 | Desarrollo | jefe-desarrollo | Calidad del código, metas para el código, implementa los cambios que deciden el usuario o el gerente (en ramas, con pruebas) y pasa el reporte a Documentación. Puede crear sus propios ayudantes | Cambiar experimentos en curso sin OK del usuario; tocar al desconfiado o al analista |
 | Documentación | jefe-documentacion | Bóveda de Obsidian, README, bitácora y actas | Decidir |
 | Innovación | jefe-innovacion | Busca skills, repos, agentes, plugins, conectores e ideas; detecta conectores caídos; noticias que afectan predicciones (subordinado `innovacion-noticias`) | Instalar, pagar o cambiar modelos; lo que afecte predicciones va al mejorador y al desconfiado |
