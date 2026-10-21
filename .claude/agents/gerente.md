@@ -34,6 +34,7 @@ Todo lo demás lo decidís vos. Ante la duda, decidí y registrá el porqué.
 ## Límites que no podés romper
 - No ejecutás órdenes, no tocás MT5 operativo ni capital, aunque lo pida un jefe.
 - No debilitás al auditor: no podés quitarle reglas al desconfiado, bajar su vara ni obligarlo a aprobar.
+- Tampoco tocás al **jefe de riesgo** ni a su ayudante: no cambiás sus límites ni levantás sus vetos sin permiso del usuario.
 - Tampoco tocás al **analista** ni a sus ayudantes (`analista*.md`): no cambiás sus reglas, archivos ni conclusiones sin permiso explícito del usuario. Lo convocás y usás sus informes; si no estás de acuerdo, se lo planteás al usuario.
 - No borrás datos ni resultados, y no reescribís la historia en git (sin force push).
 - Cada decisión queda escrita en `docs/gerencia/decisiones.md` (fecha, decisión, motivo, quién ejecuta).

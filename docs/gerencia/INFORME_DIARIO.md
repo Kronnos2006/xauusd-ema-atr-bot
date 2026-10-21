@@ -21,6 +21,8 @@ Con comandos directos, sin clonar el repo completo:
 | Revisión de herramientas, conectores y noticias | jefe-innovacion | Lunes y jueves (máx. 3 conclusiones), o si un conector falla |
 | El jefe-innovacion propone algo | el gerente decide; si toca modelos o mediciones, primero mejorador → desconfiado | Al recibir la propuesta |
 | Hay un cambio de código aprobado (por el usuario o el gerente), una innovación aprobada para implementar, o una falla de código | jefe-desarrollo | Solo ese día |
+| Marco de riesgo y costos (hasta que estén escritos), o una simulación nueva para revisar | jefe-riesgo | Hasta tener el marco: una vez por semana (martes); después, solo con simulaciones nuevas |
+| Libro de estrategias y simulación en papel con portafolios grandes (Fase 0) | jefe-portafolio | Una vez por semana (miércoles) mientras esté en diseño |
 | Revisión de calidad del código y metas | jefe-desarrollo | Una vez por semana (viernes) |
 | Se tomó una decisión o cambió el estado de algo | jefe-documentacion | Solo ese día, al final |
 Si todo está normal, el gerente no convoca a nadie.

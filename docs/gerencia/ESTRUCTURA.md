@@ -15,6 +15,10 @@ Usuario (dueño del proyecto)
     │   └── Ballenas            .claude/agents/analista-ballenas.md
     ├── Jefe de Datos           .claude/agents/vigia-datos.md
     ├── Jefe de Operaciones     .claude/agents/jefe-operaciones.md
+    ├── Jefe de Riesgo          .claude/agents/jefe-riesgo.md          (independiente)
+    │   └── Costos              .claude/agents/riesgo-costos.md
+    ├── Jefe de Portafolio      .claude/agents/jefe-portafolio.md
+    │   └── Réplica             .claude/agents/portafolio-replica.md
     ├── Jefe de Desarrollo      .claude/agents/jefe-desarrollo.md
     │   ├── Diseñador           .claude/agents/desarrollo-disenador.md
     │   ├── Programador         .claude/agents/desarrollo-programador.md
@@ -36,6 +40,8 @@ Todos los jefes le reportan al gerente, y el gerente le rinde cuentas al usuario
 | Mercado | analista | Analiza BTC, oro, dólar, petróleo, ballenas y noticias; dice si el mercado está alcista, bajista o lateral con reglas fijas | Dar señales de trading; cambiar modelos o mediciones |
 | Datos | vigia-datos | Verifica los datos recogidos (huecos, duplicados, hashes, coherencia) | Editar datos |
 | Operaciones | jefe-operaciones | Mantiene funcionando workflows, tareas programadas y panel | Interpretar resultados |
+| Riesgo | jefe-riesgo | Límites escritos antes de cualquier estrategia, costos reales, veto y apagado de simulaciones | Operar; cambiar modelos o datos |
+| Portafolio | jefe-portafolio | Libro de estrategias; portafolios en papel con datos públicos de portafolios grandes, con registro previo | Dinero real; simular sin registro ni auditorías |
 | Desarrollo | jefe-desarrollo | Calidad del código, metas para el código, implementa los cambios que deciden el usuario o el gerente (en ramas, con pruebas) y pasa el reporte a Documentación. Puede crear sus propios ayudantes | Cambiar experimentos en curso sin OK del usuario; tocar al desconfiado o al analista |
 | Documentación | jefe-documentacion | Bóveda de Obsidian, README, bitácora y actas | Decidir |
 | Innovación | jefe-innovacion | Busca skills, repos, agentes, plugins, conectores e ideas; detecta conectores caídos; noticias que afectan predicciones (subordinado `innovacion-noticias`) | Instalar, pagar o cambiar modelos; lo que afecte predicciones va al mejorador y al desconfiado |
@@ -54,6 +60,8 @@ Todos los jefes le reportan al gerente, y el gerente le rinde cuentas al usuario
 7. un colapso que no se arregló tras 2 intentos distintos.
 
 **Independencia del auditor:** el gerente puede corregir al desconfiado por cómo trabaja (falta de evidencia, salirse de su función), pero no puede bajarle la vara ni hacerlo aprobar.
+
+**Independencia del jefe de riesgo (2026-10-21):** igual que el desconfiado y el analista; sus límites y vetos solo los cambia el usuario.
 
 **Independencia del analista (decisión del usuario, 2026-10-21):** misma autoridad que el desconfiado. El gerente lo convoca y lee sus informes, pero no puede cambiar sus reglas, sus ayudantes, sus conclusiones ni sus archivos sin permiso explícito del usuario. Un desacuerdo con el analista se le plantea al usuario.
 
