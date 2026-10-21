@@ -19,7 +19,9 @@ Usuario (dueño del proyecto)
     ├── Jefe de Riesgo          .claude/agents/jefe-riesgo.md          (independiente)
     │   └── Costos              .claude/agents/riesgo-costos.md
     ├── Jefe de Portafolio      .claude/agents/jefe-portafolio.md
-    │   └── Réplica             .claude/agents/portafolio-replica.md
+    │   ├── Réplica             .claude/agents/portafolio-replica.md
+    │   ├── Investigador        .claude/agents/portafolio-investigador.md
+    │   └── Estratega           .claude/agents/portafolio-estratega.md
     ├── Jefe de Desarrollo      .claude/agents/jefe-desarrollo.md
     │   ├── Diseñador           .claude/agents/desarrollo-disenador.md
     │   ├── Programador         .claude/agents/desarrollo-programador.md
