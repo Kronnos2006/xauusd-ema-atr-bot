@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Visor del proyecto Kronos/TimesFM</title>
+<meta name="description" content="Visor público de solo lectura: BTC en vivo con las predicciones de Kronos y TimesFM, acierto, diagnóstico histórico, organigrama y decisiones.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Mismo sistema visual que la Oficina del dueño (artefacto de Claude), en versión pública de solo lectura. */
+:root { --bg:#eef0f3; --panel:#fff; --ink:#18202b; --muted:#5d6877; --line:#d6dbe2; --accent:#1f4fd1; --accent-soft:#e3eafc; --ok:#1d7a46; --bad:#b4232c; --warn:#a86400; --ok-soft:#e2f3e9; --bad-soft:#fbe3e4; --warn-soft:#fbefd9;
+  --kr:#7a4fd1; --tf:#0f8a80; --kt:#c2412d; --btc:#18202b;
+  --f-d:"Newsreader",Georgia,serif; --f-b:"IBM Plex Sans",system-ui,sans-serif; --f-m:"IBM Plex Mono",ui-monospace,monospace; color-scheme: light }
+@media (prefers-color-scheme: dark) { :root { --bg:#11161d; --panel:#19202a; --ink:#e6eaf0; --muted:#98a3b3; --line:#2b3542; --accent:#7b9cff; --accent-soft:#1f2a44; --ok:#5fcf8f; --bad:#ff7a80; --warn:#f0b04f; --ok-soft:#173326; --bad-soft:#3d1c1f; --warn-soft:#3a2c14; --kr:#a78bfa; --tf:#3cc7b9; --kt:#ff8a73; --btc:#e6eaf0; color-scheme: dark } }
+* { box-sizing: border-box }
+body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.5 var(--f-b) }
+.wrap { max-width:1180px; margin:0 auto; padding-block:20px 48px; padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px)); display:grid; gap:20px }
+h1 { font-family:var(--f-d); font-size:clamp(28px,5vw,40px); line-height:1.1; margin:0 }
+h2 { font-family:var(--f-d); font-size:21px; margin:0 }
+.sub,.hint,.note { color:var(--muted) } .hint,.note { font-size:13px; margin:2px 0 0 }
+.card { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:18px; display:grid; gap:14px; min-width:0 }
+.grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:20px; align-items:start }
+@media (max-width:860px){ .grid { grid-template-columns:minmax(0,1fr) } }
+.row { display:flex; flex-wrap:wrap; gap:8px; align-items:center } .between { justify-content:space-between }
+.pill { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; padding:2px 9px; border-radius:99px; background:var(--accent-soft); color:var(--accent); white-space:nowrap }
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.mute{background:var(--bg);color:var(--muted)}
+.kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr)); gap:10px }
+.kpi { border:1px solid var(--line); border-radius:8px; padding:10px 12px; border-top:3px solid var(--c,var(--line)) }
+.kpi .l{font-size:12px;color:var(--muted)} .kpi .v{font-family:var(--f-d);font-size:26px;font-weight:600;font-variant-numeric:tabular-nums} .kpi .s{font-size:12px;color:var(--muted);font-family:var(--f-m)}
+.chart svg { width:100%; height:auto; display:block } .chart text { fill:var(--muted); font:11px var(--f-m) }
+.leg { display:flex; flex-wrap:wrap; gap:6px 14px; font-size:12px; color:var(--muted) }
+.leg span::before { content:""; display:inline-block; width:10px; height:10px; border-radius:50%; background:var(--c); margin-right:5px; vertical-align:-1px }
+.btn { border:1px solid var(--line); background:var(--panel); color:var(--ink); border-radius:8px; padding:5px 12px; font:inherit; font-size:13px; cursor:pointer }
+.btn[aria-pressed=true] { border-color:var(--accent); color:var(--accent) }
+.tbl { overflow-x:auto } table { border-collapse:collapse; width:100%; font-size:13px; font-variant-numeric:tabular-nums }
+th,td { text-align:left; padding:7px 8px; border-bottom:1px solid var(--line); vertical-align:top } th { color:var(--muted); font-weight:500; white-space:nowrap }
+.hit{color:var(--ok);font-weight:600} .miss{color:var(--bad);font-weight:600}
+.bars { display:grid; gap:8px } .bar { display:grid; grid-template-columns:110px minmax(0,1fr) 64px; gap:8px; align-items:center; font-size:13px }
+.bar .t { height:14px; background:var(--bg); border-radius:4px; position:relative; overflow:hidden } .bar .f { position:absolute; inset:0 auto 0 0; background:var(--c); border-radius:4px }
+.bar .half { position:absolute; left:50%; top:-2px; bottom:-2px; border-left:2px dashed var(--muted) }
+/* organigrama */
+.org-scroll{overflow-x:auto} .org,.org ul{list-style:none;margin:0;padding:0} .org{display:flex;justify-content:center;min-width:max-content}
+.org li{position:relative;display:flex;flex-direction:column;align-items:center;padding:22px 6px 0} .org>li{padding-top:0}
+.org ul{display:flex;justify-content:center;position:relative;padding-top:22px} .org ul::before{content:"";position:absolute;top:0;left:50%;height:22px;border-left:2px solid var(--line)}
+.org ul>li::before,.org ul>li::after{content:"";position:absolute;top:0;height:22px;width:50%;border-top:2px solid var(--line)} .org ul>li::before{right:50%} .org ul>li::after{left:50%;border-left:2px solid var(--line);margin-left:-2px}
+.org ul>li:first-child::before,.org ul>li:last-child::after{border-top:0} .org ul>li:only-child::before{display:none} .org ul>li:last-child::after{border-left:0} .org ul>li:last-child::before{border-right:2px solid var(--line)}
+.org ul>li:only-child::after{border-top:0}
+.node{display:grid;gap:2px;justify-items:center;text-align:center;width:132px;padding:10px 8px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);text-decoration:none}
+.node:hover{border-color:var(--accent)} .node .av{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-d);font-weight:600;color:#fff;background:var(--c)}
+.node .nm{font-weight:600;font-size:13px;line-height:1.25} .node .ar{font-size:11px;color:var(--muted)} .node.you{width:auto;padding:4px 12px;border-style:dashed;background:var(--bg)}
+@media (max-width:700px){ .org-scroll{overflow:visible} .org,.org ul{display:block;min-width:0} .org li{display:block;padding:8px 0 0 22px} .org>li{padding-left:0}
+  .org ul{padding-top:0;margin-left:14px;border-left:2px solid var(--line)} .org ul::before{display:none} .org ul>li::before{content:"";position:absolute;left:0;top:30px;width:18px;border:0;border-top:2px solid var(--line)} .org ul>li::after{display:none}
+  .node{width:100%;grid-template-columns:auto minmax(0,1fr);justify-items:start;text-align:left;align-items:center;column-gap:10px} .node .av{grid-row:1/span 2} .node.you{display:inline-grid;width:auto} }
+a { color:var(--accent) }
+.links { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr)); gap:8px } .links a { border:1px solid var(--line); border-radius:8px; padding:10px 12px; text-decoration:none; color:var(--ink) } .links a span { display:block; font-size:12px; color:var(--muted); overflow-wrap:anywhere }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="row between">
+    <div><h1>Visor del proyecto</h1><p class="sub" style="margin:4px 0 0">Kronos y TimesFM sobre BTC · solo lectura · datos en vivo del repositorio <a href="https://github.com/Kronnos2006/xauusd-ema-atr-bot">Kronnos2006/xauusd-ema-atr-bot</a></p></div>
+    <span class="pill mute" id="salud">Cargando…</span>
+  </header>
+
+  <section class="card">
+    <div class="row between"><div><h2>BTC en vivo y predicciones</h2><p class="hint">Cada punto es una predicción a 4 h: desde el precio de la vela base, la línea va hasta el precio que esperaba cada modelo. ✓/✗ es el resultado real.</p></div>
+      <div class="row"><button class="btn" id="r24" aria-pressed="false">24 h</button><button class="btn" id="r7" aria-pressed="true">7 días</button></div></div>
+    <div class="leg"><span style="--c:var(--btc)">BTC (Binance, 1 h)</span><span style="--c:var(--kr)">Kronos</span><span style="--c:var(--tf)">TimesFM</span><span style="--c:var(--kt)">KT-001 (50/50)</span></div>
+    <div class="chart" id="chart"><p class="note">Cargando velas…</p></div>
+    <p class="note" id="precio"></p>
+  </section>
+
+  <section class="card">
+    <h2>KT-002 · Acierto en vivo</h2>
+    <p class="hint">Dirección a 4 h. «Sin solape» = una predicción cada 4 h (las que cuentan). Con pocos resultados no se puede concluir nada.</p>
+    <div class="kpis" id="k2"></div>
+  </section>
+
+  <div class="grid">
+    <section class="card">
+      <h2>KT-003 · Diagnóstico histórico</h2>
+      <p class="hint">Una predicción por día, 2017–2026. Lo que cuenta es «post corte» (desde jul-2024, menos expuesto al entrenamiento de los modelos). La línea punteada es 50 %.</p>
+      <div class="bars" id="k3"></div>
+      <p class="note" id="k3n"></p>
+    </section>
+    <section class="card">
+      <h2>Últimas predicciones</h2>
+      <div class="tbl"><table><thead><tr><th>Hora CR</th><th>Precio</th><th>Kronos</th><th>TimesFM</th><th>Real</th><th>K·T·50</th></tr></thead><tbody id="preds"><tr><td colspan="6" class="note">Cargando…</td></tr></tbody></table></div>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2>Organigrama</h2>
+    <p class="hint">Quién le reporta a quién. Cada tarjeta abre las instrucciones de ese agente en GitHub.</p>
+    <div class="org-scroll"><ul class="org" id="org"></ul></div>
+  </section>
+
+  <div class="grid">
+    <section class="card">
+      <h2>Decisiones del gerente</h2>
+      <div class="tbl"><table><thead><tr><th>Fecha</th><th>Decisión</th></tr></thead><tbody id="dec"><tr><td colspan="2" class="note">Cargando…</td></tr></tbody></table></div>
+    </section>
+    <section class="card">
+      <h2>Corridas en GitHub</h2>
+      <div class="tbl"><table><thead><tr><th>Proceso</th><th>Inicio CR</th><th>Estado</th></tr></thead><tbody id="runs"><tr><td colspan="3" class="note">Cargando…</td></tr></tbody></table></div>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2>Documentos</h2>
+    <div class="links" id="links"></div>
+  </section>
+  <p class="note">Medición descriptiva: no evalúa ganancias, costos ni órdenes. Sin dinero real. Las decisiones del dueño y las órdenes se manejan en la Oficina del dueño (privada, en Claude).</p>
+</div>
+<script>
+const REPO='Kronnos2006/xauusd-ema-atr-bot', RAW='https://raw.githubusercontent.com/'+REPO+'/master/', GH='https://github.com/'+REPO+'/blob/master/';
+const $=id=>document.getElementById(id), el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const fmt=new Intl.DateTimeFormat('es-CR',{timeZone:'America/Costa_Rica',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',hour12:true});
+const when=s=>{try{return fmt.format(new Date(s))}catch{return s}};
+const pct=(x,d=1)=>x==null||x===''||isNaN(x)?'—':(100*x).toFixed(d)+' %';
+const sgn=x=>x===''||x==null?'…':(x>0?'+':'')+(100*x).toFixed(2)+' %';
+const get=async(u,json)=>{const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw new Error(r.status);return json?r.json():r.text()};
+
+/* Organigrama */
+const TEAM=[['gerente','Gerente general','Dirección','#1f4fd1',null,'G'],['mejorador','Mejorador','Investigación','#7a4fd1','gerente','M'],['desconfiado','Desconfiado','Auditoría','#c2412d','gerente','D'],['vigia-datos','Vigía de datos','Datos','#0f8a80','gerente','V'],['jefe-operaciones','Jefe de Operaciones','Operaciones','#b07400','gerente','O'],['jefe-documentacion','Jefe de Documentación','Documentación','#4b6a2e','gerente','Do'],['jefe-innovacion','Jefe de Innovación','Innovación','#c23d8a','gerente','I'],['innovacion-noticias','Vigía de noticias','Innovación','#c23d8a','jefe-innovacion','N']];
+function branch(k){const t=TEAM.find(x=>x[0]===k),li=el('li'),a=el('a','node');a.href=GH+'.claude/agents/'+k+'.md';a.target='_blank';a.style.setProperty('--c',t[3]);a.append(el('span','av',t[5]),el('span','nm',t[1]),el('span','ar',t[2]));li.append(a);const ch=TEAM.filter(x=>x[4]===k);if(ch.length){const ul=el('ul');ch.forEach(c=>ul.append(branch(c[0])));li.append(ul)}return li}
+(()=>{const you=el('li'),y=el('div','node you');y.append(el('span','nm','Dueño'),el('span','ar','el gerente le rinde cuentas'));you.append(y);const ul=el('ul');ul.append(branch('gerente'));you.append(ul);$('org').append(you)})();
+[['Guía de uso','XAUUSD EMA/ATR/Guía de uso.md'],['Estructura de gerencia','docs/gerencia/ESTRUCTURA.md'],['Registro KT-002','docs/KT-002_registro_prospectivo.md'],['Registro KT-003','docs/KT-003_registro_historico.md'],['Propuesta KT-004','docs/propuestas/KT-004_propuesta.md'],['Propuesta KT-005','docs/propuestas/KT-005_propuesta.md'],['Contexto compartido Claude/Codex','docs/coordination/CONTEXTO_COMPARTIDO.md'],['Reglas del proyecto','CLAUDE.md']].forEach(([n,p])=>{const a=el('a');a.href=GH+encodeURI(p);a.target='_blank';a.append(n,el('span',null,p));$('links').append(a)});
+
+/* Datos */
+let preds=[],kl=[],range='7';
+function parseCSV(t){const L=t.trim().split('\n'),h=L[0].split(',');return L.slice(1).map(l=>Object.fromEntries(l.split(',').map((v,i)=>[h[i],v])))}
+async function cargar(){
+  try{preds=parseCSV(await get(RAW+'data/kt002/predicciones.csv'))}catch{preds=[]}
+  tabla(); dibujar();
+  get(RAW+'data/kt002/resumen.json',1).then(k2).catch(()=>$('k2').replaceChildren(el('p','note','No se pudo leer el resumen.')));
+  get(RAW+'data/kt003/resumen.json',1).then(k3).catch(()=>$('k3').replaceChildren(el('p','note','No se pudo leer KT-003.')));
+  get(RAW+'docs/gerencia/decisiones.md').then(dec).catch(()=>{});
+  get('https://api.github.com/repos/'+REPO+'/actions/runs?per_page=8',1).then(runs).catch(()=>$('runs').replaceChildren(fila(['No se pudo leer GitHub (límite de consultas).','',''])));
+}
+async function velas(){
+  const iv=range==='24'?'15m':'1h', lim=range==='24'?96:168;
+  try{const a=await get('https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval='+iv+'&limit='+lim,1);kl=a.map(r=>({t:r[0],c:+r[4]}));
+    const last=kl[kl.length-1].c,first=kl[0].c;$('precio').textContent='Último precio: $'+last.toLocaleString('en-US',{maximumFractionDigits:0})+' · '+(last>=first?'+':'')+((last/first-1)*100).toFixed(2)+' % en '+(range==='24'?'24 h':'7 días')+' · '+when(Date.now());}
+  catch{kl=[];$('chart').replaceChildren(el('p','note','No se pudieron leer las velas de Binance.'))}
+  dibujar();
+}
+function dibujar(){
+  if(!kl.length)return; const W=900,H=320,ml=58,mr=12,mt=12,mb=26;
+  const t0=kl[0].t,t1=kl[kl.length-1].t+4*36e5;
+  const vis=preds.filter(p=>{const t=+new Date(p.base_open_utc)+36e5;return t>=t0&&t<=t1});
+  const vals=kl.map(k=>k.c).concat(vis.flatMap(p=>[+p.kronos_close4,+p.timesfm_close4,+p.kt001_close4].filter(Boolean)));
+  let lo=Math.min(...vals),hi=Math.max(...vals);const pad=(hi-lo)*.06||50;lo-=pad;hi+=pad;
+  const X=t=>ml+(t-t0)/(t1-t0)*(W-ml-mr),Y=v=>mt+(hi-v)/(hi-lo)*(H-mt-mb);
+  const ns='http://www.w3.org/2000/svg',s=document.createElementNS(ns,'svg');s.setAttribute('viewBox','0 0 '+W+' '+H);
+  const mk=(t,a)=>{const e=document.createElementNS(ns,t);for(const k in a)e.setAttribute(k,a[k]);s.append(e);return e};
+  for(let i=0;i<=4;i++){const v=lo+(hi-lo)*i/4;mk('line',{x1:ml,x2:W-mr,y1:Y(v),y2:Y(v),stroke:'var(--line)'});mk('text',{x:ml-6,y:Y(v)+4,'text-anchor':'end'}).textContent='$'+Math.round(v).toLocaleString('en-US')}
+  for(let i=0;i<=4;i++){const t=t0+(t1-t0)*i/4;mk('text',{x:X(t),y:H-6,'text-anchor':i===0?'start':i===4?'end':'middle'}).textContent=new Intl.DateTimeFormat('es-CR',{timeZone:'America/Costa_Rica',day:'numeric',month:'short',hour:'2-digit',hour12:true}).format(t)}
+  mk('path',{d:kl.map((k,i)=>(i?'L':'M')+X(k.t+(range==='24'?9e5:36e5)).toFixed(1)+' '+Y(k.c).toFixed(1)).join(''),fill:'none',stroke:'var(--btc)','stroke-width':2});
+  vis.forEach(p=>{const tb=+new Date(p.base_open_utc)+36e5,te=tb+4*36e5,b=+p.base_close;
+    [['kronos','--kr'],['timesfm','--tf'],['kt001','--kt']].forEach(([m,c])=>{const v=+p[m+'_close4'];if(v)mk('line',{x1:X(tb),y1:Y(b),x2:X(te),y2:Y(v),stroke:'var('+c+')','stroke-width':1.6,'stroke-dasharray':'4 3',opacity:.9})});
+    mk('circle',{cx:X(tb),cy:Y(b),r:3.5,fill:'var(--ink)'});
+    const done=p.actual_ret!=='';const tx=mk('text',{x:X(te)+3,y:Y(done?+p.actual_close4:b)-6,'text-anchor':'start'});
+    tx.textContent=done?[p.kronos_hit,p.timesfm_hit,p.kt001_hit].map(h=>h==='1'?'✓':'✗').join(''):'○';tx.setAttribute('style','fill:var(--ink);font-size:11px');
+    const tt=document.createElementNS(ns,'title');tt.textContent=when(tb)+' · base $'+b.toFixed(0)+' · Kronos '+sgn(+p.kronos_ret)+' · TimesFM '+sgn(+p.timesfm_ret)+(done?' · real '+sgn(+p.actual_ret):' · pendiente');s.lastChild.append(tt)});
+  $('chart').replaceChildren(s);
+}
+function tabla(){
+  if(!preds.length){$('preds').replaceChildren(fila(['Todavía no hay predicciones.','','','','','']));return}
+  $('preds').replaceChildren(...preds.slice().reverse().slice(0,24).map(p=>{const tr=el('tr');
+    [when(+new Date(p.base_open_utc)+36e5),'$'+(+p.base_close).toLocaleString('en-US',{maximumFractionDigits:0}),sgn(p.kronos_ret===''?'':+p.kronos_ret),sgn(p.timesfm_ret===''?'':+p.timesfm_ret),sgn(p.actual_ret===''?'':+p.actual_ret)].forEach(v=>tr.append(el('td',null,v)));
+    const td=el('td');[p.kronos_hit,p.timesfm_hit,p.kt001_hit].forEach(h=>td.append(el('span',h==='1'?'hit':h==='0'?'miss':'',h==='1'?'✓ ':h==='0'?'✗ ':'… ')));tr.append(td);return tr}));
+}
+function k2(j){
+  const ss=j.sin_solape||{},all=j.todos_solapados||{};
+  const box=(l,c,o,o2)=>{const d=el('div','kpi');d.style.setProperty('--c',c);d.append(el('div','l',l),el('div','v',o&&o.n?pct(o.tasa,0):'—'),el('div','s',(o&&o.n?o.aciertos+' de '+o.n+' sin solape':'sin resultados sin solape')+(o2&&o2.n?' · todas: '+pct(o2.tasa,0)+' (n='+o2.n+')':'')));return d};
+  $('k2').replaceChildren(box('Kronos','var(--kr)',ss.kronos,all.kronos),box('TimesFM','var(--tf)',ss.timesfm,all.timesfm),box('KT-001 (50/50)','var(--kt)',ss.kt001,all.kt001),box('«Siempre sube»','var(--muted)',ss.siempre_sube,all.siempre_sube));
+  const s=$('salud'),age=(Date.now()-new Date(j.updated_utc))/36e5;
+  s.textContent=(age<3?'KT-002 al día':'KT-002 sin actualizar hace '+Math.round(age)+' h')+' · '+j.pronosticos+' predicciones';s.className='pill '+(age<3?'ok':'warn');
+}
+function k3(j){
+  const p=j.por_periodo.post_corte;
+  const rows=[['Kronos','var(--kr)',p.kronos],['TimesFM','var(--tf)',p.timesfm],['KT-001','var(--kt)',p.kt001],['«Siempre sube»','var(--muted)',p.siempre_sube],['Persistencia','var(--line)',p.persistencia]];
+  $('k3').replaceChildren(...rows.map(([n,c,o])=>{const b=el('div','bar'),t=el('div','t'),f=el('div','f');f.style.setProperty('--c',c);f.style.width=(100*o.tasa)+'%';t.append(f,el('div','half'));b.append(el('span',null,n),t,el('strong',null,pct(o.tasa)));b.title='IC95 '+pct(o.ic95[0])+'–'+pct(o.ic95[1]);return b}));
+  $('k3n').textContent='Post corte n='+p.n+'. Kronos contra «siempre sube»: p Holm '+p.kronos.mcnemar_vs_sube.p_holm+' (no significativo con α 0,05). Acertar la dirección no implica ganar tras costos.';
+}
+function fila(c){const tr=el('tr');c.forEach(x=>tr.append(el('td',null,x)));return tr}
+function dec(md){const r=md.split('\n').filter(l=>/^\|\s*\d{4}-\d{2}-\d{2}/.test(l)).map(l=>l.split('|').slice(1,-1).map(s=>s.trim()));$('dec').replaceChildren(...(r.length?r.slice(-10).reverse().map(x=>fila([x[0],x[1]])):[fila(['','Sin decisiones registradas.'])]))}
+function runs(j){$('runs').replaceChildren(...(j.workflow_runs||[]).map(r=>{const tr=el('tr'),a=el('a',null,r.name);a.href=r.html_url;a.target='_blank';const td=el('td');td.append(a);tr.append(td,el('td',null,when(r.run_started_at||r.created_at)));
+  const st=r.status!=='completed'?['Corriendo','']:r.conclusion==='success'?['Bien','ok']:r.conclusion==='cancelled'?['Cancelada','mute']:['Falló','bad'];const t2=el('td');t2.append(el('span','pill '+st[1],st[0]));tr.append(t2);return tr}))}
+$('r24').onclick=()=>{range='24';$('r24').setAttribute('aria-pressed','true');$('r7').setAttribute('aria-pressed','false');velas()};
+$('r7').onclick=()=>{range='7';$('r7').setAttribute('aria-pressed','true');$('r24').setAttribute('aria-pressed','false');velas()};
+cargar().then(velas);
+setInterval(()=>{cargar();velas()},10*60e3);
+</script>
+</body>
+</html>
