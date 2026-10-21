@@ -27,7 +27,7 @@ Con comandos directos, sin clonar el repo completo:
 | El jefe-innovacion propone algo | el gerente decide; si toca modelos o mediciones, primero mejorador → desconfiado | Al recibir la propuesta |
 | Hay un cambio de código aprobado (por el usuario o el gerente), una innovación aprobada para implementar, o una falla de código | jefe-desarrollo | Solo ese día |
 | Marco de riesgo y costos (hasta que estén escritos), o una simulación nueva para revisar | jefe-riesgo | Hasta tener el marco: una vez por semana (martes); después, solo con simulaciones nuevas |
-| Libro de estrategias y simulación en papel con portafolios grandes (Fase 0) | jefe-portafolio | Una vez por semana (miércoles) mientras esté en diseño |
+| Búsqueda continua de hipótesis (pedido del usuario 2026-10-21): portafolio-investigador propone hasta 2 hipótesis nuevas con Fase 0 y el desconfiado las audita | jefe-portafolio | Lunes y miércoles |
 | Cumplimiento y colaboración de jefes y ayudantes | gerencia-disciplina | Viernes, y cuando alguien no entregó |
 | El vigía encontró una falla | desarrollo-reparador (lo convoca el vigía) | En el momento |
 | Catálogo de ayudantes, pedidos de ayudantes de los jefes | jefe-recursos-ia | Jueves, y cuando un jefe pide un ayudante |
