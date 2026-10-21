@@ -12,7 +12,7 @@ on:
     paths:
       - tools/kt002_prospectivo.py
       - .github/workflows/kt002.yml
-      - data/kt002/despertar.txt   # el despertador externo lo toca cada 5 h
+      - data/kt002/despertar.txt   # el despertador externo lo toca cada 4 h
 
 permissions:
   contents: write
@@ -59,21 +59,60 @@ jobs:
       - name: Pronosticar cada hora durante ~4 h 45 min
         run: |
           # El cron horario de GitHub no se ejecuta en este repo: el job se queda vivo y corre
-          # el mismo script en cada hora (minuto 7 UTC). Un despertador externo lo relanza.
+          # el mismo script en cada hora (minuto 7 UTC). Un despertador externo lo relanza cada 4 h:
+          # como el job dura ~4 h 45 min, el relanzamiento queda en cola (grupo kt002) y arranca
+          # apenas termina el anterior. Nunca corren dos a la vez.
           git config user.name "kt002-bot"
           git config user.email "kt002-bot@users.noreply.github.com"
+          set -o pipefail
+          mkdir -p "$RUNNER_TEMP/kt002-logs"
+          fallas=0
           fin=$(( $(date +%s) + 285*60 ))
           while :; do
-            python tools/kt002_prospectivo.py || echo "Fallo esta hora; se cuenta como hora omitida"
+            log="$RUNNER_TEMP/kt002-logs/vuelta-$(date -u +%Y%m%dT%H%MZ).log"
+            # Traer lo que dejo el job anterior (el checkout es del commit que disparo este job)
+            # para que el script vea los pronosticos ya hechos y no repita la misma base.
+            if git pull -q --rebase origin "${GITHUB_REF_NAME}" >>"$log" 2>&1; then
+              if ! python tools/kt002_prospectivo.py 2>&1 | tee -a "$log"; then
+                echo "::error::Fallo la vuelta $(date -u +%H:%MZ); se cuenta como hora omitida (log: $(basename "$log"))"
+                fallas=$((fallas + 1))
+              fi
+            else
+              git rebase --abort 2>/dev/null || true
+              echo "::error::No se pudo actualizar desde origin; vuelta omitida para no duplicar filas"
+              fallas=$((fallas + 1))
+            fi
             git add data/kt002
             if ! git diff --cached --quiet; then
               git commit -q -m "KT-002: registro $(date -u +%Y-%m-%dT%H:%MZ)"
+              subido=0
               for i in 1 2 3; do
-                git pull -q --rebase origin "${GITHUB_REF_NAME}" && git push -q origin HEAD:"${GITHUB_REF_NAME}" && break
+                if git pull -q --rebase origin "${GITHUB_REF_NAME}" >>"$log" 2>&1 \
+                   && git push -q origin HEAD:"${GITHUB_REF_NAME}" >>"$log" 2>&1; then
+                  subido=1; break
+                fi
+                git rebase --abort 2>/dev/null || true
                 sleep 10
               done
+              if [ "$subido" -ne 1 ]; then
+                echo "::error::No se pudo subir el registro de esta vuelta (log: $(basename "$log"))"
+                fallas=$((fallas + 1))
+              fi
             fi
             prox=$(( ( $(date +%s) / 3600 + 1 ) * 3600 + 7*60 ))
             [ "$prox" -gt "$fin" ] && break
             sleep $(( prox - $(date +%s) ))
           done
+          if [ "$fallas" -gt 0 ]; then
+            echo "::error::$fallas vuelta(s) con falla en esta corrida"
+            exit 1
+          fi
+
+      - name: Guardar logs de cada vuelta
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kt002-logs-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/kt002-logs/
+          retention-days: 30
+          if-no-files-found: warn

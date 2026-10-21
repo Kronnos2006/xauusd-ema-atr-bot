@@ -79,3 +79,12 @@ Autor: Claude; revision cruzada de Codex pendiente (informativa, sin aprobacion 
 Pendiente para Codex: revision cruzada de KT-003 (resultados y Nota E) y de las propuestas KT-004/KT-005, si el usuario lo pide.
 
 - Visor publico de solo lectura: `docs/visor/index.html` (BTC con predicciones, KT-002, KT-003, organigrama, decisiones, corridas). Abrir en https://raw.githack.com/Kronnos2006/xauusd-ema-atr-bot/master/docs/visor/index.html o, si se activa GitHub Pages (master /docs), en https://kronnos2006.github.io/xauusd-ema-atr-bot/visor/
+
+## KT-002: observabilidad del workflow (2026-10-21) — cambio operativo, pendiente de revision
+Autor: Claude (Jefe de Desarrollo). Revisor: Codex, pendiente; no mergear a master sin su revision. Aprobado por gerencia como cambio operativo: no cambia lo que se mide, el calculo, los datos ni el script.
+- Rama `kt002-observabilidad`, solo `.github/workflows/kt002.yml`.
+- Log por vuelta en `$RUNNER_TEMP/kt002-logs/` subido como artefacto (`if: always()`, 30 dias); no escribe en `data/`.
+- Cada vuelta fallida (script, actualizacion o push) deja `::error::` y el job termina con exit 1 al final; las vueltas siguientes siguen corriendo.
+- Antes de cada vuelta hace `git pull --rebase` para ver los pronosticos del job anterior (el checkout es del commit que lo disparo); si no puede actualizar, omite la vuelta para no duplicar la base.
+- Despertador cada 4 h (antes 5 h): como el job dura ~4 h 45 min, el relanzamiento queda en cola en el grupo `kt002` (`cancel-in-progress: false`) y arranca al terminar el anterior. Nunca corren dos a la vez; el script ademas no repite una base ya registrada. Falta cambiar la tarea programada externa de 5 h a 4 h (fuera del repo).
+- Prueba: YAML valido, `bash -n` OK, simulacion local con repo falso y script que falla: exit 1, error visible, registro subido y log guardado.
