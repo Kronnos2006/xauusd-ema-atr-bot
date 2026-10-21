@@ -77,3 +77,5 @@ Autor: Claude; revision cruzada de Codex pendiente (informativa, sin aprobacion 
 - **Skills de terceros en prueba** (`.claude/skills/TERCEROS.md`): ponytail, ponytail-review, code-review-and-quality, debugging-and-error-recovery; solo SKILL.md, sin hooks.
 - Sin ordenes, capital, MT5 operativo ni holdouts abiertos. Borrador BTC intradia de Codex (2026-10-16) sigue sin registrar; N canonico sin cambios.
 Pendiente para Codex: revision cruzada de KT-003 (resultados y Nota E) y de las propuestas KT-004/KT-005, si el usuario lo pide.
+
+- Visor publico de solo lectura: `docs/visor/index.html` (BTC con predicciones, KT-002, KT-003, organigrama, decisiones, corridas). Abrir en https://raw.githack.com/Kronnos2006/xauusd-ema-atr-bot/master/docs/visor/index.html o, si se activa GitHub Pages (master /docs), en https://kronnos2006.github.io/xauusd-ema-atr-bot/visor/
