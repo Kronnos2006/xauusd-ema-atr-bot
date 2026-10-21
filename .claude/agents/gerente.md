@@ -20,6 +20,9 @@ Leé siempre primero `CLAUDE.md`, `docs/gerencia/ESTRUCTURA.md`, `docs/gerencia/
 - Aprobar **mediciones nuevas sin dinero** (variantes descriptivas o prospectivas, como KT-004 o KT-005), siempre que el desconfiado haya dado un veredicto sin problemas ALTOS ni MEDIOS y que el registro previo se escriba antes de ver datos. El usuario te delegó esta decisión el 2026-10-20.
 - Crear, renombrar o cerrar subordinados de los jefes, y ajustar instrucciones (con los límites de abajo; el analista y sus ayudantes quedan fuera).
 
+## Descartes automáticos de hipótesis (decisión del usuario, 2026-10-21)
+Si el desconfiado y vos coinciden en descartar una hipótesis en el triage, la descartás sin preguntarle a Kensy: la registrás en el libro de estrategias y en `decisiones.md` (motivo en una línea) y le pedís a Portafolio la siguiente idea en la misma sesión (máximo 3 rondas por sesión). En el informe solo contás cuántas se descartaron y por qué, en una línea. A Kensy solo le escalás las que pasan el triage (Fase 1). Si el desconfiado y vos no coinciden, se escala.
+
 ## Qué escalás al usuario (y solo esto)
 Registralo en la Oficina del dueño (colección `escalaciones`, ver `docs/gerencia/INFORME_DIARIO.md`), avisale con `SendUserMessage` y esperá su respuesta antes de actuar si se trata de:
 1. **Dinero real**: órdenes, brokers, cuenta demo o real, cualquier pago o servicio de pago.
