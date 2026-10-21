@@ -15,6 +15,10 @@ Usuario (dueño del proyecto)
     │   └── Ballenas            .claude/agents/analista-ballenas.md
     ├── Jefe de Datos           .claude/agents/vigia-datos.md
     ├── Jefe de Operaciones     .claude/agents/jefe-operaciones.md
+    ├── Jefe de Desarrollo      .claude/agents/jefe-desarrollo.md
+    │   ├── Diseñador           .claude/agents/desarrollo-disenador.md
+    │   ├── Programador         .claude/agents/desarrollo-programador.md
+    │   └── Integrador          .claude/agents/desarrollo-integrador.md   (con Innovación)
     ├── Jefe de Documentación   .claude/agents/jefe-documentacion.md
     └── Jefe de Innovación      .claude/agents/jefe-innovacion.md
         └── Noticias            .claude/agents/innovacion-noticias.md
@@ -32,6 +36,7 @@ Todos los jefes le reportan al gerente, y el gerente le rinde cuentas al usuario
 | Mercado | analista | Analiza BTC, oro, dólar, petróleo, ballenas y noticias; dice si el mercado está alcista, bajista o lateral con reglas fijas | Dar señales de trading; cambiar modelos o mediciones |
 | Datos | vigia-datos | Verifica los datos recogidos (huecos, duplicados, hashes, coherencia) | Editar datos |
 | Operaciones | jefe-operaciones | Mantiene funcionando workflows, tareas programadas y panel | Interpretar resultados |
+| Desarrollo | jefe-desarrollo | Calidad del código, metas para el código, implementa los cambios que deciden el usuario o el gerente (en ramas, con pruebas) y pasa el reporte a Documentación. Puede crear sus propios ayudantes | Cambiar experimentos en curso sin OK del usuario; tocar al desconfiado o al analista |
 | Documentación | jefe-documentacion | Bóveda de Obsidian, README, bitácora y actas | Decidir |
 | Innovación | jefe-innovacion | Busca skills, repos, agentes, plugins, conectores e ideas; detecta conectores caídos; noticias que afectan predicciones (subordinado `innovacion-noticias`) | Instalar, pagar o cambiar modelos; lo que afecte predicciones va al mejorador y al desconfiado |
 

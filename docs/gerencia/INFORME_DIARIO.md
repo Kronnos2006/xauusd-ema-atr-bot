@@ -20,6 +20,8 @@ Con comandos directos, sin clonar el repo completo:
 | Análisis de mercado (régimen de BTC, macro, ballenas) | analista | Todos los días; su resumen de 3 líneas va en el informe tal cual, sin editarlo |
 | Revisión de herramientas, conectores y noticias | jefe-innovacion | Lunes y jueves (máx. 3 conclusiones), o si un conector falla |
 | El jefe-innovacion propone algo | el gerente decide; si toca modelos o mediciones, primero mejorador → desconfiado | Al recibir la propuesta |
+| Hay un cambio de código aprobado (por el usuario o el gerente), una innovación aprobada para implementar, o una falla de código | jefe-desarrollo | Solo ese día |
+| Revisión de calidad del código y metas | jefe-desarrollo | Una vez por semana (viernes) |
 | Se tomó una decisión o cambió el estado de algo | jefe-documentacion | Solo ese día, al final |
 Si todo está normal, el gerente no convoca a nadie.
 
