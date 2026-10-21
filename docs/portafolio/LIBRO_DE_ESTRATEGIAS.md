@@ -3,13 +3,14 @@
 Lleva: `jefe-portafolio`. Creado 2026-10-21. Sin dinero real ni órdenes.
 Estados: idea · en diseño · registrada · corriendo · descartada · aprobada. ("en auditoría" = en diseño con auditoría del desconfiado en curso.)
 
-**Hoy no hay ninguna estrategia aprobada.** Última revisión semanal: 2026-10-21 (miércoles).
+**Hoy no hay ninguna estrategia aprobada.** Última revisión semanal: 2026-10-21 (miércoles; nuevas HP-004/005 caen en Fase 0).
 
 ## Activas
 
 | ID | Nombre | Estado | Fase hypothesis-gate | Auditorías | Por qué / próximo paso |
 |---|---|---|---|---|---|
 | HP-003 | "En la apertura de los mercados es más fácil predecir": estrategia alcista y estrategia bajista (encargo de Kensy, 2026-10-21) | idea → Fase 0 escrita, triage propone descarte | Fase 0 (`hipotesis/HP-003_Fase0.md`): bajista 7,8–44,7 años necesarios; alcista 2,6 (efecto sin ajustar) a 14,9 años (ajustado); BTC: costo 0,30 % vs ganancia bruta ~0,01–0,03 %; sin datos intradía de índices en el repo | desconfiado: pendiente · jefe-riesgo: no aplica mientras no avance | Autor `jefe-portafolio`. 0 variantes, 0 resultados. Fase 1 NO iniciada: espera las definiciones de Kensy (lista en sección 7 del documento) o su aceptación del descarte. |
+| HP-004 / HP-005 | Momentum BTC largo/fuera (20/100, 50/200) · BTC con escala por volatilidad | descartada en Fase 0 (propuesta, 2026-10-21) | Fase 0 (`hipotesis/HP-004_HP-005_Fase0.md`) | desconfiado: pendiente (no convocable) · jefe-riesgo: no aplica | HP-004: MDE Sharpe 1,67 vs 0,13–0,21 esperado; 18–34 cambios en 9,2 años. HP-005: MDE 0,29 vs 0,04–0,08; 19–300 años necesarios. 0 resultados. |
 | ES-001 | BTC spot largo en régimen ALCISTA (filtro del analista, diario) | **borrador** | Previa a Fase 1; depende de HP-003 (propone descarte) | desconfiado: no enviado · jefe-riesgo: no enviado | `estrategias/ES-001.md`. Autor `portafolio-estratega`, 2026-10-21. No simulable sin registro previo, Fase 1 de Kensy, desconfiado y OK de riesgo. 0 resultados. Riesgo: piso de 30 ops/fold probablemente inalcanzable |
 | ES-002 | BTC spot en régimen BAJISTA: fuera / reducir exposición (superposición sobre ES-001) | **borrador** | Previa a Fase 1; depende de HP-003 (pata bajista, 7,8–44,7 años) | desconfiado: no enviado · jefe-riesgo: no enviado | `estrategias/ES-002.md`. Sin cortos (requerirían decisión del usuario y cambio del marco). 0 resultados |
 
