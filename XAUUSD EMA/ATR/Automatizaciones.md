@@ -29,7 +29,7 @@ Todo lo que corre sin la PC encendida.
 ## Tareas programadas de Claude
 | Nombre | Horario | Qué hace |
 |---|---|---|
-| Gerente: informe diario | 6:52 a. m. Costa Rica | Revisa todo, convoca jefes solo si hace falta, relanza lo parado y te rinde cuentas en ≤ 5 líneas |
+| Gerente: informe diario | 6:30 a. m. Costa Rica | Revisa todo, convoca jefes solo si hace falta, relanza lo parado y te rinde cuentas en ≤ 5 líneas |
 | Vigía de datos | Cada 2 horas | Mira si KT-002 registra; solo relanza lo parado o fallido y deja constancia al gerente en la Oficina. Sin mensaje si todo está bien |
 
 KT-002 se mantiene solo: cuando termina una corrida larga, arranca la siguiente del cron horario de GitHub.

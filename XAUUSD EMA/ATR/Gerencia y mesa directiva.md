@@ -37,7 +37,7 @@ Solo si hay dinero real, holdouts sellados, datos que habría que borrar o reesc
 El desconfiado puede ser corregido por cómo trabaja, pero nadie le baja la vara ni lo hace aprobar.
 
 ## Informe diario (modo ahorro)
-No hay reunión. Todos los jefes le reportan al gerente y él le rinde cuentas al usuario. Cada día a las 6:52 a. m. (Costa Rica) el gerente revisa todo con comandos directos, convoca a un jefe **solo si hace falta** y manda un mensaje de **máximo 5 líneas**. Detalles en `docs/gerencia/INFORME_DIARIO.md`.
+No hay reunión. Todos los jefes le reportan al gerente y él le rinde cuentas al usuario. Cada día a las 6:30 a. m. (Costa Rica) el gerente revisa todo con comandos directos, convoca a un jefe **solo si hace falta** y manda un mensaje de **máximo 5 líneas**. Detalles en `docs/gerencia/INFORME_DIARIO.md`.
 
 Para ahorrar uso del plan: una sola tarea programada por día, el desconfiado revisa los datos de rutina solo una vez por semana (además de cada propuesta o resultado nuevo), y los jefes operativos usan un modelo más económico.
 
