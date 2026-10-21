@@ -1,74 +1,78 @@
-# Investigacion cuantitativa: archivo historico y Kronos × TimesFM
+# Investigación cuantitativa con validación estadística honesta
 
-## Trabajo actual · 2026-10-19
+Proyecto personal de investigación sistemática de trading algorítmico (XAUUSD, EURUSD, ETF y BTC) en Python y MQL5. Su objetivo es responder con rigor si existe una ventaja operable **antes** de arriesgar capital. Para eso, cada hipótesis se pre-registra, se valida fuera de muestra y se audita de forma independiente.
 
-El panel local Kronos × TimesFM y el control prospectivo BTCUSDT se encuentran en la rama `codex/kronos-timesfm-panel-control`. [Indice completo y copias de evidencia](docs/INDICE_KRONOS_TIMESFM.md) · [Iniciar el panel](panel/README.md) · [Opciones gratuitas](docs/ALOJAMIENTO_GRATUITO.md).
+> **El proyecto no ejecuta órdenes ni usa capital real.** Todo es investigación y medición.
 
-KT-001 verifica inferencia sintetica. KT-002 registra pronosticos antes de sus cierres y los contrasta descriptivamente con el mercado. Ninguno demuestra rentabilidad; sin ordenes ni capital real. Revision independiente pendiente. Los marcos de trading historicos siguen cerrados. Las secciones siguientes se conservan como documentacion historica; no describen el estado mas reciente ni certifican loggers activos.
+## Estado (2026-10-20)
+
+| Línea | Estado | Resultado |
+|---|---|---|
+| XAUUSD técnico y macro (EMA/ATR, DFII10, DXY, 2s10s, ratio oro/plata, risk-off) | Cerrado | Sin edge que sobreviva walk-forward, fold dominante y DSR |
+| EURUSD (carry, momentum, risk-off, event study NFP/CPI) | Cerrado | Sin significancia fuera de muestra |
+| TF_Basket_H1 (trend following, 10 instrumentos) | Cerrado en Fase 0 | Sin efecto suficiente antes de costos |
+| **KT-003** — Kronos/TimesFM en BTC 2017–2026 (diagnóstico) | Terminado y auditado | Kronos 56,8 % vs 50,9 % «siempre sube» tras el corte; **no significativo con Holm** (p 0,086). Movimientos previstos menores que los costos |
+| **KT-002** — Kronos/TimesFM en BTC, prospectivo | **Activo** (cada hora) | Acumulando datos; útil en semanas |
+
+Para hipótesis y estrategias sigue la **pausa activa**: no se abre ninguna sin una decisión explícita del usuario.
+
+## Cómo se trabaja
+
+- **Registro previo:** la hipótesis, la métrica, la regla de aprobado y los datos se escriben y commitean antes de ver resultados. Los cambios posteriores se documentan como enmiendas.
+- **Fuera de muestra:** walk-forward anclado (TRAIN elige, TEST confirma una vez), holdouts sellados con SHA-256 y mediciones prospectivas.
+- **Pruebas múltiples:** Deflated Sharpe Ratio y corrección de Holm, contando todas las variantes realmente probadas.
+- **Potencia:** triage de frecuencia y MDE antes de escribir un backtest (`hypothesis-gate`).
+- **Auditoría independiente:** un agente auditor (`desconfiado`) revisa cada diseño y cada resultado, y pide ejecuciones concretas hasta despejar las dudas.
+
+## Documentación
+
+Toda la documentación vive en la bóveda de Obsidian **`XAUUSD EMA/ATR/`**. Para abrirla, en Obsidian elegí *Open folder as vault* y seleccioná esa carpeta. Desde ahí:
+
+- **`00 Inicio.md`** — punto de entrada.
+- **`Guía de uso.md`** — cómo ver resultados, lanzar o detener procesos, proponer mejoras y leer un resultado sin engañarse.
+- **`Mapa del repositorio.md`** — qué es cada archivo y carpeta.
+- **`Bitácora de decisiones.md`** y **`Cronología.md`** — historia completa.
+
+Los registros previos de las mediciones con modelos fundacionales están en `docs/` (`KT-002_registro_prospectivo.md`, `KT-003_registro_historico.md`).
+
+## Estructura
+
+```
+XAUUSD EMA/ATR/       Bóveda de Obsidian (documentación)
+tools/                Kronos/TimesFM: pruebas técnicas, KT-002, KT-003
+data/kt002, kt003/    Datos y resultados de las mediciones
+docs/                 Registros previos, propuestas, evidencia, coordinación
+.github/workflows/    GitHub Actions (KT-002 horario, KT-003 a demanda)
+.claude/agents/       Agentes: desconfiado, mejorador, vigia-datos, ...
+.claude/skills/       Disciplina: hypothesis-gate, data-integrity, ...
+research/, tests/     Motor de experimentos reproducibles y sus tests
+investigacion/        Fases 2–4 (momentum, Donchian, carry FX)
+estrategias/, MQL5/   Expert Advisors y bot modular
+*.py, *.ps1 (raíz)    Backtests, triage, hipótesis, loggers y operación de la PC
+```
+
+Los scripts de la raíz no se mueven porque las tareas programadas de Windows y los imports dependen de sus rutas.
+
+## Uso rápido
+
+```bash
+# Entorno local (backtests XAUUSD/EURUSD con MT5)
+pip install -r requirements.txt
+python -m unittest discover tests
+python -m research.engine --config research/config.example.yaml
+```
+
+- **KT-002:** corre solo en GitHub Actions; resultados en `data/kt002/resumen.md` y en el panel en vivo.
+- **KT-003:** se lanza editando `data/kt003/lanzar.txt` (`prueba` o `completo`) en `master`.
+- **Mejoras a los modelos:** el mejorador propone, el desconfiado audita y el usuario decide. Ver la guía de uso.
+
+## Coordinación entre asistentes
+
+Claude y Codex trabajan sobre este repo con reglas compartidas (`CLAUDE.md`, `AGENTS.md`). El registro de quién hizo qué, con autor y revisor, está en `docs/coordination/CONTEXTO_COMPARTIDO.md`.
 
 ---
+*Proyecto de investigación y validación únicamente. Nada de este repositorio es una recomendación de inversión.*
 
-XAUUSD EMA/ATR — Proyecto de validación de estrategia (archivo historico)
+## Panel local y preparacion Oracle
 
-Proyecto de investigación sistemática sobre si existe un edge operable en XAUUSD (oro) vía MetaTrader 5, con foco en la validación estadística honesta antes de considerar cualquier capital real. No ejecuta órdenes. No hay capital real involucrado en ningún punto de este proyecto.
-
-Estado actual
-
-Sin hipótesis activa. La familia de estrategias basada en el cruce EMA9/21 fue evaluada en cinco variantes distintas y retirada tras fallar de forma convergente bajo un estándar de validación honesto (walk-forward multi-fold, separación TRAIN/TEST estricta, chequeo de que el resultado no dependa de un solo fold). D1 fue descartado como candidato siguiente por tener un techo de información estructuralmente bajo para este activo. El logger de señales en vivo (solo lectura, sin ejecución) sigue corriendo para acumular datos frescos mientras se define la próxima hipótesis.
-
-Metodología
-
-Todo resultado en este repo sigue esta disciplina, sin excepciones:
-
-Train/test separado antes de tocar parámetros. Ningún parámetro se elige mirando el mismo dato que después lo confirma.
-Walk-forward multi-fold, no un solo split — un split único puede mostrar el mejor caso posible por pura suerte de calendario.
-Chequeo de fold dominante. Antes de confiar en un resultado agregado, se recalcula excluyendo el mejor fold. Si el signo cambia, el resultado no es real.
-Diagnóstico entrada-vs-salida cuando una estrategia falla, para no rediseñar a ciegas: se fija la entrada, se barre el R:R solo en TRAIN, y se confirma en TEST.
-Reglas de corte definidas antes de correr el experimento — cuántos intentos se prueban antes de descartar un enfoque, decidido de antemano, no ajustado sobre la marcha.
-Commit antes de que exista dato fresco — el código de logging en vivo se congela en git antes del primer dato real, como garantía de que la lógica no se ajustó mirando resultados.
-
-Esta metodología está empaquetada como skill reutilizable (trading-strategy-validation) para aplicarse a cualquier hipótesis futura, en este proyecto o en otros.
-
-Resultados — hipótesis probadas
-Hipótesis	Folds rentables	Resultado agregado	Veredicto
-M15 baseline (cruce EMA9/21 + EMA50)	5/9	Sin el fold dominante: t≈0.6, no significativo (294 trades)	Sin edge confirmado
-Filtro multi-timeframe (tendencia H1)	5/9	-3.79R neto (220 trades)	Descartada
-Filtro de estructura (HH/HL)	3/9	Sin el fold dominante: -2.35R	Descartada
-Trigger ruptura + retest	5/9	Agregado negativo, sin fold que lo sostenga	Descartada
-H1 retuneado (SL/R:R propios)	4/9	-23.22R neto (341 trades); t-stat decayendo con más datos	Descartada
-D1 (~11 años)	—	Solo 77 trades totales	Descartado por tamaño de muestra estructural
-
-Hallazgo más informativo: el diagnóstico entrada-vs-salida mostró que el baseline M15 sí tenía un edge de entrada genuino (89% de persistencia en TEST), pero el resultado seguía concentrado en un solo fold. Intentar arreglarlo con partial close + trailing stop (probado con el mismo rigor TRAIN-elige/TEST-confirma) empeoró todo — de +14.08R en 7/9 folds pasó a -8.05R en 3/9 folds. Esto disparó la regla de corte pre-registrada y cerró el capítulo. Lectura de conjunto: el edge probablemente montaba la tendencia macro puntual del activo (XAUUSD +210% en 2016-2026), no algo que el cruce EMA predijera por sí mismo.
-
-Detalle completo, incluyendo bugs metodológicos corregidos durante el proceso, en Informe_Proyecto_EMA_XAUUSD.md.
-
-Estructura del repo
-Scripts de backtest — walk-forward, split train/test, barrido de R:R y trailing, descuento de spread, diagnóstico entrada-vs-salida.
-log_senales_demo.py — logger de señales en vivo, solo lectura. Reutiliza (import directo) la lógica de generación de señales del backtest validado, para evitar drift entre lo testeado y lo que corre en vivo. Loop cada 30s sobre M15, escribe a CSV: precio teórico, bid/ask real de MT5, spread real, y desvío en R entre ambos.
-Informe_Proyecto_EMA_XAUUSD.md — informe de estado completo (rentabilidad/validación + infraestructura).
-
-Los .log y .csv generados en vivo están en .gitignore — son datos, no código, y quedan fuera del historial de git.
-
-Motor de investigación (research/) — Fase 1
-
-Capa nueva sobre "Backtest ema v4.py" (que sigue siendo la fuente de verdad de indicadores/señales/backtest/walk-forward, sin mover ni renombrar) para dejar cada corrida como un experimento determinista y reproducible:
-
-- research/data_cache.py — snapshot local de datos OHLC (CSV, keyed por symbol+timeframe+rango) para no depender de una descarga en vivo distinta cada corrida.
-- research/config.py — carga y valida un config.yaml de experimento.
-- research/metrics.py — Sharpe, Sortino, Profit Factor, CAGR, Max Drawdown, Expectancy, n_trades, R por trade (todo neto de spread).
-- research/export.py — arma experiments/experiment_<fecha>_<NNN>/ con config.yaml, metrics.json, trades.csv, equity.csv, log.txt, summary.md y metadata.json (commit de git, hash de los datos usados, parámetros exactos).
-- research/engine.py — orquestador: python -m research.engine --config research/config.example.yaml.
-
-Correr los tests (determinismo + no-leakage del walk-forward): python -m unittest discover tests.
-
-resultados_backtest.csv y resultados_neto_spread.csv (raíz del repo) son artefacto histórico pre-Fase-1 (de backtest_ema.py/_v2/_v3, ya inertes) — no confundir con el trades.csv que queda dentro de cada carpeta experiment_*/, que es el output vigente.
-
-Infraestructura
-
-El logger corre como tarea programada de Windows (Task Scheduler). Tuvo un incidente de downtime (~4hs) por el modo de sesión configurado originalmente; la resolución (migración a logon tipo S4U, validado con MT5 conectando en sesión no interactiva) está documentada en el informe de estado.
-
-Próximos pasos
-
-El proyecto no avanza a una hipótesis nueva sin que esta tenga: (1) una frase concreta y falsable de qué señal se prueba, y (2) su propia regla de corte definida antes de tocar código — el mismo estándar que ya se aplicó en todo lo anterior.
-
-Sin ejecución de órdenes automática. Sin capital real. Proyecto de investigación y validación únicamente.
+[Indice del panel y evidencia](docs/INDICE_KRONOS_TIMESFM.md) · [Iniciar el panel local](panel/README.md) · [Alojamiento gratuito](docs/ALOJAMIENTO_GRATUITO.md). La preparacion de Oracle se conserva en esta rama; cuenta, VM y validacion remota siguen pendientes.

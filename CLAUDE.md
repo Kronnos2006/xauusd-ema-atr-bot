@@ -33,3 +33,21 @@ Cualquier hipótesis nueva pasa primero por `.claude/skills/hypothesis-gate/SKIL
 Leer CLAUDE.md y docs/coordination/CONTEXTO_COMPARTIDO.md antes de trabajar. Mantener objetivo, decisiones, cambios, evidencia y pendientes en ese registro. No asumir acceso al historial privado del otro agente.
 Un agente propone o implementa; el otro revisa. Identificar autor y revisor, documentar desacuerdos y no aprobar sin evidencia. Evitar editar simultaneamente los mismos archivos.
 Usar exclusivamente Claude y Codex. La coordinacion entre asistentes no autoriza nuevos backtests, hipotesis, cambios en loggers/tareas programadas ni operaciones MT5.
+
+## Tareas descriptivas activas autorizadas por el usuario (2026-10-20)
+
+La PAUSA ACTIVA sigue vigente para hipótesis y estrategias. El usuario autorizó explícitamente dos mediciones **descriptivas** de Kronos/TimesFM en BTCUSDT, sin órdenes, costos ni capital y sin cambiar el N canónico:
+
+- **KT-002**: workflow horario en GitHub Actions (`.github/workflows/kt002.yml`) que escribe en `data/kt002/`. Registro: `docs/KT-002_registro_prospectivo.md`.
+- **KT-003**: diagnóstico histórico 2017–2026 (`.github/workflows/kt003.yml`), solo se lanza a mano. Registro: `docs/KT-003_registro_historico.md`.
+
+Agentes del proyecto:
+- `desconfiado` (`.claude/agents/desconfiado.md`): auditor; auditoría diaria programada que notifica al usuario.
+- `mejorador` (`.claude/agents/mejorador.md`): aprende de los resultados y propone variantes nuevas pre-registradas. Flujo: mejorador propone → desconfiado audita → el usuario da el OK explícito → recién ahí se registra y ejecuta.
+- `vigia-datos` (`.claude/agents/vigia-datos.md`): revisa los datos recogidos y el estado de los workflows; solo lee, y solo relanza lo parado o fallido.
+
+## Gerencia y delegación de decisiones (2026-10-20)
+
+El usuario creó un gerente general (`.claude/agents/gerente.md`) y una mesa directiva (`docs/gerencia/ESTRUCTURA.md`), y **le delegó explícitamente** aprobar mediciones nuevas sin dinero (variantes descriptivas o prospectivas) que el desconfiado haya aprobado sin problemas ALTOS ni MEDIOS, con registro previo antes de ver datos. Esto amplía la regla de "decisión explícita del usuario" solo para ese caso.
+
+Siguen siendo decisión exclusiva del usuario: dinero real u órdenes; abrir o usar holdouts sellados; borrar o reescribir datos, resultados o registros; cambiar un experimento en curso; cambiar estas reglas; un veto del desconfiado en disputa; y un colapso que no se arregló tras 2 intentos. El desconfiado conserva su independencia: nadie puede bajarle la vara ni obligarlo a aprobar.

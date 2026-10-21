@@ -1,0 +1,79 @@
+name: KT-002 acierto prospectivo BTC
+
+# Registro previo: docs/KT-002_registro_prospectivo.md
+# Descriptivo: sin ordenes, sin MT5, sin capital. Para detener: desactivar este workflow.
+
+on:
+  schedule:
+    - cron: '7 * * * *'   # cada hora, minuto 7 UTC (la vela 1h ya cerro)
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - tools/kt002_prospectivo.py
+      - .github/workflows/kt002.yml
+      - data/kt002/despertar.txt   # el despertador externo lo toca cada 5 h
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kt002
+  cancel-in-progress: false
+
+jobs:
+  pronosticar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    env:
+      HF_HOME: ${{ github.workspace }}/.hf-cache
+      KRONOS_SRC: ${{ github.workspace }}/tools/kronos-upstream
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: docs/evidencia/KT-001/requirements-resolved.txt
+
+      - name: Codigo Kronos fijado
+        run: |
+          mkdir -p "$KRONOS_SRC" && cd "$KRONOS_SRC"
+          git init -q
+          git remote add origin https://github.com/shiyu-coder/Kronos
+          git fetch -q --depth 1 origin 67b630e67f6a18c9e9be918d9b4337c960db1e9a
+          git checkout -q FETCH_HEAD
+
+      - name: Dependencias (versiones de KT-001)
+        run: |
+          pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/cpu
+          pip install -r docs/evidencia/KT-001/requirements-resolved.txt
+
+      - name: Cache de pesos
+        uses: actions/cache@v4
+        with:
+          path: .hf-cache
+          key: hf-kt002-901c26c1-0e011738-1d952420
+
+      - name: Pronosticar cada hora durante ~4 h 45 min
+        run: |
+          # El cron horario de GitHub no se ejecuta en este repo: el job se queda vivo y corre
+          # el mismo script en cada hora (minuto 7 UTC). Un despertador externo lo relanza.
+          git config user.name "kt002-bot"
+          git config user.email "kt002-bot@users.noreply.github.com"
+          fin=$(( $(date +%s) + 285*60 ))
+          while :; do
+            python tools/kt002_prospectivo.py || echo "Fallo esta hora; se cuenta como hora omitida"
+            git add data/kt002
+            if ! git diff --cached --quiet; then
+              git commit -q -m "KT-002: registro $(date -u +%Y-%m-%dT%H:%MZ)"
+              for i in 1 2 3; do
+                git pull -q --rebase origin "${GITHUB_REF_NAME}" && git push -q origin HEAD:"${GITHUB_REF_NAME}" && break
+                sleep 10
+              done
+            fi
+            prox=$(( ( $(date +%s) / 3600 + 1 ) * 3600 + 7*60 ))
+            [ "$prox" -gt "$fin" ] && break
+            sleep $(( prox - $(date +%s) ))
+          done

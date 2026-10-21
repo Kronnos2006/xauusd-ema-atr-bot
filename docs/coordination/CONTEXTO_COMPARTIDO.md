@@ -1,5 +1,10 @@
 # Contexto compartido
 
+## Sincronizacion Git (2026-10-20, Costa Rica)
+
+Autor Codex; revisor Claude pendiente. Solicitud del usuario: actualizar desde Git. Integrado origin/master ddae0bf en codex/oracle-always-free conservando el trabajo del panel y Oracle. Conflictos documentales resueltos conservando ambas cronologias y el README remoto actualizado. Sin ejecucion de modelos, backtests, workflows, tareas ni operaciones MT5. Revision funcional de los cambios remotos pendiente.
+
+
 ## Preparacion Oracle Always Free (2026-10-19, Costa Rica)
 
 Regresion sintetica final Windows con dos hilos: PASS_TECHNICAL_ONLY en36.04s, 400 velas/4futuros,20trayectorias, seed42 y revisiones intactas. Evidencia docs/evidencia/oracle-preparacion/smoke-windows-2hilos.json. Nueve tests y sintaxis Bash/JS correctos; no se ejecuta instalador apt/systemd ni prueba ARM local. Docker daemon Linux no disponible; no se inicio ni modifico Docker/WSL. Preparacion completa para revisar, pendiente cuenta/VM y validacion remota; no migracion completada.
@@ -33,6 +38,21 @@ Cuatro tests aislados pasan: separacion direccion/precio, velas abiertas/huecos,
 Usuario pide ver que hace la integracion mediante panel visual/dinamico y elige explicitamente «Panel local con ejecucion real». Autor Codex; revisor Claude pendiente. Implementacion en panel/: servidor Python estandar loopback 127.0.0.1:8765, frontend HTML/CSS/JS sin dependencias externas, graficos SVG con capas/zoom/inspeccion, guia animada, tabla/fomula y exportacion JSON. Boton Ejecutar modelos lanza el script KT-001 con la misma configuracion sintetica offline; progreso real de seis etapas, sin porcentajes inventados. Una ejecucion por vez, timeout cuatro minutos, directorios de salida separados en panel/runtime ignorado por Git. Sin mercado, backtest, MT5, ordenes o tareas programadas.
 
 tools/kronos_timesfm_smoke.py incorpora opciones --output-dir y --progress y fecha UTC de ejecucion; defaults/configuracion/revisiones intactos. Prueba end-to-end desde el boton del navegador: PASS_TECHNICAL_ONLY en 30.22 s; 400 filas de entrada y cuatro de pronostico, seis eventos reales y fuente ejecucion_local. Comprobados promedio numerico 50/50, rechazo de origen externo y cuatro rutas fuera de lista autorizada con HTTP 404. Archivos HTML/JS/CSS/API HTTP 200, Python compila, JS syntax check correcto. UI verificada visualmente en navegador local; revision funcional independiente aun pendiente. Acceso HTTP de pruebas desde shell requirio escalacion de red del entorno; no se debilitaron controles ni se expuso servidor fuera de loopback.
+## KT-003 prueba superada y Enmienda D (2026-10-20, Costa Rica)
+
+Autor Claude; auditor desconfiado (revision de la prueba: DUDAS ABIERTAS con 2 bloqueos MEDIOS, sin ALTOS); revisor Codex pendiente. Prueba (run 39447082961): 2928 bases, 404 saltadas, 842 post corte, 43 velas desalineadas excluidas, predict = predict_batch, ~65 min por shard. Bloqueos resueltos en Enmienda D: el modo completo usa el CSV sellado con hash verificado; corte descriptivo desde 2025-10-03 declarado antes de resultados. Se declara que el autor vio tasas de referencias triviales en un ensayo de la union con pronosticos aleatorios.
+
+## KT-003 Enmienda B y corrida de prueba (2026-10-20, Costa Rica)
+
+Autor Claude; auditor desconfiado (2a revision del diseno: DUDAS ABIERTAS, sin look-ahead); revisor Codex pendiente. El usuario acepta explicitamente que KT-003 exponga toda la historia BTC 2017-2026. Enmienda B escrita antes de cualquier dato: Holm sobre 3 modelos en post corte como resultado primario, MDE 4,8 pts, hashes y CSV versionado, persistencia como referencia, guardas de rama y de conjunto de bases. Se lanza primero el modo prueba (datos, equivalencia predict/predict_batch, tiempos, fechas de checkpoints), sin pronosticar el diagnostico; el modo completo espera la revision del auditor.
+
+## Auditoria desconfiado y arranque KT-002 (2026-10-20 14:30 UTC)
+
+Autor Claude; auditor agente desconfiado; revisor Codex pendiente. La primera auditoria dio DUDAS ABIERTAS: el workflow KT-002 no tuvo ninguna corrida (cron sin ejecutar). Aplicado lo pedido: disparo por push del propio script, McNemar exacto vs siempre sube, conteo de horas omitidas, chequeo de reproducibilidad en la primera corrida, Enmienda A del registro KT-002 (antes del primer dato), cambios.json corregido, CLAUDE.md con las tareas descriptivas autorizadas. KT-003 sigue en la rama kt003-diseno; su workflow se lanza solo a mano. Auditoria diaria programada 6:33 Costa Rica con notificacion al usuario.
+
+## KT-002 prospectivo en GitHub Actions (2026-10-20, Costa Rica)
+
+Autor Claude; revisor Codex pendiente. El usuario pide medir el acierto con datos reales sin depender de su PC. Elige prueba prospectiva y evaluar Kronos, TimesFM y KT-001 por separado. Registro previo, escrito antes de recolectar datos, en docs/KT-002_registro_prospectivo.md. Workflow .github/workflows/kt002.yml, cada hora, BTCUSDT 1h, 400 velas cerradas, horizonte 4h, misma configuracion y revisiones que KT-001. Script tools/kt002_prospectivo.py. Salida data/kt002/ (predicciones.csv, resumen.md/json). La logica de puntuacion se probo localmente con velas sinteticas y modelos simulados; la inferencia real solo corre en Actions porque este entorno no llega a Hugging Face ni a Binance. Es descriptivo: sin ordenes, MT5, costos ni rentabilidad, sin cambio de N canonico y sin abrir reservas. Las velas posteriores al 2026-10-20 quedan expuestas para cualquier holdout BTC futuro.
 
 ## Publicacion solicitada (2026-10-19, Costa Rica)
 

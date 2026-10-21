@@ -1,5 +1,8 @@
 # Proyecto: Backtest EMA/ATR XAUUSD
 
+> [!tip] Nuevo punto de entrada (2026-10-20)
+> La bóveda se reorganizó: empezá por [[00 Inicio]], que enlaza la [[Guía de uso]], el [[Mapa del repositorio]] y la investigación actual con Kronos/TimesFM ([[KT-002 — Acierto prospectivo BTC|KT-002]], [[KT-003 — Diagnóstico histórico BTC|KT-003]]). Esta nota queda como presentación original del proyecto XAUUSD.
+
 Backtest de estrategias técnicas (y ahora macro) sobre XAUUSD vía MetaTrader5, en Python, con una disciplina de walk-forward anclado (TRAIN elige parámetros, TEST confirma una sola vez) construida para evitar data snooping. Proyecto solo, sin control de versiones hasta el 2026-07-21.
 
 ## PAUSA ACTIVA (desde 2026-08-05, reafirmada 2026-08-06)

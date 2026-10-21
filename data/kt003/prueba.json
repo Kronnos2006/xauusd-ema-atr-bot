@@ -1,0 +1,17 @@
+{
+  "bases": 2928,
+  "bases_saltadas": 404,
+  "velas_desalineadas_excluidas": 43,
+  "post_corte": 842,
+  "primera": "2017-09-03T00:00:00+00:00",
+  "ultima": "2026-10-20T00:00:00+00:00",
+  "shards_cubren_todo": true,
+  "predict_vs_batch_max_dif": 0.0,
+  "predict_vs_batch_identico": true,
+  "segundos_por_lote": [
+    170.1,
+    170.9
+  ],
+  "lotes_por_shard": 23,
+  "minutos_estimados_por_shard": 65.5
+}
