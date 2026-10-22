@@ -29,7 +29,8 @@
 - [x] Preparar comprobación CI de solo lectura en PR #3, pendiente de ejecución en GitHub.
 - [x] CI de los controles read-only verificado: inspector PR #3 (8/8), resumen PR #5 (4/4). El veredicto independiente del PR #3 sigue pendiente.
 - [x] Resumen compacto del gerente, PR #5 fusionado en `master` (commit `a8c6f1c`) con ejecución programada a las 13:20 UTC. Primera corrida programada aún no verificada.
-- [ ] Inspector PR #3 pendiente de dictamen independiente; revisión diaria de integridad propuesta, todavía no fusionada.
+- [x] Protocolos de ahorro del gerente y del auditor aprobados por el dueño e integrados mediante PR #4 (commit `061c1b2`). No se elimina ninguna auditoría obligatoria.
+- [ ] Inspector PR #3: revisión diaria de integridad/frescura preparada, aún sin fusionar; última revisión CI y dictamen independiente pendientes.
 - [ ] Evaluar consumo real del plan de Claude durante varios días y ajustar únicamente las convocatorias que el gerente puede cambiar.
 
 ## Advertencias
