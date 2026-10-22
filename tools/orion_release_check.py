@@ -14,7 +14,7 @@ EXPECTED_PAGES = "https://kronnos2006.github.io/xauusd-ema-atr-bot/"
 REQUIRED_IDS = (
     "chart-main", "chart-models", "history-chart", "workflow-runs",
     "open-issues", "orion-queue", "agents-count", "ops-links", "refresh-live",
-    "alerts", "live-time", "command-output",
+    "alerts", "live-time", "command-output", "pilot-links",
 )
 WORKFLOWS = ("orion-pages.yml", "orion-ci.yml", "orion-comandos.yml",
              "orion-arbitro.yml")
