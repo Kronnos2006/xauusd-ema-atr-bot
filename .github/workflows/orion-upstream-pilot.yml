@@ -1,0 +1,34 @@
+name: ORION - Piloto aislado OpenHands y TradingAgents
+
+on:
+  pull_request:
+    paths:
+      - pilot/**
+      - tests/test_orion_upstream_pilot.py
+      - .github/workflows/orion-upstream-pilot.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  safe-upstream-pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verificar entradas con casos sinteticos
+        run: python -m unittest discover -s tests -p 'test_orion_upstream_pilot.py' -v
+      - name: Inspeccionar solo README de upstreams fijados
+        run: |
+          python pilot/orion_upstream_check.py --live-readmes --out "$RUNNER_TEMP/orion-upstream-results.json"
+          echo '## Piloto documental: NO instala ni ejecuta repos externos' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Fuentes fijadas por SHA, README inspeccionados; ver resultado de job.' >> "$GITHUB_STEP_SUMMARY"
+          cat "$RUNNER_TEMP/orion-upstream-results.json" >> "$GITHUB_STEP_SUMMARY"
