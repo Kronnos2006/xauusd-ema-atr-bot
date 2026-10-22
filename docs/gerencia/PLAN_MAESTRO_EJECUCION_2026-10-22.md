@@ -75,3 +75,10 @@ Una plataforma técnica auditable que detecta fallos, conserva evidencia y permi
 - [x] Tests de integridad en rama y PR #3: 8/8 aprobados incluso en la última versión ([run 39795858163](https://github.com/Kronnos2006/xauusd-ema-atr-bot/actions/runs/39795858163)); integración en master y primera verificación del cron aún pendientes de auditoría.
 - [ ] Anexos verificables del analista.
 - [ ] Diseño e integración de la Oficina del Dueño.
+
+
+## Actualización de avance — 2026-10-22
+- **Fase 2:** la integración del PR #3 sigue pendiente de dictamen independiente de Desconfiado y verificación operativa; CI de 8/8 tests superado. No declararla cerrada formalmente.
+- **Fase 3:** protocolos de ahorro del gerente y auditor integrados por PR #4, resumen automatizado integrado por PR #5. Criterios documentales de calidad y plantilla de revisión integrados por [PR #6](https://github.com/Kronnos2006/xauusd-ema-atr-bot/pull/6). **Pendiente:** 3 informes reales consecutivos y medición real del uso de Claude, seguimiento [issue #7](https://github.com/Kronnos2006/xauusd-ema-atr-bot/issues/7). No declararla completamente cerrada.
+- **Fase 4:** KT-002 sigue siendo observacional. Snapshot verificado: `data/kt002/resumen.json` actualizado a 2026-10-22T14:08:40Z, 39 pronósticos, 35 puntuados, **8 no solapados**: benchmark 4/8, Kronos 3/8, TimesFM 2/8, KT-001 1/8. Aún no existe base científica para concluir ventaja económica ni de precisión. No se cambian parámetros ni se abren holdouts.
+- Los registros de cuota de Claude y el funcionamiento de la Oficina privada no son verificables mediante este repositorio.
