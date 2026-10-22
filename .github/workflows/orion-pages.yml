@@ -44,6 +44,10 @@ jobs:
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
+          # Evita colisión si se vuelve a ejecutar un job dentro del mismo workflow run.
+          name: orion-pages-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/orion-pages
       - id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: orion-pages-${{ github.run_id }}-${{ github.run_attempt }}
