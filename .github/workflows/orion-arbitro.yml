@@ -1,0 +1,53 @@
+name: ORION · Reservar tarea sin conflictos
+
+on:
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: "Número de issue [ORION]"
+        required: true
+        type: string
+      operacion:
+        description: "Reservar, liberar (solo autor de reserva), o consultar"
+        required: true
+        type: choice
+        options: [estado, reservar, liberar]
+        default: estado
+      operador:
+        description: "Responsable propuesto; no confirma que una IA esté conectada"
+        required: true
+        type: choice
+        options: [Claude, ChatGPT, Gerencia, Operaciones]
+        default: Gerencia
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: orion-tarea-${{ inputs.issue }}
+  cancel-in-progress: false
+
+jobs:
+  arbitraje:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validar reglas en pruebas sintéticas
+        run: python -m unittest discover -s tests -p 'test_orion_arbitro.py' -v
+      - name: Reservar o consultar con sesión GitHub
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ORION_ISSUE: ${{ inputs.issue }}
+          ORION_OPERATION: ${{ inputs.operacion }}
+          ORION_OPERATOR: ${{ inputs.operador }}
+        run: |
+          python tools/orion_arbitro.py "$ORION_ISSUE" "$ORION_OPERATION" "$ORION_OPERATOR" | tee "$RUNNER_TEMP/orion-arbitro.json"
+          echo '## Estado de reserva ORION (no ejecuta Claude ni ChatGPT)' >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          cat "$RUNNER_TEMP/orion-arbitro.json" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
