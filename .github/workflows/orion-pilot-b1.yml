@@ -1,0 +1,43 @@
+name: ORION - Piloto B1 contrato sintético aislado
+
+on:
+  pull_request:
+    paths:
+      - pilot/orion_mock_contract.py
+      - tests/test_orion_mock_contract.py
+      - .github/workflows/orion-pilot-b1.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  isolated-mock:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            pilot/orion_mock_contract.py
+            tests/test_orion_mock_contract.py
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Confirmar que datos de experimentos no están en workspace
+        run: |
+          test ! -e data/kt002
+          test ! -e data/kt003
+          test ! -e .github/workflows/kt002.yml
+          test ! -e docs/visor/index.html
+      - name: Pruebas de contrato
+        run: python -m unittest discover -s tests -p 'test_orion_mock_contract.py' -v
+      - name: Ejecución funcional mock y evidencia
+        run: |
+          python pilot/orion_mock_contract.py --out "$RUNNER_TEMP/orion-b1.json"
+          python -c 'import json,sys; r=json.load(open(sys.argv[1])); assert r["status"]=="BLOCKED" and r["evidence_chain_valid"] and r["generated_orders"]==0 and not r["external_code_executed"]' "$RUNNER_TEMP/orion-b1.json"
+          echo '## B1: prueba sintética, NO se ejecutan OpenHands ni TradingAgents' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Veto independiente respetado, no se permite cambiar experimentos ni crear órdenes.' >> "$GITHUB_STEP_SUMMARY"
+          echo "Resultado: `$RUNNER_TEMP/orion-b1.json`" >> "$GITHUB_STEP_SUMMARY"
