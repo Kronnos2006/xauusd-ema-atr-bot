@@ -109,3 +109,13 @@ Una plataforma técnica auditable que detecta fallos, conserva evidencia y permi
 - **Referencias prioritarias:** OpenHands (control de agentes), TradingAgents (roles financieros y riesgo), RD-Agent/Qlib (nueva investigación cuantitativa), FinRobot (informes y trazabilidad). **No se ha instalado ninguno** y no se sustituyen componentes actuales.
 - **Decisión:** conservar ORION como supervisor estable y el control desde los chats existentes; no desplegar Google OAuth, APIs de agentes ni motores de trading.
 - **Pendientes externos independientes** siguen inalterados: Desconfiado, Vigía, Analista y evidencia científica futura. Documentación completa **no equivale** a auditoría concluida.
+
+## ORION 3.0 — Evaluación funcional de proyectos reutilizables (22-oct-2026)
+
+**Registro de evidencia actualizado:** [ORION_3_ESTADO_PILOTO_REAL_2026-10-22.md](ORION_3_ESTADO_PILOTO_REAL_2026-10-22.md).
+
+- OpenHands **real** compilado con interfaz mock en runner sin datos KT. Ver [Actions 39866289074](https://github.com/Kronnos2006/xauusd-ema-atr-bot/actions/runs/39866289074).
+- TradingAgents **real** instalado e importado, rutas de debate/riesgo comprobadas en su suite propia ([39866920746](https://github.com/Kronnos2006/xauusd-ema-atr-bot/actions/runs/39866920746)) y grafo multiagente completo con LLM/scripted offline verificado ([39867208325](https://github.com/Kronnos2006/xauusd-ema-atr-bot/actions/runs/39867208325)).
+- ORION muestra el seguimiento de estos pilotos con evidencias públicas sin presentarlos como sesiones activas ([PR #26](https://github.com/Kronnos2006/xauusd-ema-atr-bot/pull/26)).
+- **Pendiente antes de afirmar integración productiva:** OpenHands backend real con mock de LLM; adopción de componentes concretos, evaluación profunda de seguridad, prueba de costo/beneficio y revisión de riesgos. La opción vigente es continuar controlando desde los chats y aprovechar solo elementos útiles, manteniendo el panel actual.
+- **No es cierre de Fases 1–5:** siguen intactos los requisitos de Desconfiado, Vigía, Analista e investigación prospectiva. Estos pilotos no demuestran rentabilidad ni cambian KT-002/003.
