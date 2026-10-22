@@ -1,0 +1,49 @@
+name: ORION - Publicar GitHub Pages (móvil)
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - dashboard/index.html
+      - tools/centro_control.py
+      - docs/gerencia/equipo.json
+      - data/kt002/resumen.json
+      - .github/workflows/orion-pages.yml
+  schedule:
+    - cron: '27 */4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: orion-github-pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validar ORION antes de publicar
+        run: python -m unittest discover -s tests -p 'test_centro_control.py' -v
+      - name: Generar sitio público sin recursos privados
+        run: |
+          python tools/centro_control.py build --public --out "$RUNNER_TEMP/orion-pages"
+          python -c 'import json,sys; p=sys.argv[1]; d=json.load(open(p)); assert "office" not in d["governance"]["links"]; assert all(not n["description"] for n in d["agents"]["nodes"]); assert d["meta"]["readonly"]; print("Publicación sin Oficina privada: OK")' "$RUNNER_TEMP/orion-pages/data.json"
+          touch "$RUNNER_TEMP/orion-pages/.nojekyll"
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/orion-pages
+      - id: deployment
+        uses: actions/deploy-pages@v4
