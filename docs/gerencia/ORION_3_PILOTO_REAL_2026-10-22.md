@@ -34,3 +34,15 @@ Se puede eliminar este workflow y este documento mediante PR normal. Nada se des
 - TradingAgents `e8f5503e9b86d5c2710b0c76b1f686703968c9df`, README y `pyproject.toml` version 0.7.0.
 
 **Estado de ejecución:** pendiente del resultado del workflow del PR; actualizar solo tras leer jobs/logs.
+
+## Ejecución observada — 2026-10-22
+
+[GitHub Actions #39866289074](https://github.com/Kronnos2006/xauusd-ema-atr-bot/actions/runs/39866289074) concluyó **success**, con DOS jobs completados en verde:
+- **openhands-sandbox:** repositorio OpenHands fijado por SHA descargado, Node 24 y metadatos comprobados, `npm ci --ignore-scripts`, `npm run build:mock` y artefacto de compilación presente. **Front-end real, API simulada**; no backend de agentes en ejecución.
+- **tradingagents-sandbox:** repositorio TradingAgents fijado por SHA descargado, paquete instalado mediante pip e importación de `tradingagents` y `DEFAULT_CONFIG` con versión 0.7.0. No se ejecutaron agentes de análisis ni decisiones de trading.
+
+**Valor de B2–B4 alcanzado:** compatibilidad técnica inicial e instalación/compilación real reproducible. **No alcanzado:** auditoría completa de dependencias, seguridad de cadena de suministro, debate financiero multiagente offline y prueba end-to-end de colaboración con Claude/ChatGPT. Estas tareas siguen pendientes de evaluación posterior. Ni el CI verde ni un paquete instalable son prueba de valor cuantitativo.
+
+**Decisión de integración acotada:** ORION podrá mostrar enlaces a estas ejecuciones y sus límites, pero no importar el runtime de OpenHands/TradingAgents ni activar cuentas, claves o trading. El dueño mantendrá control desde ambos chats.
+
+[PR #25](https://github.com/Kronnos2006/xauusd-ema-atr-bot/pull/25) integrado tras CI verde.
