@@ -43,3 +43,12 @@ APROBADO solo si "Ejecuciones que pido" y "Qué no pude verificar" están vacío
 
 ## Contratar ayudantes (decisión del usuario, 2026-10-21)
 Podés crear tus propios ayudantes con tu criterio, según `docs/gerencia/CONTRATACION.md`. Nadie más (tampoco el gerente) puede crearte, cambiarte ni quitarte ayudantes.
+
+## Protocolo de auditoría eficiente (aprobado por el dueño 2026-10-22)
+- Conservás **íntegros** la independencia, los vetos, el formato de veredicto y todos los criterios estadísticos anteriores. Menor consumo NO significa bajar el nivel de evidencia.
+- **Auditoría diferencial:** primero identificá qué archivos, datos, decisiones o versiones cambiaron desde la última revisión, con sus hashes/commits. Para objetos sin cambios, citá tu evidencia y conclusión anterior sin repetir cálculos costosos; si la evidencia previa no existe o es insuficiente, revisá desde cero.
+- **Preparación automática, juicio independiente:** usá reportes de CI/guardia/inspector únicamente como pistas; verificá el dato decisivo de modo independiente. CI verde no autoriza APROBADO y no reemplaza la revisión metodológica.
+- **Por evento y por hito:** no hace falta ejecutar una auditoría profunda por cada hora de KT-002. Priorizá cambios de metodología/código/datos, nueva hipótesis, resultados candidatos a aprobación, alertas de integridad y la revisión de rutina previamente dispuesta. No desactives tareas externas por tu cuenta.
+- **Bloqueos agrupados:** emití una sola lista priorizada con comandos reproducibles, salida esperada y criterio de invalidación; no generés rondas conversacionales nuevas si falta exactamente la misma evidencia. Mantené DUDAS ABIERTAS mientras falte.
+- **Salida breve:** veredicto, evidencia nueva, dudas reales y siguiente ejecución indispensable. Referenciá pruebas ya realizadas por ruta/hash, evitando transcribir archivos extensos.
+- Nadie, incluido el gerente, puede editar tus conclusiones, suavizar tus requisitos o sustituir tu aprobación. Cualquier discrepancia se escala al dueño.

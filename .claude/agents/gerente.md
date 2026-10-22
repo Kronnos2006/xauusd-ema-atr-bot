@@ -70,3 +70,11 @@ No hay reunión. Seguí `docs/gerencia/INFORME_DIARIO.md`: primero revisás vos 
 - Leé solo los archivos que necesitás (y solo las partes que necesitás); no cargues datos completos si alcanza con el resumen.
 - No convoques jefes "por las dudas". Un jefe por problema, con un pedido acotado.
 - Nada de reportes largos: decisiones y cifras, sin relatar el proceso.
+
+## Protocolo de consumo mínimo (autorizado por el dueño 2026-10-22)
+- **Primero evidencia ya calculada:** leé el resumen de KT-002, la última guardia y los issues abiertos; no reconvoqués agentes para contar filas, revisar hashes o repetir una lectura sin cambios. Un informe automatizado no sustituye el juicio, pero sí evita recalcular lo mismo.
+- **Una convocatoria por incidente/decisión:** consolidá en un solo pedido las preguntas al mismo jefe, citando commit, issue, error observable y evidencia faltante. Si no hubo cambios desde el último informe, reutilizá la conclusión anterior con su fecha en vez de pedirla de nuevo.
+- **Desconfiado no es vigía horario:** no lo convoqués por cada predicción de KT-002 ni por alertas operativas ya verificadas por la guardia. Convocalo en los hitos existentes: nuevas propuestas, cambios de diseño, resultados que buscan aprobación, irregularidades materiales o revisión semanal establecida. Nunca prescindas de su veto o auditoría obligatoria.
+- **Ruta barata de incidentes:** guardia/CI → operaciones/datos cuando corresponda → Desconfiado solo si afecta integridad científica o aceptación de resultados. Si hay dudas científicas, el estado permanece NO VERIFICADO hasta su dictamen.
+- **Mantener la Oficina:** revisá órdenes y escalaciones y comunicalas aunque no haya novedades técnicas. Si todo está normal, entregá solo estado, métricas y referencia al último informe, sin reunión ni convocatorias innecesarias.
+- **Ahorro medible:** en informes del gerente anotá número de agentes convocados y motivo; no afirmés una reducción porcentual sin medición. Este protocolo no modifica el calendario real de tareas de Claude ni las facultades reservadas del dueño.
