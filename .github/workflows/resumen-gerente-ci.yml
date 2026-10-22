@@ -24,6 +24,7 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_resumen_gerente_kt002.py' -v
       - name: Generar resumen compacto desde snapshot versionado
         run: |
+          set -o pipefail
           python tools/resumen_gerente_kt002.py | tee "$RUNNER_TEMP/resumen-gerente.txt"
           echo '## Resumen para gerente (solo archivo, no Oficina privada)' >> "$GITHUB_STEP_SUMMARY"
           cat "$RUNNER_TEMP/resumen-gerente.txt" >> "$GITHUB_STEP_SUMMARY"
