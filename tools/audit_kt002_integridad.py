@@ -104,8 +104,21 @@ def inspect(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--csv", default="data/kt002/predicciones.csv")
+    parser.add_argument("--max-age-hours", type=float, default=None,
+                        help="Opcional: marcar fallo si la ultima base esta demasiado atrasada")
     args = parser.parse_args()
-    print(json.dumps(inspect(args.csv), ensure_ascii=False, indent=2))
+    result = inspect(args.csv)
+    if args.max_age_hours is not None:
+        if args.max_age_hours <= 0:
+            parser.error("--max-age-hours debe ser positivo")
+        last = parse_utc(result["ultima_base_utc"]) if result["ultima_base_utc"] else None
+        age_hours = (datetime.now(timezone.utc) - last).total_seconds() / 3600 if last else None
+        result["edad_ultima_base_horas"] = round(age_hours, 3) if age_hours is not None else None
+        if age_hours is None or age_hours > args.max_age_hours:
+            result["veredicto_integridad_basica"] = "REVISAR"
+            result["errores_estructura"].append("Ultima base fuera de umbral de frescura")
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    raise SystemExit(1 if result["veredicto_integridad_basica"] == "REVISAR" else 0)
 
 
 if __name__ == "__main__":
