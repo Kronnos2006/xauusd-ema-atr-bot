@@ -17,7 +17,8 @@ def utc(s):
 
 
 def report(csv_path, summary_path):
-    rows = list(csv.DictReader(Path(csv_path).open(encoding="utf-8-sig", newline="")))
+    with Path(csv_path).open(encoding="utf-8-sig", newline="") as stream:
+        rows = list(csv.DictReader(stream))
     summary = json.loads(Path(summary_path).read_text(encoding="utf-8"))
     errors = []
     bases = []
