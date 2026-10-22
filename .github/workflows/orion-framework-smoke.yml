@@ -1,0 +1,116 @@
+name: ORION - Piloto B2-B4 frameworks reales aislados
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/orion-framework-smoke.yml
+      - pilot/upstreams.json
+      - docs/gerencia/ORION_3_PILOTO_REAL_2026-10-22.md
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  openhands-sandbox:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Preparar Node moderno
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Comprobar que no se recibieron secretos ni datos cientificos
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e data/kt002
+          test ! -e data/kt003
+          test ! -e CLAUDE.md
+          test ! -e .github/workflows/kt002.yml
+          test -z "${OPENAI_API_KEY:-}"
+          test -z "${ANTHROPIC_API_KEY:-}"
+      - name: Obtener fuente OpenHands fijada y auditar metadatos
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/openhands"
+          cd "$RUNNER_TEMP/openhands"
+          git init -q
+          git remote add origin https://github.com/OpenHands/OpenHands.git
+          git fetch -q --depth 1 origin 542aa917de74d24d3f1eb7abd86622097bfff21f
+          git checkout -q --detach FETCH_HEAD
+          test "$(git rev-parse HEAD)" = 542aa917de74d24d3f1eb7abd86622097bfff21f
+          node -e 'const p=require("./package.json");if(p.name!=="@openhands/agent-canvas"||p.license!=="MIT"||p.scripts["build:mock"]==null||!p.engines.node.includes("24"))process.exit(2);console.log("B2 OpenHands: version="+p.version+" dependencies="+Object.keys(p.dependencies).length+" mock build documented");'
+      - name: Instalar dependencias SIN scripts de instalación
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/openhands"
+          npm ci --ignore-scripts --no-audit --no-fund
+      - name: Compilar la aplicación real en modo API simulada
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/openhands"
+          VITE_MOCK_API=true npm run build:mock
+          test -f build/client/index.html || test -f build/index.html
+          echo "B3: OpenHands real compilado con API mock sin proveedores privados." >> "$GITHUB_STEP_SUMMARY"
+
+  tradingagents-sandbox:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verificar ausencia de datos reales
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e data/kt002
+          test ! -e data/kt003
+          test ! -e CLAUDE.md
+          test -z "${OPENAI_API_KEY:-}"
+          test -z "${ANTHROPIC_API_KEY:-}"
+      - name: Obtener fuente TradingAgents fijada
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/tradingagents"
+          cd "$RUNNER_TEMP/tradingagents"
+          git init -q
+          git remote add origin https://github.com/TauricResearch/TradingAgents.git
+          git fetch -q --depth 1 origin e8f5503e9b86d5c2710b0c76b1f686703968c9df
+          git checkout -q --detach FETCH_HEAD
+          test "$(git rev-parse HEAD)" = e8f5503e9b86d5c2710b0c76b1f686703968c9df
+          python - <<'PY'
+          import tomllib
+          with open("pyproject.toml","rb") as f: p=tomllib.load(f)
+          assert p["project"]["name"]=="tradingagents"
+          assert "3.11" in p["project"]["requires-python"]
+          assert len(p["project"]["dependencies"]) > 5
+          print("B2 TradingAgents: direct dependencies",len(p["project"]["dependencies"]))
+          PY
+      - name: Instalar distribución real sin credenciales
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/tradingagents"
+          python -m pip install --disable-pip-version-check .
+      - name: Importar paquete y configuración real sin crear agente LLM
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          python - <<'PY'
+          import tradingagents
+          from tradingagents.default_config import DEFAULT_CONFIG
+          assert tradingagents.__version__ == "0.7.0"
+          assert isinstance(DEFAULT_CONFIG, dict)
+          print("B4 TradingAgents real importado:",tradingagents.__version__,
+                "config keys:",len(DEFAULT_CONFIG))
+          print("SIN generación de decisiones, backtest, API externas ni órdenes.")
+          PY
+          echo "B4: importación real TradingAgents y configuración; no se ejecutó modelo." >> "$GITHUB_STEP_SUMMARY"
