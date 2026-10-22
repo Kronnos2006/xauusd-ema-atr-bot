@@ -100,3 +100,12 @@ Una plataforma técnica auditable que detecta fallos, conserva evidencia y permi
 - **Fase 6:** **ORION estable completado para supervisión pública** por [PR #20](https://github.com/Kronnos2006/xauusd-ema-atr-bot/pull/20), [publicación 39857001117](https://github.com/Kronnos2006/xauusd-ema-atr-bot/actions/runs/39857001117). Claude y ChatGPT se controlan desde sus propios chats por decisión del dueño; Google OAuth no desplegado, no hay telemetría de sesiones privadas ni ejecución autónoma en ORION. Pendiente solo trazabilidad de Oficina privada si se exige cierre de Fase 6 en el sentido original, no comprobable desde GitHub.
 
 **Regla de integridad del plan:** no marcar como completas fases que dependen de dictámenes independientes o evidencia futura. La actualización no modifica KT-002, KT-003, datos, holdouts ni reglas de autoridad.
+
+
+## Cierre de documentación y evaluación de soluciones existentes — 2026-10-22
+
+- **Manual operativo consolidado:** [ORION_MANUAL_CONTINUIDAD.md](ORION_MANUAL_CONTINUIDAD.md): rutas, responsables, verificaciones read-only, recuperación, coordinación de Claude y ChatGPT, límites de seguridad y prioridades.
+- **Búsqueda de soluciones externas:** [REPOS_SIMILARES_ORION_LAB_2026-10-22.md](REPOS_SIMILARES_ORION_LAB_2026-10-22.md): nueve repositorios abiertos comprobados documentalmente, con licencia, fecha de actividad, función que se parece a nuestro sistema, límites y orden de posibles pilotos.
+- **Referencias prioritarias:** OpenHands (control de agentes), TradingAgents (roles financieros y riesgo), RD-Agent/Qlib (nueva investigación cuantitativa), FinRobot (informes y trazabilidad). **No se ha instalado ninguno** y no se sustituyen componentes actuales.
+- **Decisión:** conservar ORION como supervisor estable y el control desde los chats existentes; no desplegar Google OAuth, APIs de agentes ni motores de trading.
+- **Pendientes externos independientes** siguen inalterados: Desconfiado, Vigía, Analista y evidencia científica futura. Documentación completa **no equivale** a auditoría concluida.
