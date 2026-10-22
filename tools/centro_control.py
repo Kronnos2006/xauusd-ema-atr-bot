@@ -118,6 +118,8 @@ def assemble(root=ROOT):
                 "tasks": "https://github.com/Kronnos2006/xauusd-ema-atr-bot/issues/new/choose",
                 "commands": "https://github.com/Kronnos2006/xauusd-ema-atr-bot/actions/workflows/orion-comandos.yml",
                 "arbitro": "https://github.com/Kronnos2006/xauusd-ema-atr-bot/actions/workflows/orion-arbitro.yml",
+                "pilot_frameworks": "https://github.com/Kronnos2006/xauusd-ema-atr-bot/actions/workflows/orion-framework-smoke.yml",
+                "pilot_report": "https://github.com/Kronnos2006/xauusd-ema-atr-bot/blob/master/docs/gerencia/ORION_3_PILOTO_REAL_2026-10-22.md",
                 "pr3": "https://github.com/Kronnos2006/xauusd-ema-atr-bot/pull/3",
                 "plan": "https://github.com/Kronnos2006/xauusd-ema-atr-bot/blob/master/docs/gerencia/PLAN_MAESTRO_EJECUCION_2026-10-22.md",
                 "office": "https://claude.ai/artifact/CJjo7mMyMEdyvTKbLc3wJc",
