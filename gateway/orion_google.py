@@ -112,6 +112,27 @@ def create_app():
         data["governance"]["links"].pop("office", None)
         return JSONResponse(data, headers={"Cache-Control": "no-store"})
 
+    @app.get("/cuentas")
+    async def cuentas(request: Request):
+        deny = require(request)
+        if deny:
+            return deny
+        # No se reciben contraseñas, cookies ni tokens de servicios ajenos.
+        page = """<!doctype html><html lang="es"><meta name="viewport" content="width=device-width,initial-scale=1">
+        <title>ORION · Cuentas</title>
+        <style>body{font:16px system-ui;background:#0b1322;color:#edf3fc;padding:2rem;max-width:580px;margin:auto}
+        a{display:block;background:#1d3657;padding:1rem;border-radius:12px;color:white;margin:12px 0;text-decoration:none}
+        p{color:#a9bfdc}button{padding:12px;border-radius:9px}</style>
+        <h1>ORION · Accesos oficiales</h1>
+        <p>Ingresaste a ORION con Google. ChatGPT y Claude gestionan sus propias sesiones.
+        Usá «Continuar con Google» en cada sitio si corresponde a tu cuenta.</p>
+        <a href="https://chatgpt.com/" rel="noopener noreferrer">Abrir ChatGPT</a>
+        <a href="https://claude.ai/" rel="noopener noreferrer">Abrir Claude</a>
+        <a href="/">Volver a ORION</a>
+        <form method="post" action="/auth/logout"><button>Cerrar sesión de ORION</button></form>
+        </html>"""
+        return HTMLResponse(page, headers={"Cache-Control": "no-store"})
+
     @app.get("/visor/")
     async def visor(request: Request):
         deny = require(request)
