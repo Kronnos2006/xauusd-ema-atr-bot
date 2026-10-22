@@ -71,6 +71,6 @@ Una plataforma técnica auditable que detecta fallos, conserva evidencia y permi
 - [x] Issue de hallazgos #1.
 - [x] Comprobación retrospectiva de integridad básica de las 37 filas publicadas (lectura, sin nuevas inferencias).
 - [ ] Revisión de logs de Actions y auditoría independiente.
-- [ ] Tests adicionales de integridad en rama y PR.
+- [x] Tests de integridad en rama y PR: 8/8 aprobados en [Actions run 39786254352](https://github.com/Kronnos2006/xauusd-ema-atr-bot/actions/runs/39786254352); la integración en master sigue pendiente de revisión independiente.
 - [ ] Anexos verificables del analista.
 - [ ] Diseño e integración de la Oficina del Dueño.
