@@ -116,6 +116,7 @@ def assemble(root=ROOT):
                 "actions": "https://github.com/Kronnos2006/xauusd-ema-atr-bot/actions",
                 "visor": "https://kronnos2006.github.io/xauusd-ema-atr-bot/visor/",
                 "tasks": "https://github.com/Kronnos2006/xauusd-ema-atr-bot/issues/new/choose",
+                "commands": "https://github.com/Kronnos2006/xauusd-ema-atr-bot/actions/workflows/orion-comandos.yml",
                 "pr3": "https://github.com/Kronnos2006/xauusd-ema-atr-bot/pull/3",
                 "plan": "https://github.com/Kronnos2006/xauusd-ema-atr-bot/blob/master/docs/gerencia/PLAN_MAESTRO_EJECUCION_2026-10-22.md",
                 "office": "https://claude.ai/artifact/CJjo7mMyMEdyvTKbLc3wJc",
