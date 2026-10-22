@@ -46,3 +46,11 @@ Se puede eliminar este workflow y este documento mediante PR normal. Nada se des
 **Decisión de integración acotada:** ORION podrá mostrar enlaces a estas ejecuciones y sus límites, pero no importar el runtime de OpenHands/TradingAgents ni activar cuentas, claves o trading. El dueño mantendrá control desde ambos chats.
 
 [PR #25](https://github.com/Kronnos2006/xauusd-ema-atr-bot/pull/25) integrado tras CI verde.
+
+## Ampliación de prueba en el software original
+
+El piloto ejecuta también el test upstream `tests/test_risk_router_path_map.py` de TradingAgents mediante pytest (sin claves). Comprueba que las rutas del debate y las rutas de revisión de riesgo conducen a destinos válidos y que el debate finaliza según el límite configurado.
+
+Esta es una **prueba real del código del upstream**, no una simulación creada por ORION. **No equivale a que Desconfiado haya aprobado**, ni garantiza que una propuesta de TradingAgents sea segura o científicamente válida; la autoridad del auditor independiente y la prohibición de órdenes reales permanecen fuera de ese framework.
+
+La instalación de `pytest` se realiza únicamente en el runner efímero, sin credenciales, sin copiar datasets y sin habilitar un servicio permanente.
