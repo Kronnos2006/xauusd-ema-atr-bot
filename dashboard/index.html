@@ -8,12 +8,12 @@ a{color:#9cc8ff;text-decoration:none}a:hover{text-decoration:underline}button{cu
 @media(max-width:980px){.shell{grid-template-columns:1fr}.sidebar{padding:15px;gap:12px;border-right:0;border-bottom:1px solid var(--line)}.sidebar-bottom{display:none}.nav{display:flex;overflow-x:auto}.nav button{white-space:nowrap}.main{padding:20px}.metrics{grid-template-columns:repeat(2,1fr)}.cols{grid-template-columns:1fr}.chart{height:245px}}
 @media(max-width:560px){.metrics{gap:9px}.card{padding:15px}.stat{font-size:27px}h1{font-size:24px}.agents{height:370px}}
 </style></head>
-<body><div class="shell"><aside class="sidebar"><div class="brand"><div class="logo">✦</div> ORION <span style="font-size:10px;color:var(--muted);align-self:end">v1</span></div><div><p class="small">CENTRO DE CONTROL</p><nav class="nav">
+<body><div class="shell"><aside class="sidebar"><div class="brand"><div class="logo">✦</div> ORION <span style="font-size:10px;color:var(--muted);align-self:end">Estable · v2</span></div><div><p class="small">CENTRO DE CONTROL</p><nav class="nav">
 <button class="active" data-tab="overview">◈ &nbsp; Resumen ejecutivo</button>
 <button data-tab="models">◫ &nbsp; Experimentos</button>
 <button data-tab="agents">◇ &nbsp; Red de agentes</button>
 <button data-tab="operations">⌘ &nbsp; Operaciones</button><button data-tab="live">◉ &nbsp; Actividad verificada</button>
-</nav></div><div class="sidebar-bottom"><div>● <span class="warn">Snapshot local</span></div><div>Sin operaciones · Paper-only</div><div>No sustituye al auditor</div></div></aside>
+</nav></div><div class="sidebar-bottom"><div>● <span class="warn">Datos científicos: snapshot fechado</span></div><div>Sin operaciones · Paper-only</div><div>No sustituye al auditor</div></div></aside>
 <main class="main"><header class="top"><div><div class="eyebrow">ORION / LABORATORIO CUANTITATIVO</div><h1 id="page-title">Resumen ejecutivo</h1><p>Visibilidad, evidencia y supervisión. Sin ejecución de órdenes.</p></div><span class="pill">◌ &nbsp; <strong>NO EN VIVO</strong> · <span id="stamp">Cargando...</span></span></header>
 <div class="notice" id="notice">Este panel refleja un snapshot generado desde archivos versionados. El mapa de agentes representa relaciones configuradas, no actividad observada. No tiene sesión con Claude, Github ni la Oficina privada.</div>
 <section class="section active" id="overview"><div class="metrics">
@@ -135,7 +135,7 @@ else $('command-output').textContent=txt;
 });
 
 fetch('./data.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('No se pudo cargar data.json');return r.json()}).then(d=>{
-$('stamp').textContent=fmtTime(d.meta.source_updated_utc);$('total').textContent=d.kt002.pronosticos;$('scored').textContent=d.kt002.evaluados;$('independent').textContent=d.kt002.independientes;$('missing').textContent=d.kt002.horas_omitidas_acumuladas;$('agents-count').textContent=d.agents.nodes.length;$('freshness').textContent=fmtTime(d.meta.source_updated_utc);
+$('stamp').textContent=fmtTime(d.meta.source_updated_utc);if(d.meta.source_updated_utc){const ms=Date.now()-Date.parse(d.meta.source_updated_utc);if(Number.isFinite(ms)&&ms>6*3600000){$('notice').textContent='Aviso: los datos científicos tienen más de 6 horas. Fecha de la fuente: '+fmtTime(d.meta.source_updated_utc)+'. GitHub Actions se consulta aparte.';$('notice').classList.add('warn')}}$('total').textContent=d.kt002.pronosticos;$('scored').textContent=d.kt002.evaluados;$('independent').textContent=d.kt002.independientes;$('missing').textContent=d.kt002.horas_omitidas_acumuladas;$('agents-count').textContent=d.agents.nodes.length;$('freshness').textContent=fmtTime(d.meta.source_updated_utc);
 chart('chart-main',d.kt002.modelos);chart('chart-models',d.kt002.modelos);historyChart(d.kt002.historia||[]);graph(d.agents);$('reset-graph').addEventListener('click',()=>graph(d.agents));
 links('quick-links',d.governance.links,[['repository','Repositorio'],['visor','Visor de Claude'],['tasks','Solicitar trabajo'],['commands','Verificaciones seguras'],['arbitro','Reservar tarea'],['actions','GitHub Actions'],['pr3','Auditoría PR #3'],['plan','Plan maestro'],['office','Oficina privada']]);
 links('ops-links',d.governance.links,[['repository','Código y PRs'],['visor','Visor de Claude'],['tasks','Registrar tarea con GitHub'],['commands','Ejecutar verificación en GitHub'],['arbitro','Reservar o liberar tarea'],['actions','Corridas y alertas'],['plan','Reglas y autorización'],['office','Abrir Oficina privada']]);
