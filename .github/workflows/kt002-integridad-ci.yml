@@ -37,3 +37,7 @@ jobs:
       - name: Fallar si se detectan anomalías estructurales
         run: |
           python -c 'import json,os,sys; p=os.path.join(os.environ["RUNNER_TEMP"],"kt002-integridad.json"); d=json.load(open(p)); print("Estado:",d["veredicto_integridad_basica"]); sys.exit(1 if d["veredicto_integridad_basica"] != "SIN_ANOMALIAS_ESTRUCTURALES" else 0)'
+
+      - name: Detectar corridas estancadas (solo programación diaria)
+        if: github.event_name == 'schedule'
+        run: python tools/audit_kt002_integridad.py --csv data/kt002/predicciones.csv --max-age-hours 3
