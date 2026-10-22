@@ -1,0 +1,45 @@
+name: ORION · Ejecutar verificación segura
+
+on:
+  workflow_dispatch:
+    inputs:
+      accion:
+        description: "Elegí una consulta de solo lectura; no inicia Claude ni modifica datos"
+        type: choice
+        required: true
+        default: estado
+        options:
+          - estado
+          - modelos
+          - publicacion
+          - integridad-basica
+
+permissions:
+  contents: read
+
+concurrency:
+  group: orion-consulta-${{ github.ref }}-${{ inputs.accion }}
+  cancel-in-progress: false
+
+jobs:
+  verificacion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Pruebas de lista cerrada
+        run: python -m unittest discover -s tests -p 'test_orion_comandos.py' -v
+      - name: Ejecutar solamente comando autorizado
+        env:
+          ORION_ACCION: ${{ inputs.accion }}
+        run: |
+          python tools/orion_comandos.py "$ORION_ACCION" | tee "$RUNNER_TEMP/orion-resultado.json"
+          echo "## ORION: verificación de solo lectura" >> "$GITHUB_STEP_SUMMARY"
+          echo "`Acción:` $ORION_ACCION" >> "$GITHUB_STEP_SUMMARY"
+          echo "No inicia Claude, no escribe datos, no prueba rentabilidad ni sustituye a Desconfiado." >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          cat "$RUNNER_TEMP/orion-resultado.json" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
