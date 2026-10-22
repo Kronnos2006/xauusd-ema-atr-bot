@@ -50,6 +50,7 @@ jobs:
           cp "$RUNNER_TEMP/orion-pages/index.html" "$RUNNER_TEMP/orion-pages/orion/index.html"
           cp "$RUNNER_TEMP/orion-pages/data.json" "$RUNNER_TEMP/orion-pages/orion/data.json"
           cmp docs/visor/index.html "$RUNNER_TEMP/orion-pages/visor/index.html"
+          python -c 'from pathlib import Path; import json,sys; p=Path(sys.argv[1]); d=json.loads((p/"data.json").read_text()); assert (p/"visor/index.html").is_file(); assert (p/"orion/index.html").is_file(); assert d["governance"]["links"]["visor"].endswith("/visor/"); assert "office" not in d["governance"]["links"]; print("Dos visores conservados, sin enlaces privados")' "$RUNNER_TEMP/orion-pages"
           touch "$RUNNER_TEMP/orion-pages/.nojekyll"
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
