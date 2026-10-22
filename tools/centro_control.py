@@ -5,6 +5,7 @@ No coloca órdenes, no modifica datos ni arranca Claude. GitHub Actions continú
 siendo la fuente de las métricas publicadas. No expone servicios en red pública.
 """
 import argparse
+import csv
 import json
 import shutil
 from datetime import datetime, timezone
@@ -15,6 +16,41 @@ ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "dashboard"
 DEFAULT_OUT = ROOT / ".local" / "centro-control"
 MODELS = ("siempre_sube", "kronos", "timesfm", "kt001")
+
+
+def history_series(path):
+    """Serie histórica primaria: solo bases UTC múltiplos de 4, puntajes publicados."""
+    if not path.exists():
+        return []
+    with path.open(encoding="utf-8-sig", newline="") as stream:
+        rows = list(csv.DictReader(stream))
+    points = []
+    count = {name: 0 for name in MODELS}
+    seen = set()
+    for row in sorted(rows, key=lambda x: x.get("base_open_utc", "")):
+        base = row.get("base_open_utc", "")
+        try:
+            instant = datetime.fromisoformat(base.replace("Z", "+00:00"))
+            if instant.tzinfo is None or instant.astimezone(timezone.utc).hour % 4:
+                continue
+            if not row.get("actual_ret", "").strip() or base in seen:
+                continue
+            actual = float(row["actual_ret"])
+            if actual == 0:
+                continue
+            signs = {"siempre_sube": 1, "kronos": float(row["kronos_ret"]),
+                     "timesfm": float(row["timesfm_ret"]), "kt001": float(row["kt001_ret"])}
+            if any(value == 0 for value in signs.values()):
+                continue
+            seen.add(base)
+            for name, predicted in signs.items():
+                count[name] += int((predicted > 0) == (actual > 0))
+            n = len(points) + 1
+            points.append({"base_utc": instant.astimezone(timezone.utc).isoformat(),
+                           "n": n, "rates": {key: count[key] / n for key in MODELS}})
+        except (ValueError, KeyError, TypeError):
+            continue
+    return points
 
 
 def assemble(root=ROOT):
@@ -58,6 +94,7 @@ def assemble(root=ROOT):
             "horas_omitidas_acumuladas": summary.get("horas_omitidas"),
             "rentabilidad_evaluada": False,
             "modelos": samples,
+            "historia": history_series(root / "data/kt002/predicciones.csv"),
         },
         "agents": {
             "nodes": [{
