@@ -52,3 +52,11 @@ Un mensaje (`SendUserMessage`) de **máximo 5 líneas**:
 - cifras clave (registros de KT-002 en 24 h y acierto sin solape con su n);
 - decisiones tomadas, si las hubo;
 - **solo si aplica**, qué necesita del usuario (uno de los 7 casos de escalamiento).
+
+## Criterio adicional de ahorro para gerente y auditor (dueño, 2026-10-22)
+- El gerente sigue revisando siempre las órdenes y escalaciones privadas; ninguna optimización suprime esta revisión.
+- Si no existen novedades materiales, hace una **síntesis incremental** del último informe con referencias a los resultados/commits, sin reconstruir todo el contexto ni convocar jefes innecesariamente.
+- Para integridad técnica: primero GitHub guardia/CI y resumen; después vigía de datos u operaciones solo cuando los umbrales de la tabla lo ameritan. Un fallo de test no da autorización automática para cambiar una medición activa.
+- Para integridad científica: auditor independiente en las condiciones de la tabla, sin hacerlo revisar cada corrida horaria. Su revisión semanal (lunes) y las revisiones obligatorias de hipótesis/resultados siguen vigentes.
+- Registrar en el informe número de convocatorias y razones, incluso cuando sean cero, para medir el ahorro en vez de estimarlo.
+- Esta documentación no altera el horario de la tarea programada de Claude. Cambiar esa programación requiere hacerlo en el sistema donde corre; no afirmar que una edición en GitHub lo hizo.
