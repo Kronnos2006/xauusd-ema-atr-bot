@@ -56,6 +56,24 @@ class CentroControlTests(unittest.TestCase):
             self.assertTrue(all(not m["description"] for m in data["agents"]["nodes"]))
             self.assertTrue(data["meta"]["readonly"])
 
+    def test_historical_nonoverlap_only(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);self.fixture(root)
+            p=root/"data/kt002/predicciones.csv"
+            p.write_text(
+                "base_open_utc,actual_ret,kronos_ret,timesfm_ret,kt001_ret\n"
+                "2026-10-22T00:00:00+00:00,0.02,0.1,-0.1,0.2\n"
+                "2026-10-22T01:00:00+00:00,-0.02,-0.1,-0.1,-0.2\n"
+                "2026-10-22T04:00:00+00:00,-0.03,0.1,-0.1,-0.1\n"
+                "2026-10-22T08:00:00+00:00,,0.1,-0.1,-0.1\n",
+                encoding="utf-8"
+            )
+            points=mod.assemble(root)["kt002"]["historia"]
+            self.assertEqual(len(points),2)
+            self.assertEqual(points[-1]["rates"]["kronos"],0.5)
+            self.assertEqual(points[-1]["rates"]["timesfm"],0.5)
+            self.assertEqual(points[-1]["rates"]["siempre_sube"],0.5)
+
     def test_duplicate_agent(self):
         with tempfile.TemporaryDirectory() as d:
             root=Path(d);self.fixture(root, duplicate=True)
