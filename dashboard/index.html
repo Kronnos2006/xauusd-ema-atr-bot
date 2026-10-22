@@ -140,4 +140,6 @@ links('quick-links',d.governance.links,[['repository','Repositorio'],['actions',
 links('ops-links',d.governance.links,[['repository','Código y PRs'],['actions','Corridas y alertas'],['plan','Reglas y autorización'],['office','Abrir Oficina privada']]);
 }).catch(e=>{$('notice').textContent='Error cargando snapshot: '+e.message+'. Inicia servidor: python tools/centro_control.py serve';$('notice').classList.add('danger')});
 refreshLive();
+// Reconsulta cada tres minutos para limitar consumo de la API pública sin token.
+setInterval(refreshLive,180000);
 </script></body></html>
