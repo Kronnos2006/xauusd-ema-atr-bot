@@ -1,0 +1,29 @@
+name: KT-002 observatorio descriptivo (sin Claude)
+
+on:
+  pull_request:
+    paths:
+      - tools/observatorio_kt002.py
+      - tests/test_observatorio_kt002.py
+      - .github/workflows/observatorio-kt002-ci.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Pruebas sintéticas
+        run: python -m unittest discover -s tests -p 'test_observatorio_kt002.py' -v
+      - name: Informe de muestra sin solape, solo lectura
+        run: |
+          set -o pipefail
+          python tools/observatorio_kt002.py | tee "$RUNNER_TEMP/observatorio-kt002.md"
+          cat "$RUNNER_TEMP/observatorio-kt002.md" >> "$GITHUB_STEP_SUMMARY"
