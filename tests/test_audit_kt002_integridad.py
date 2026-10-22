@@ -36,6 +36,15 @@ class AuditTests(unittest.TestCase):
                 writer.writerows(rows)
             return audit.inspect(path)
 
+    def test_empty(self):
+        result = self.check([])
+        self.assertEqual(result["veredicto_integridad_basica"], "REVISAR")
+
+    def test_forecast_before_close(self):
+        r = row(0)
+        r["run_utc"] = (BASE + timedelta(minutes=50)).isoformat()
+        self.assertEqual(self.check([r])["pronosticos_antes_de_cierre_base"], 1)
+
     def test_normal(self):
         a = self.check([row(i) for i in range(24)])
         self.assertEqual(a["veredicto_integridad_basica"], "SIN_ANOMALIAS_ESTRUCTURALES")
