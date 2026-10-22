@@ -99,6 +99,14 @@ jobs:
           set -euo pipefail
           cd "$RUNNER_TEMP/tradingagents"
           python -m pip install --disable-pip-version-check .
+      - name: Probar en upstream real que rutas de riesgo y debate estan cubiertas
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/tradingagents"
+          python -m pip install --disable-pip-version-check "pytest>=8,<10"
+          python -m pytest -q tests/test_risk_router_path_map.py
+          echo 'Rutas del debate financiero y revisiones de riesgo comprobadas con tests del upstream real. No implica veto independiente de ORION.' >> "$GITHUB_STEP_SUMMARY"
       - name: Importar paquete y configuración real sin crear agente LLM
         shell: bash
         run: |
