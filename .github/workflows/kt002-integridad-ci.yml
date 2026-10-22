@@ -7,6 +7,8 @@ on:
       - tests/test_audit_kt002_integridad.py
       - .github/workflows/kt002-integridad-ci.yml
   workflow_dispatch:
+  schedule:
+    - cron: '15 13 * * *'  # una verificación diaria a las 13:15 UTC, solo tras fusionar a master
 
 permissions:
   contents: read
@@ -31,3 +33,7 @@ jobs:
           echo '```json' >> "$GITHUB_STEP_SUMMARY"
           cat "$RUNNER_TEMP/kt002-integridad.json" >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fallar si se detectan anomalías estructurales
+        run: |
+          python -c 'import json,os,sys; p=os.path.join(os.environ["RUNNER_TEMP"],"kt002-integridad.json"); d=json.load(open(p)); print("Estado:",d["veredicto_integridad_basica"]); sys.exit(1 if d["veredicto_integridad_basica"] != "SIN_ANOMALIAS_ESTRUCTURALES" else 0)'
