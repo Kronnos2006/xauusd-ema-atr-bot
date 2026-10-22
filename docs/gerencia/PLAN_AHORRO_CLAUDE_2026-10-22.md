@@ -27,8 +27,9 @@
 - [x] Publicar auditoría externa y seguimiento: Issue #1.
 - [x] Preparar inspector read-only y pruebas sintéticas en PR #3.
 - [x] Preparar comprobación CI de solo lectura en PR #3, pendiente de ejecución en GitHub.
-- [ ] Ver resultados del CI, corregir pruebas que fallen y solicitar veredicto externo.
-- [ ] Tras revisión, estudiar activación de comprobaciones periódicas de integridad sin agentes.
+- [x] CI de los controles read-only verificado: inspector PR #3 (8/8), resumen PR #5 (4/4). El veredicto independiente del PR #3 sigue pendiente.
+- [x] Resumen compacto del gerente, PR #5 fusionado en `master` (commit `a8c6f1c`) con ejecución programada a las 13:20 UTC. Primera corrida programada aún no verificada.
+- [ ] Inspector PR #3 pendiente de dictamen independiente; revisión diaria de integridad propuesta, todavía no fusionada.
 - [ ] Evaluar consumo real del plan de Claude durante varios días y ajustar únicamente las convocatorias que el gerente puede cambiar.
 
 ## Advertencias
