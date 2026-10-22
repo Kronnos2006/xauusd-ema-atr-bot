@@ -69,6 +69,33 @@ jobs:
           if [ -n "$abierto" ]; then gh issue comment "$abierto" -R "$REPO" -b "$msg"
           else gh issue create -R "$REPO" -l guardia -t "Guardia: KT-002 necesita reparación" -b "$msg"; fi
 
+      - name: Spread y deslizamiento de Binance (cada hora, para riesgo-costos)
+        continue-on-error: true
+        run: |
+          mkdir -p data/mercado
+          python3 - <<'PY'
+          import json, urllib.request, datetime as dt, os
+          B = "https://data-api.binance.vision/api/v3"
+          bt = json.load(urllib.request.urlopen(f"{B}/ticker/bookTicker?symbol=BTCUSDT", timeout=20))
+          d = json.load(urllib.request.urlopen(f"{B}/depth?symbol=BTCUSDT&limit=500", timeout=20))
+          bid, ask = float(bt["bidPrice"]), float(bt["askPrice"]); mid = (bid + ask) / 2
+          def slip(levels, usd):  # costo de barrer el libro por "usd" dólares, en % sobre el precio medio
+              q = usd; cost = 0.0; got = 0.0
+              for p, a in levels:
+                  p, a = float(p), float(a); take = min(a * p, q); cost += take; got += take / p; q -= take
+                  if q <= 0: break
+              return None if q > 0 else round((cost / got / mid - 1) * 100, 5)
+          fila = [dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"), bid, ask, round((ask - bid) / mid * 100, 5),
+                  slip(d["asks"], 1000), slip(d["asks"], 10000), slip(d["asks"], 100000)]
+          f = "data/mercado/spread_btcusdt.csv"; nuevo = not os.path.exists(f)
+          with open(f, "a") as h:
+              if nuevo: h.write("utc,bid,ask,spread_pct,desliz_compra_1k_pct,desliz_compra_10k_pct,desliz_compra_100k_pct\n")
+              h.write(",".join("" if x is None else str(x) for x in fila) + "\n")
+          print(fila)
+          PY
+          git config user.name "guardia-bot"; git config user.email "guardia-bot@users.noreply.github.com"
+          git add data/mercado/spread_btcusdt.csv && git commit -q -m "Mercado: spread BTCUSDT $(date -u +%Y-%m-%dT%H:%MZ)" && for i in 1 2 3; do git pull -q --rebase && git push -q && break; sleep 10; done || true
+
       - name: Velas de BTC y régimen de tendencia (una vez al día)
         if: github.event_name == 'workflow_dispatch' || github.event.schedule == '37 * * * *'
         run: |
