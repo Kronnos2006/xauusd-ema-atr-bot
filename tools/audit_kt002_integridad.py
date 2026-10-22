@@ -25,11 +25,20 @@ def inspect(path):
     text = raw.decode("utf-8-sig")
     rows = list(csv.DictReader(text.splitlines()))
     errors = []
+    required = {"run_utc", "base_open_utc", "target_open_utc", "actual_ret", "scored_utc"}
+    with Path(path).open(newline="", encoding="utf-8-sig") as stream:
+        reader = csv.DictReader(stream)
+        headers = set(reader.fieldnames or [])
+    missing_columns = sorted(required - headers)
+    if missing_columns:
+        errors.append("Columnas obligatorias ausentes: " + ", ".join(missing_columns))
+    if not rows:
+        errors.append("CSV sin predicciones: no se puede certificar integridad")
     bases = []
     scored = 0
     early_scores = 0
     bad_targets = 0
-    late_forecasts = 0
+    early_forecasts = 0
     incomplete = 0
     for idx, row in enumerate(rows, 2):
         try:
@@ -44,7 +53,7 @@ def inspect(path):
                 bad_targets += 1
             # Vela base cerrada al cabo de una hora: pronóstico posterior.
             if run < base + HOUR:
-                late_forecasts += 1  # etiqueta histórica: predicción antes de cierre
+                early_forecasts += 1
             has_actual = bool(row.get("actual_ret", "").strip())
             if has_actual:
                 scored += 1
@@ -83,11 +92,11 @@ def inspect(path):
         "horas_omitidas_ultimas_24_bases": len(missing24),
         "horas_omitidas_ultimas_24_bases_utc": missing24,
         "objetivos_con_desfase": bad_targets,
-        "pronosticos_antes_de_cierre_base": late_forecasts,
+        "pronosticos_antes_de_cierre_base": early_forecasts,
         "puntuaciones_tempranas_o_sin_fecha": early_scores,
         "filas_sin_retorno_real_pero_con_fecha_puntuacion": incomplete,
         "errores_estructura": errors,
-        "veredicto_integridad_basica": "REVISAR" if (dup or bad_targets or late_forecasts or early_scores or incomplete or errors) else "SIN_ANOMALIAS_ESTRUCTURALES",
+        "veredicto_integridad_basica": "REVISAR" if (dup or bad_targets or early_forecasts or early_scores or incomplete or errors) else "SIN_ANOMALIAS_ESTRUCTURALES",
         "limites": "No verifica inferencia real, hora de publicación, logs de Actions, tasas de acierto ni rentabilidad.",
     }
 
