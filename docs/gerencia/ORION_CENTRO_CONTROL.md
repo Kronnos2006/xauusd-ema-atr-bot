@@ -1,0 +1,45 @@
+# ORION — Centro de Control del Dueño (v1)
+
+**Alcance:** aplicación local de solo lectura; gráficas, métricas y organigrama obtenidos de datos reales del repositorio.
+
+## Instalación y ejecución
+En una computadora con Python 3.10+ y una copia del repositorio actualizada:
+
+```bash
+python tools/centro_control.py status
+python tools/centro_control.py serve
+```
+
+Abrir **http://127.0.0.1:8765** en el navegador de la misma computadora. Detener con Ctrl+C.
+No se necesitan paquetes externos ni tokens de Claude.
+
+Para generar una carpeta estática sin iniciar servidor:
+
+```bash
+python tools/centro_control.py build
+```
+
+Se crea `.local/centro-control/index.html` y `data.json`. Como el dashboard usa `fetch('./data.json')`, abrir el HTML con `file://` puede bloquear la carga: usar `serve` o `python -m http.server` en esa carpeta.
+
+## Qué es real y qué no
+- **Datos auténticos pero no en vivo:** la fuente KT-002 es `data/kt002/resumen.json` de la copia local. Para refrescar, actualizar la copia del repositorio y reiniciar `serve`; la página no ejecuta automáticamente `git pull`.
+- Los intervalos Wilson son los publicados; el dashboard no reestima modelos ni modifica preregistros.
+- **Grafo:** se basa en `docs/gerencia/equipo.json`; las líneas indican `reporta_a`, no llamadas o actividad real. Independencia se colorea aparte.
+- **Github Actions/PRs/Oficina:** enlaces que abren los servicios originales. La Oficina es privada; esta web no sincroniza órdenes ni escalaciones.
+- No hay autenticación ni servidor público. Escucha exclusivamente en `127.0.0.1`; no exponer por túneles ni redes sin implementar control de acceso.
+- Sin órdenes, brokers, MT5, dinero real, escritura en GitHub, creación de agentes, lanzamiento de workflows ni modificación de KT-002. **No es una terminal de ejecución remota.**
+- Las operaciones futuras solo se habilitarán con backend autenticado, control de roles, confirmación explícita, registros inmutables y revisiones independientes; se excluirán acciones prohibidas.
+- No se mide el consumo real semanal de Claude porque esa información no existe en los archivos.
+
+## Estructura
+- `tools/centro_control.py`: assemble, build, status y servidor local.
+- `dashboard/index.html`: interfaz responsive sin CDN ni dependencias de red.
+- `tests/test_centro_control.py`: pruebas de integridad de entradas y generación.
+- Salidas bajo `.local/centro-control/` no deben incluirse en commits ni desplegarse públicamente sin revisar datos.
+
+## Próximo incremento
+1. Integración read-only autenticada de GitHub (Actions/PR/issues) con caché, estados observados y timestamps. Nunca inferir "agente trabajando" solo por organigrama.
+2. Comandos de gestión de issues con alcance limitado; separar consultas y mutaciones, pedir confirmación explícita.
+3. Integración con Oficina privada **solo** si hay un conector autorizado compatible; sin copiar datos privados al frontend estático.
+4. Gráficos de series históricas por snapshot; no inventar evolución desde un solo resumen puntual.
+5. Auditoría de seguridad antes de permitir acceso externo.

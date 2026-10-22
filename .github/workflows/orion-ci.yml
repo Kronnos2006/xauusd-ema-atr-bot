@@ -1,0 +1,31 @@
+name: ORION Centro de Control - pruebas (sin Claude)
+
+on:
+  pull_request:
+    paths:
+      - dashboard/**
+      - tools/centro_control.py
+      - tests/test_centro_control.py
+      - .github/workflows/orion-ci.yml
+      - docs/gerencia/ORION_CENTRO_CONTROL.md
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Pruebas sintéticas
+        run: python -m unittest discover -s tests -p 'test_centro_control.py' -v
+      - name: Ensamblar panel con snapshot publicado
+        run: |
+          python tools/centro_control.py status
+          python tools/centro_control.py build
+          python -c 'import json; d=json.load(open(".local/centro-control/data.json")); assert d["meta"]["readonly"]; assert d["kt002"]["rentabilidad_evaluada"] is False; print("ORION datos válidos:", len(d["agents"]["nodes"]), "agentes")'
