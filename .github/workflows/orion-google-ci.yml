@@ -1,0 +1,27 @@
+name: ORION Google - seguridad del acceso
+
+on:
+  pull_request:
+    paths:
+      - gateway/**
+      - tests/test_orion_google.py
+      - .github/workflows/orion-google-ci.yml
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Instalar dependencias del gateway
+        run: python -m pip install -r gateway/requirements.txt
+      - name: Pruebas de identidad y bloqueo de anónimos
+        run: python -m unittest discover -s tests -p 'test_orion_google.py' -v
+      - name: Verificar sintaxis
+        run: python -m py_compile gateway/orion_google.py
