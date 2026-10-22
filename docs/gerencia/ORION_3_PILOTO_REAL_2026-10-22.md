@@ -54,3 +54,11 @@ El piloto ejecuta también el test upstream `tests/test_risk_router_path_map.py`
 Esta es una **prueba real del código del upstream**, no una simulación creada por ORION. **No equivale a que Desconfiado haya aprobado**, ni garantiza que una propuesta de TradingAgents sea segura o científicamente válida; la autoridad del auditor independiente y la prohibición de órdenes reales permanecen fuera de ese framework.
 
 La instalación de `pytest` se realiza únicamente en el runner efímero, sin credenciales, sin copiar datasets y sin habilitar un servicio permanente.
+
+## B4 — Prueba del grafo completo SIN LLM externo
+
+Tras comprobar las rutas del debate financiero, se incorpora la prueba oficial upstream `tests/test_graph_end_to_end.py::test_a_full_run_reaches_a_logged_decision` (variantes free-text y structured). Esta prueba sustituye el proveedor de modelos por un `ScriptedModel` y los accesos a datos por respuestas sintéticas mediante monkeypatch/fixtures, comprobando que analistas, investigación, decisión y registro del resultado ejecuten su flujo sin servicios externos.
+
+**Interpretación válida si el CI pasa:** TradingAgents v0.7.0 efectivamente puede ejecutar un recorrido de su grafo multiagente con entradas ficticias y modelos simulados, sin gastar tokens de Claude/OpenAI. **No demuestra** predicción rentable, calidad de razonamiento de los LLM, cumplimiento de nuestro veto independiente Desconfiado ni interoperabilidad directa de las sesiones privadas de ambos chats.
+
+La ruta ejecutada se verifica mediante los tests del upstream, no por una simulación nuestra que finja ejecutar TradingAgents. El grafo se conserva solo dentro del runner desechable sin compartir datos con KT-002/KT-003.
