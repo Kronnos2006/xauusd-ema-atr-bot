@@ -1,0 +1,33 @@
+name: KT-002 integridad (solo lectura, sin Claude)
+
+on:
+  pull_request:
+    paths:
+      - tools/audit_kt002_integridad.py
+      - tests/test_audit_kt002_integridad.py
+      - .github/workflows/kt002-integridad-ci.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  revisar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Pruebas sintéticas (sin modelos ni red)
+        run: python -m unittest discover -s tests -p 'test_audit_kt002_integridad.py' -v
+      - name: Leer CSV publicado (sin modificarlo)
+        run: |
+          python tools/audit_kt002_integridad.py --csv data/kt002/predicciones.csv > "$RUNNER_TEMP/kt002-integridad.json"
+          cat "$RUNNER_TEMP/kt002-integridad.json"
+          echo '## Control estático KT-002' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Este análisis es solo lectura. No certifica ejecuciones de los modelos ni ventaja económica.' >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          cat "$RUNNER_TEMP/kt002-integridad.json" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
