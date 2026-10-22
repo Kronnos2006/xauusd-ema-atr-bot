@@ -70,7 +70,8 @@ Una plataforma técnica auditable que detecta fallos, conserva evidencia y permi
 - [x] Auditoría documental en `docs/coordination/AUDITORIA_EXTERNA_2026-10-22.md`.
 - [x] Issue de hallazgos #1.
 - [x] Comprobación retrospectiva de integridad básica de las 37 filas publicadas (lectura, sin nuevas inferencias).
-- [ ] Revisión de logs de Actions y auditoría independiente.
-- [x] Tests de integridad en rama y PR: 8/8 aprobados en [Actions run 39786254352](https://github.com/Kronnos2006/xauusd-ema-atr-bot/actions/runs/39786254352); la integración en master sigue pendiente de revisión independiente.
+- [x] Revisión de logs de Actions completada para el inspector: [run 39795858163](https://github.com/Kronnos2006/xauusd-ema-atr-bot/actions/runs/39795858163), 8/8 pruebas OK. La auditoría independiente **sigue pendiente**.
+- [ ] Veredicto independiente de Desconfiado y comprobación operativa de Vigía; entrega preparada en [paquete de auditoría](../coordination/ENTREGA_AUDITOR_FASE2_2026-10-22.md).
+- [x] Tests de integridad en rama y PR #3: 8/8 aprobados incluso en la última versión ([run 39795858163](https://github.com/Kronnos2006/xauusd-ema-atr-bot/actions/runs/39795858163)); integración en master y primera verificación del cron aún pendientes de auditoría.
 - [ ] Anexos verificables del analista.
 - [ ] Diseño e integración de la Oficina del Dueño.
