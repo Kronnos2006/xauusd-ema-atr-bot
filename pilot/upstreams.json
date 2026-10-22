@@ -1,0 +1,10 @@
+{
+  "OpenHands/OpenHands": {
+    "commit": "542aa917de74d24d3f1eb7abd86622097bfff21f",
+    "license": "MIT"
+  },
+  "TauricResearch/TradingAgents": {
+    "commit": "e8f5503e9b86d5c2710b0c76b1f686703968c9df",
+    "license": "Apache-2.0"
+  }
+}
