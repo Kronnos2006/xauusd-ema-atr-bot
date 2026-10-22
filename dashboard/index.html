@@ -34,7 +34,7 @@ a{color:#9cc8ff;text-decoration:none}a:hover{text-decoration:underline}button{cu
 <section class="section" id="live"><div class="telemetry-grid"><div class="card">
 <div class="head"><div><h2>GitHub Actions · ejecuciones reales</h2><p class="muted" id="live-time">Consulta pública; no incluye tareas privadas de Claude</p></div><button class="btn" id="refresh-live">Actualizar</button></div><div id="workflow-runs"><p>Consultando GitHub…</p></div></div>
 <div class="card"><div class="head"><div><h2>Tareas abiertas y decisiones</h2><p class="muted">Issues y revisiones; la lista puede estar incompleta</p></div></div><div id="open-issues"><p>Consultando GitHub…</p></div></div></div>
-<div class="card"><div class="head"><h2>Conexión entre agentes: realidad observable</h2></div>
+<div class="card"><div class="head"><h2>Cola ORION · coordinación entre operadores</h2><span class="muted">Issues públicos, no comandos ejecutados</span></div><div id="orion-queue"><p>Consultando solicitudes…</p></div></div><div class="card"><div class="head"><h2>Conexión entre agentes: realidad observable</h2></div>
 <p>El organigrama muestra relaciones declaradas. Sin conexión autorizada a Claude no se puede comprobar quién está ejecutándose ahora, ni enviarle órdenes. Una actividad de GitHub Actions tampoco demuestra que un agente haya intervenido.</p>
 <div class="agent-status"><strong class="warn">Agentes Claude: actividad NO VERIFICADA</strong> · <span id="live-refreshed">Sin consulta</span></div>
 </div></section>
@@ -95,6 +95,7 @@ queryPublic(REPO_API+'/issues?state=open&per_page=12')
 ]);
 const runs=(results[0].workflow_runs||[]),issues=(results[1]||[]).filter(x=>!x.pull_request);
 listRows('workflow-runs',runs,'runs');listRows('open-issues',issues,'issues');
+const queue=issues.filter(x=>/^\[ORION\]/i.test(x.title||''));listRows('orion-queue',queue,'issues');
 const alertBox=$('alerts');alertBox.replaceChildren();let failed=runs.filter(x=>x.conclusion==='failure');
 let active=runs.filter(x=>x.status==='in_progress'||x.status==='queued');
 [
@@ -102,7 +103,7 @@ let active=runs.filter(x=>x.status==='in_progress'||x.status==='queued');
 [active.length+' ejecuciones en cola o proceso',active.length?'warn':'status'],
 [issues.length+' issues abiertos entre los últimos 12',issues.length?'warn':'status']
 ].forEach(([line,col])=>{const p=document.createElement('div');p.className='rowline';p.textContent=line;p.classList.add(col);alertBox.appendChild(p)});
-lastLive={at:new Date().toISOString(),runs,issues};
+lastLive={at:new Date().toISOString(),runs,issues,queue};
 $('live-refreshed').textContent='Consultado: '+fmtTime(lastLive.at);
 $('live-time').textContent='Datos de API pública · '+fmtTime(lastLive.at)+' · No incluye Claude privado';
 $('command-output').textContent='Última consulta: '+fmtTime(lastLive.at)+' · '+runs.length+' corridas, '+issues.length+' issues listados.';
@@ -128,7 +129,7 @@ const last=coords[coords.length-1];add(svg,el('circle',{cx:last[0],cy:last[1],r:
 $('refresh-live').addEventListener('click',refreshLive);
 $('ops-refresh').addEventListener('click',refreshLive);
 $('status-copy').addEventListener('click',()=>{
-const txt=lastLive?'ORION · '+lastLive.at+' · '+lastLive.runs.length+' ejecuciones públicas; '+lastLive.issues.length+' issues visibles. Claude privado NO VERIFICADO.':'ORION: telemetría no disponible. Claude privado NO VERIFICADO.';
+const txt=lastLive?'ORION · '+lastLive.at+' · '+lastLive.runs.length+' ejecuciones públicas; '+lastLive.issues.length+' issues visibles; '+lastLive.queue.length+' solicitudes ORION. Ningún agente convocado automáticamente. Claude privado NO VERIFICADO.':'ORION: telemetría no disponible. Claude privado NO VERIFICADO.';
 if(navigator.clipboard?.writeText)navigator.clipboard.writeText(txt).then(()=>$('command-output').textContent='Diagnóstico copiado').catch(()=>$('command-output').textContent=txt);
 else $('command-output').textContent=txt;
 });
