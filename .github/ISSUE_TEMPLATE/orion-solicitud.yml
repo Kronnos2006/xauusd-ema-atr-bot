@@ -1,0 +1,51 @@
+name: "ORION · Solicitud coordinada"
+description: "Registrar una tarea para gerencia, Claude o ChatGPT sin cambiar experimentos ni evadir revisiones."
+title: "[ORION] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Esta solicitud no ejecuta agentes automáticamente. Claude y ChatGPT solo pueden atenderla cuando tengan acceso autorizado al repositorio. Todo cambio de código requiere rama y PR; los revisores independientes conservan sus vetos.
+  - type: dropdown
+    id: destination
+    attributes:
+      label: Responsable propuesto
+      options:
+        - Gerencia (triage)
+        - Claude (si lo consulta su flujo autorizado)
+        - ChatGPT (cuando el dueño solicite atenderlo)
+        - Desarrollo
+        - Datos/Operaciones
+        - Auditoría independiente
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Tipo de solicitud
+      options:
+        - Consultar estado / auditoría documental
+        - Corregir panel o documentación
+        - Revisar un fallo de GitHub Actions
+        - Proponer una mejora (sin aplicarla)
+        - Solicitar aprobación independiente
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: Objetivo y evidencia
+      description: "Enlace a commit, issue, logs o archivo. Nunca contraseñas ni datos privados."
+      placeholder: "Qué hay que revisar y por qué"
+    validations:
+      required: true
+  - type: checkboxes
+    id: protection
+    attributes:
+      label: Salvaguardas
+      options:
+        - label: "No autoriza dinero real, cambios a KT-002/KT-003, holdouts, resultados, reglas, auditorías independientes ni acceso a secretos."
+          required: true
+        - label: "Entiendo que abrir el issue no ejecuta a Claude ni a ChatGPT de forma automática."
+          required: true

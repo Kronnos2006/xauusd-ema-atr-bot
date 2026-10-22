@@ -68,3 +68,17 @@ El contenido sigue reflejando un snapshot de GitHub con fecha UTC; aunque el des
 - El sitio de GitHub Pages es **público**. No contiene credenciales ni descripción privada de agentes en el snapshot. No introducir claves ni información de la Oficina privada.
 - **Actualización**: las métricas de KT-002 se reconstruyen al publicar desde GitHub, mientras las tarjetas de Actions/Issues realizan peticiones directas al ver el panel. Si se abre desde celular, GitHub Pages debe estar operativo.
 - **Pendiente** para operaciones de escritura y flujos de aprobación: backend autenticado, privilegios mínimos, registro de órdenes, protección contra abuso y auditoría externa. No se puede habilitar de forma segura en una web pública estática.
+
+
+## Publicación conjunta sin sobrescribir el visor de Claude
+Desde la versión protegida, el **único** workflow que debe desplegar GitHub Pages es `.github/workflows/orion-pages.yml`. En un mismo artefacto publica:
+- `https://kronnos2006.github.io/xauusd-ema-atr-bot/` → ORION;
+- `https://kronnos2006.github.io/xauusd-ema-atr-bot/orion/` → ORION (alias);
+- `https://kronnos2006.github.io/xauusd-ema-atr-bot/visor/` → visor existente creado por Claude, copiado sin cambios de `docs/visor/index.html`.
+
+Las URLs son públicas. El publicador comprueba que el visor de Claude se conserva byte por byte y que ORION no publica la Oficina privada. No editar el visor de Claude desde ORION; sus cambios de fuente se incorporan de manera íntegra a la siguiente publicación.
+
+### Cooperación y trabajo desde el celular
+ORION enlaza a **Issues → Nueva incidencia**, usando `.github/ISSUE_TEMPLATE/orion-solicitud.yml`. Las instrucciones se registran con la cuenta autenticada de GitHub, se asignan por responsabilidad y se ejecutan exclusivamente cuando Claude, ChatGPT o un operador autorizado las acepten por un canal conectado. Abrir un issue **no invoca agentes**.
+
+Consultar el [protocolo de coordinación](../coordination/ORION_PROTOCOLO_COOPERACION.md) antes de editar workflows, visores o permisos. Las órdenes automáticas y la telemetría privada de Claude aún necesitan un servicio autorizado, autenticación, controles de acceso y auditoría. GitHub Pages no proporciona esas capacidades por sí mismo.

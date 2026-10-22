@@ -74,6 +74,15 @@ class CentroControlTests(unittest.TestCase):
             self.assertEqual(points[-1]["rates"]["timesfm"],0.5)
             self.assertEqual(points[-1]["rates"]["siempre_sube"],0.5)
 
+    def test_public_has_only_public_navigation(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);self.fixture(root)
+            out=root/"public";mod.build(out,root,public=True)
+            j=json.loads((out/"data.json").read_text(encoding="utf-8"))
+            self.assertNotIn("office",j["governance"]["links"])
+            self.assertTrue(j["governance"]["links"]["visor"].endswith("/visor/"))
+            self.assertIn("github.com",j["governance"]["links"]["tasks"])
+
     def test_duplicate_agent(self):
         with tempfile.TemporaryDirectory() as d:
             root=Path(d);self.fixture(root, duplicate=True)
