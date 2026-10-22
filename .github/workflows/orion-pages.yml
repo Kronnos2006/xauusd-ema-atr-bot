@@ -8,6 +8,8 @@ on:
       - tools/centro_control.py
       - docs/gerencia/equipo.json
       - data/kt002/resumen.json
+      - data/kt002/predicciones.csv
+      - tests/test_centro_control.py
       - .github/workflows/orion-pages.yml
   schedule:
     - cron: '27 */4 * * *'
