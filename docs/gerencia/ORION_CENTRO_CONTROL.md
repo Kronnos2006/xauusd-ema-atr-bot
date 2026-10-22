@@ -57,3 +57,14 @@ La versión pública elimina el enlace a la Oficina privada y las descripciones 
 
 Para actualizarlo manualmente: Actions → `ORION - Publicar GitHub Pages (móvil)` → Run workflow.
 El contenido sigue reflejando un snapshot de GitHub con fecha UTC; aunque el despliegue sea reciente, los datos de KT-002 pueden estar atrasados. No poner órdenes, contraseñas, datos personales ni decisiones privadas en este sitio público.
+
+
+## ORION v2 — telemetría pública y gráficos históricos (2026-10-22)
+- **Histórico prospectivo real** a partir de `data/kt002/predicciones.csv`: solo observaciones evaluadas, únicas y bases en horas UTC divisibles por cuatro. Tasas acumuladas comparadas con el benchmark; no son operaciones ni rendimiento económico.
+- **Actividad verificada** consulta sin token la API pública de GitHub: últimas 12 corridas de Actions e issues abiertos recientes. La consulta sale directamente del navegador, indica cuándo se realizó y muestra **NO VERIFICADO** si falla la API (incluidos límites de solicitudes).
+- **Alertas** se basan en ese subconjunto de ejecuciones e issues, no son una certificación integral de todos los workflows.
+- **Consola segura** admite actualizar la consulta y copiar un diagnóstico. No crea issues, no reejecuta workflows, no llama agentes ni altera datos.
+- **Agentes Claude**: la red se basa en configuración `equipo.json`; la actividad de agentes privados continúa **NO VERIFICADA**. No fabricar estado «en vivo» sin telemetría explícita de esos agentes.
+- El sitio de GitHub Pages es **público**. No contiene credenciales ni descripción privada de agentes en el snapshot. No introducir claves ni información de la Oficina privada.
+- **Actualización**: las métricas de KT-002 se reconstruyen al publicar desde GitHub, mientras las tarjetas de Actions/Issues realizan peticiones directas al ver el panel. Si se abre desde celular, GitHub Pages debe estar operativo.
+- **Pendiente** para operaciones de escritura y flujos de aprobación: backend autenticado, privilegios mínimos, registro de órdenes, protección contra abuso y auditoría externa. No se puede habilitar de forma segura en una web pública estática.
