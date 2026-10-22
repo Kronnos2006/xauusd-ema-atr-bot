@@ -1,0 +1,29 @@
+name: Resumen gerente KT-002 (sin Claude, solo lectura)
+
+on:
+  pull_request:
+    paths:
+      - tools/resumen_gerente_kt002.py
+      - tests/test_resumen_gerente_kt002.py
+      - .github/workflows/resumen-gerente-ci.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  resumen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validar con datos sintéticos
+        run: python -m unittest discover -s tests -p 'test_resumen_gerente_kt002.py' -v
+      - name: Generar resumen compacto desde snapshot versionado
+        run: |
+          python tools/resumen_gerente_kt002.py | tee "$RUNNER_TEMP/resumen-gerente.txt"
+          echo '## Resumen para gerente (solo archivo, no Oficina privada)' >> "$GITHUB_STEP_SUMMARY"
+          cat "$RUNNER_TEMP/resumen-gerente.txt" >> "$GITHUB_STEP_SUMMARY"
