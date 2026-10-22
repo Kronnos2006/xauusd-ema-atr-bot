@@ -7,6 +7,8 @@ on:
       - tests/test_resumen_gerente_kt002.py
       - .github/workflows/resumen-gerente-ci.yml
   workflow_dispatch:
+  schedule:
+    - cron: '20 13 * * *' # resumen diario UTC; se activa solo en rama predeterminada
 
 permissions:
   contents: read
