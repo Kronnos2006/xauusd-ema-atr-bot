@@ -85,10 +85,17 @@ def assemble(root=ROOT):
     }
 
 
-def build(out=DEFAULT_OUT, root=ROOT):
+def build(out=DEFAULT_OUT, root=ROOT, public=False):
     out.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(root / "dashboard/index.html", out / "index.html")
-    (out / "data.json").write_text(json.dumps(assemble(root), ensure_ascii=False, indent=2), encoding="utf-8")
+    snapshot = assemble(root)
+    if public:
+        # GitHub Pages es público. Nunca enlazar ni copiar recursos de la Oficina privada.
+        snapshot["governance"]["links"].pop("office", None)
+        snapshot["meta"]["publication"] = "PUBLIC_GITHUB_PAGES"
+        for member in snapshot["agents"]["nodes"]:
+            member["description"] = ""  # Las instrucciones internas no son telemetría pública.
+    (out / "data.json").write_text(json.dumps(snapshot, ensure_ascii=False, indent=2), encoding="utf-8")
     return out
 
 
@@ -97,6 +104,7 @@ def main():
     p.add_argument("command", choices=("status", "build", "serve"))
     p.add_argument("--port", type=int, default=8765)
     p.add_argument("--out", type=Path, default=DEFAULT_OUT)
+    p.add_argument("--public", action="store_true", help="Genera un snapshot seguro para GitHub Pages (sin enlaces privados)")
     args = p.parse_args()
     if args.command == "status":
         d = assemble()
@@ -105,7 +113,7 @@ def main():
         print(f"Agentes registrados: {len(d['agents']['nodes'])}; independientes: {len(d['agents']['independent'])}")
         print(f"Snapshot UTC: {d['meta']['source_updated_utc']}. Paper only; edge no demostrado.")
         return
-    out = build(args.out.resolve())
+    out = build(args.out.resolve(), public=args.public)
     if args.command == "build":
         print(f"Centro generado: {out / 'index.html'}")
         print("Para verlo, ejecutar: python tools/centro_control.py serve")

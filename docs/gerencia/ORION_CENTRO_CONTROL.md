@@ -43,3 +43,17 @@ Se crea `.local/centro-control/index.html` y `data.json`. Como el dashboard usa 
 3. Integración con Oficina privada **solo** si hay un conector autorizado compatible; sin copiar datos privados al frontend estático.
 4. Gráficos de series históricas por snapshot; no inventar evolución desde un solo resumen puntual.
 5. Auditoría de seguridad antes de permitir acceso externo.
+
+
+## ORION publicado para celular (GitHub Pages)
+El workflow `.github/workflows/orion-pages.yml` genera un sitio estático público en GitHub Pages cuando cambian los datos, cada cuatro horas y por ejecución manual.
+
+**Enlace previsto después de la primera implementación exitosa:**
+`https://kronnos2006.github.io/xauusd-ema-atr-bot/`
+
+**Importante:** este enlace debe confirmarse desde la página de GitHub Actions/Pages. GitHub Pages puede requerir una habilitación inicial por el propietario en **Settings → Pages → Build and deployment → Source → GitHub Actions**; sin eso no se puede afirmar que esté publicado.
+
+La versión pública elimina el enlace a la Oficina privada y las descripciones internas de los agentes; no utiliza claves ni credenciales. El número de agentes y los nombres/relaciones que aparecen son metadatos publicados, **no estado de actividad en vivo**.
+
+Para actualizarlo manualmente: Actions → `ORION - Publicar GitHub Pages (móvil)` → Run workflow.
+El contenido sigue reflejando un snapshot de GitHub con fecha UTC; aunque el despliegue sea reciente, los datos de KT-002 pueden estar atrasados. No poner órdenes, contraseñas, datos personales ni decisiones privadas en este sitio público.

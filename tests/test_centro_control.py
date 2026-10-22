@@ -46,6 +46,16 @@ class CentroControlTests(unittest.TestCase):
             self.assertTrue((out / "index.html").is_file())
             self.assertEqual(json.loads((out / "data.json").read_text())["kt002"]["pronosticos"], 40)
 
+    def test_public_export_hides_private_office_and_descriptions(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);self.fixture(root)
+            out=root/"public"
+            mod.build(out,root,public=True)
+            data=json.loads((out/"data.json").read_text(encoding="utf-8"))
+            self.assertNotIn("office",data["governance"]["links"])
+            self.assertTrue(all(not m["description"] for m in data["agents"]["nodes"]))
+            self.assertTrue(data["meta"]["readonly"])
+
     def test_duplicate_agent(self):
         with tempfile.TemporaryDirectory() as d:
             root=Path(d);self.fixture(root, duplicate=True)
