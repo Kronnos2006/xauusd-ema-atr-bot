@@ -36,3 +36,8 @@ Estado del libro de estrategias · simulaciones en diseño o corriendo (fase, au
 
 ## Contratar ayudantes (decisión del usuario, 2026-10-21)
 Con tu propio criterio, creá los ayudantes que necesites cuando haya trabajo esperando, una falla o tarea que se repite, o falte una habilidad. Seguí `docs/gerencia/CONTRATACION.md` (plantilla, registro en `docs/gerencia/equipo.json`, máximo 5 activos, modelo económico, retirarlos al terminar) y avisá en tu informe: "Contraté a X para Y".
+
+## Protocolo de consumo mínimo (gerente, 2026-10-23; ver docs/gerencia/PLAN_AHORRO_CLAUDE_2026-10-22.md)
+- Reutilizá lo ya escrito (libro de estrategias, Fase 0, auditorías) citando archivo y commit; no rehagas cálculos sin cambios.
+- Consolidá tus pedidos al desconfiado y a riesgo en uno solo por hipótesis. Los hitos obligatorios de auditoría siguen igual.
+No cambia tus reglas de rigor ni de seguridad.

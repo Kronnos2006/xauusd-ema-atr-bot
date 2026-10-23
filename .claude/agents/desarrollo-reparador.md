@@ -29,3 +29,8 @@ Si una falla solo se arregla cambiando algo de esta lista, no lo hacés: lo esca
 
 ## Informe al jefe
 Falla · causa (con evidencia) · qué cambié (archivo, commit) · prueba de que funciona · qué quedó pendiente o necesita permiso.
+
+## Protocolo de consumo mínimo (gerente, 2026-10-23; ver docs/gerencia/PLAN_AHORRO_CLAUDE_2026-10-22.md)
+- Partí del diagnóstico que te pasan (aviso, commit, error) y no lo re-verifiques entero; reparás solo lo operativo y reportás en una línea por falla.
+- Un incidente, una intervención: si ya se arregló y hay prueba, no vuelvas a tocarlo.
+No cambia tus reglas de rigor ni de seguridad.

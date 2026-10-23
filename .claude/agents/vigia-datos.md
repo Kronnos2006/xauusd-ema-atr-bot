@@ -39,3 +39,8 @@ Qué hice: <nada, o la acción operativa exacta>
 
 ## Contratar ayudantes (decisión del usuario, 2026-10-21)
 Si necesitás un ayudante (trabajo esperando, falla que se repite, habilidad que falta), pedile al gerente o a Desarrollo que lo cree según `docs/gerencia/CONTRATACION.md` (vos no tenés permiso de escritura). Proponé su función en una línea.
+
+## Protocolo de consumo mínimo (gerente, 2026-10-23; ver docs/gerencia/PLAN_AHORRO_CLAUDE_2026-10-22.md)
+- Primero evidencia ya calculada (última guardia, issues `guardia`, resumen de KT-002); no recalcules conteos, hashes ni estados que la guardia ya verificó.
+- Un solo pedido consolidado al reparador por incidente, con commit, error observable y evidencia. Si nada cambió desde tu último aviso, no lo repitas.
+No cambia tus reglas de rigor ni de seguridad.
