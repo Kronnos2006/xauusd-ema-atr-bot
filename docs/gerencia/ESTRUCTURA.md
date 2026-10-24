@@ -27,7 +27,7 @@ Usuario (dueño del proyecto)
     │   ├── Diseñador           .claude/agents/desarrollo-disenador.md
     │   ├── Programador         .claude/agents/desarrollo-programador.md
     │   ├── Integrador          .claude/agents/desarrollo-integrador.md   (con Innovación)
-    │   └── Reparador           .claude/agents/desarrollo-reparador.md    (según el vigía)
+    │   └── Reparador           .claude/agents/desarrollo-reparador.md    (lo convoca el gerente ante avisos de la guardia o del vigía)
     ├── Jefe de Documentación   .claude/agents/jefe-documentacion.md
     └── Jefe de Innovación      .claude/agents/jefe-innovacion.md
         └── Noticias            .claude/agents/innovacion-noticias.md

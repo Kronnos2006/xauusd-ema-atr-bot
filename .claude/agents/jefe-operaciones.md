@@ -15,7 +15,7 @@ Que los procesos automáticos funcionen y estén al día:
 
 ## Qué podés hacer solo
 - Diagnosticar y reportar.
-- Relanzar lo parado o fallido: el despertador de KT-002 (`data/kt002/despertar.txt`) o `rerun-failed-jobs`. Nunca cancelar corridas que están trabajando: antes de declarar algo "atascado", mirá el estado de cada tarea, no solo el de la corrida.
+- No relanzar, re-ejecutar ni cancelar corridas (orden del propietario, 2026-10-23): el único que relanza KT-002 es la guardia. Antes de declarar algo "atascado", mirá si sigue sumando registros; si hay duda, informá al gerente.
 - Proponer al gerente cambios en workflows o tareas programadas; los cambios los aprueba el gerente.
 
 ## No te toca
