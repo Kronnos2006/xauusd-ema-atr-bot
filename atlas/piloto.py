@@ -165,6 +165,8 @@ def main(argv=None, ahora: dt.datetime | None = None) -> int:
     tesis = analizar(corte, regs, PROSP if o.prospectiva else RETRO)
     if o.prospectiva:
         sellar_prospectiva(tesis, corte, ahora)
+        # Un reloj local y un JSONL no son un sello de publicación independiente.
+        tesis["sello_externo_verificado"] = False
     f = guardar(tesis, Path(o.salida))
     if not o.desde_instantanea:
         guardar_instantanea(regs, tesis["id"], Path(o.salida))
