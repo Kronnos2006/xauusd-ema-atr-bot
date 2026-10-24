@@ -1,0 +1,55 @@
+import json
+import unittest
+from datetime import datetime,timedelta,timezone
+from atlas.barreras_estadisticas import evaluar_folds_operaciones
+from atlas.sello_preregistro import verificar_sello
+from atlas.laboratorio import Senal
+from atlas.validacion_temporal import evaluar_confirmatorio
+
+SHA="a"*40
+PUB="2026-10-24T14:00:00Z"
+def sellar(s,when="2026-10-24T13:00:00Z"):
+    return verificar_sello(s,"Kronnos2006/xauusd-ema-atr-bot",SHA,"research/preregistro.json",
+        lambda repo,sha:[{"head_sha":sha,"created_at":when}],
+        lambda sha,path:json.dumps({"id":s.preregistro}).encode())
+
+class TestBarreras(unittest.TestCase):
+    def test_29_operaciones_invalida_fold(self):
+        r=evaluar_folds_operaciones([[.01,-.01]*14+[.01]],4,4)
+        self.assertEqual(r["folds"][0]["estado"],"INVALIDO")
+        self.assertFalse(r["promocion_permitida"])
+    def test_30_operaciones_y_fold_dominante(self):
+        a=[.03,-.01]*15
+        b=[.01,-.005]*15
+        r=evaluar_folds_operaciones([a,b],4,4)
+        self.assertEqual([f["estado"] for f in r["folds"]],["VALIDO","VALIDO"])
+        self.assertEqual(r["fold_dominante"],0)
+        self.assertIsNotNone(r["t_stat"])
+        self.assertIsNotNone(r["t_stat_sin_dominante"])
+        self.assertEqual(r["n_total"],4)
+    def test_n_inflado_y_reducido(self):
+        for n in (3,5):
+            with self.assertRaises(ValueError):
+                evaluar_folds_operaciones([[.01,-.01]*15],4,n)
+    def test_fecha_igual_o_posterior_rechazada(self):
+        senal=Senal("a",PUB,1,"PRE-1",True)
+        self.assertFalse(sellar(senal,PUB))
+        self.assertFalse(sellar(senal,"2026-10-24T15:00:00Z"))
+        self.assertTrue(sellar(senal))
+    def test_cadena_git_con_documento_distinto(self):
+        s=Senal("a",PUB,1,"PRE-1",True)
+        self.assertFalse(verificar_sello(s,"Kronnos2006/xauusd-ema-atr-bot",SHA,
+                          "x.json",lambda *a:[{"head_sha":SHA,"created_at":"2026-10-24T13:00:00Z"}],
+                          lambda *a:b'{"id":"OTRO"}'))
+    def test_cadena_sin_ancla_rechazada_aunque_bool_true(self):
+        s=Senal("a",PUB,1,"PRE-1",True)
+        self.assertFalse(verificar_sello(s,"Kronnos2006/xauusd-ema-atr-bot",SHA,
+                          "x.json",lambda *a:[],lambda *a:b'{"id":"PRE-1"}'))
+    def test_gate_no_permite_resultado_sin_sello(self):
+        s=Senal("a",PUB,1,"PRE-1",True)
+        with self.assertRaises(ValueError):
+            evaluar_confirmatorio([[.02,-.01]*15],4,4,[s],
+                    "Kronnos2006/xauusd-ema-atr-bot",{"a":(SHA,"x.json")},
+                    lambda *a:[],lambda *a:b'{"id":"PRE-1"}')
+if __name__=="__main__":
+    unittest.main()
