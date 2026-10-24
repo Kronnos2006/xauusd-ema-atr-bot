@@ -1,6 +1,9 @@
 """ATLAS · piloto BTCUSDT: evalúa una predicción publicada de KT-002 en su contexto, en un punto del tiempo.
 
 Uso:  python3 -m atlas.piloto --corte 2026-10-21T00:00:00Z [--eventos ruta.json] [--salida research/atlas/salidas]
+      python3 -m atlas.piloto --corte <hora en punto reciente> --prospectiva --registro research/atlas/registro/tesis.jsonl
+Prospectiva: el corte debe ser pasado y de hace 60 min o menos, con el horizonte de 4 h sin vencer; la hora de
+registro queda fuera de la huella (la huella sigue siendo reproducible desde la instantánea).
 Solo lectura de data/: no modifica KT-002, no descarga, no opera. Escribe solo en --salida.
 La parte medida es determinista: la misma entrada da el mismo `huella_contenido`.
 """
@@ -19,6 +22,10 @@ from .procedencia import Registro, t
 from .tesis import huella
 
 VERSION = "atlas-piloto-0.1"
+RETRO = "retrospectiva (corte histórico), no prospectiva"
+PROSP = "prospectiva: registrada antes de que venza el horizonte de 4 h"
+VENTANA_PROSPECTIVA_MIN = 60
+HORIZONTE = dt.timedelta(hours=4)
 PROHIBIDO = ("data/kt002",)  # aislamiento: jamás se escribe ahí
 
 
@@ -33,7 +40,7 @@ def evaluar(corte: dt.datetime, raiz: Path = Path("."), eventos: str | None = No
     return analizar(corte, obtener(corte, raiz, eventos))
 
 
-def analizar(corte: dt.datetime, registros: list[Registro]) -> dict:
+def analizar(corte: dt.datetime, registros: list[Registro], naturaleza: str = RETRO) -> dict:
     """Determinista: solo depende del corte y de los registros (se guardan como instantánea)."""
     por = lambda pre: [r for r in registros if r.tipo.startswith(pre)]
     velas, spreads, preds, evs = por("vela_1d"), por("spread"), por("prediccion"), por("evento")
@@ -71,7 +78,7 @@ def analizar(corte: dt.datetime, registros: list[Registro]) -> dict:
         "explicacion_prediccion": {"hechos_comprobados": hechos, "inferencias_fundamentadas": inferencias,
                                    "hipotesis_causales_no_demostradas": causales, "informacion_ausente": ausente,
                                    "decision_de_investigacion": rev["decision_investigacion"],
-                                   "naturaleza": "retrospectiva (corte histórico), no prospectiva"},
+                                   "naturaleza": naturaleza},
         "evidencia": [e.como_dict() for e in evid],
         "fuentes": sorted({(f["fuente"], f["hash_sha256"]) for e in evid for f in e.fuentes}, key=str),
         "version_software": VERSION,
@@ -106,21 +113,62 @@ def guardar(tesis: dict, salida: Path) -> Path:
     return f
 
 
-def main(argv=None) -> int:
+def validar_prospectiva(corte: dt.datetime, ahora: dt.datetime) -> None:
+    """Candado: una tesis prospectiva solo vale si se registra pronto tras el corte y antes de que venza."""
+    if corte > ahora:
+        raise ValueError("corte en el futuro")
+    if ahora - corte > dt.timedelta(minutes=VENTANA_PROSPECTIVA_MIN):
+        raise ValueError(f"corte de hace más de {VENTANA_PROSPECTIVA_MIN} min: no es prospectiva")
+    if ahora >= corte + HORIZONTE:
+        raise ValueError("horizonte vencido")
+
+
+def exigir_prediccion_reciente(regs: list[Registro], corte: dt.datetime, max_h: int = 2) -> None:
+    """Una tesis prospectiva evalúa una predicción vigente, no una vieja ni una cobertura faltante."""
+    bases = [t(r.evento_utc) for r in regs if r.tipo == "prediccion" and r.calidad != "faltante" and r.evento_utc]
+    if not bases or corte - max(bases) > dt.timedelta(hours=max_h):
+        raise ValueError(f"sin predicción de KT-002 de las últimas {max_h} h al corte: no hay tesis prospectiva")
+
+
+def sellar_prospectiva(tesis: dict, corte: dt.datetime, ahora: dt.datetime) -> dict:
+    """Agrega hora de registro y vencimiento DESPUÉS de la huella: no cambian la parte medida."""
+    tesis["registrada_utc"] = ahora.isoformat()
+    tesis["vence_utc"] = (corte + HORIZONTE).isoformat()
+    return tesis
+
+
+def main(argv=None, ahora: dt.datetime | None = None) -> int:
     a = argparse.ArgumentParser()
     a.add_argument("--corte", required=True)
     a.add_argument("--eventos")
     a.add_argument("--salida", default="research/atlas/salidas")
     a.add_argument("--raiz", default=".")
     a.add_argument("--desde-instantanea", help="reproduce una tesis desde sus entradas guardadas")
+    a.add_argument("--prospectiva", action="store_true", help="tesis registrada antes de que venza el horizonte")
+    a.add_argument("--registro", help="cadena JSONL donde anexar la tesis (solo anexar)")
     o = a.parse_args(argv)
     corte = t(o.corte)
+    ahora = ahora or dt.datetime.now(dt.timezone.utc)
+    if o.prospectiva:
+        if o.desde_instantanea:
+            raise SystemExit("--prospectiva no se combina con --desde-instantanea")
+        validar_prospectiva(corte, ahora)
     regs = cargar_instantanea(Path(o.desde_instantanea)) if o.desde_instantanea else obtener(corte, Path(o.raiz), o.eventos)
-    tesis = analizar(corte, regs)
+    if o.prospectiva:
+        exigir_prediccion_reciente(regs, corte)
+    tesis = analizar(corte, regs, PROSP if o.prospectiva else RETRO)
+    if o.prospectiva:
+        sellar_prospectiva(tesis, corte, ahora)
     f = guardar(tesis, Path(o.salida))
     if not o.desde_instantanea:
         guardar_instantanea(regs, tesis["id"], Path(o.salida))
     c = tesis["contradicciones"]
+    if o.registro:
+        from .tesis import Registro as Cadena
+        Cadena(o.registro).anexar({"id": tesis["id"], "estado": tesis["estado"], "conclusion": c["conclusion"],
+                                   "huella_contenido": tesis["huella_contenido"],
+                                   **({"naturaleza": "prospectiva", "registrada_utc": tesis["registrada_utc"],
+                                       "vence_utc": tesis["vence_utc"]} if o.prospectiva else {})})
     print(json.dumps({"archivo": str(f), "conclusion": c["conclusion"], "decision": c["decision_investigacion"],
                       "estado": tesis["estado"], "huella": tesis["huella_contenido"]}, ensure_ascii=False))
     return 0

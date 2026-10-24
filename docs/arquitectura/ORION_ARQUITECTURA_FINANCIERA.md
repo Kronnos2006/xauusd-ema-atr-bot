@@ -71,8 +71,8 @@ En los dos cortes el sistema hizo lo que pide la orden: **no pudo justificar la 
 |---|---|---|---|
 | 1. Investigación y matriz | Hecho (lectura de código, sin ejecución) | Sección 1 | Continuar |
 | 2. Arquitectura, contratos, riesgos | Hecho | Secciones 2 y 6, contratos | Continuar |
-| 3. Registro de tesis y motor de contradicciones | Implementado y probado localmente | 24 pruebas; falta el CI del PR y la auditoría | Revisión |
-| 4. Piloto BTCUSDT | Funcional con datos reales, retrospectivo | Sección 3 | Revisión. Siguiente paso: tesis **prospectivas** registradas antes de que venza el horizonte |
+| 3. Registro de tesis y motor de contradicciones | Implementado y probado | 28 pruebas; CI del PR en verde (corrida 40065809952); falta la auditoría independiente | Revisión |
+| 4. Piloto BTCUSDT | Funcional con datos reales; modo prospectivo agregado | Sección 3. Primera tesis prospectiva `TS-BTC-20261024T0523Z` (INCONCLUSA → ABSTENERSE), registrada 05:23:41Z, vence 09:23Z; el commit en GitHub es su sello de tiempo. Candados: corte de hace ≤ 60 min, horizonte sin vencer, predicción de KT-002 de ≤ 2 h; la hora de registro queda fuera de la huella | Revisión. Puntuar la tesis al vencer, sin cambiar su contenido |
 | 5. Laboratorio de estrategias | **Bloqueado** | Ninguna hipótesis pasó la Fase 0 (HP-001 a HP-007 descartadas); simular sin hipótesis sería sobreajuste | Esperar |
 | 6. Portafolio | **Bloqueado** por el hito 5 | — | Esperar |
 | 7. Integración con el panel ORION | No iniciado | Requiere la aprobación de los hitos 3 y 4 | Después |

@@ -14,7 +14,8 @@ from referencing import Registry, Resource
 from atlas import analitica as an
 from atlas.contradicciones import revisar
 from atlas.datos import PrediccionesKT002, VelasArchivo
-from atlas.piloto import analizar, cargar_instantanea, evaluar, guardar, guardar_instantanea, obtener
+from atlas.piloto import (PROSP, RETRO, analizar, cargar_instantanea, evaluar, exigir_prediccion_reciente, guardar,
+                          guardar_instantanea, main as piloto_main, obtener, sellar_prospectiva, validar_prospectiva)
 from atlas.procedencia import Registro, cobertura_faltante, discrepancia
 from atlas.tesis import Registro as RegistroTesis, TransicionInvalida, transicion
 
@@ -244,6 +245,43 @@ class Aislamiento(unittest.TestCase):
         fuente = " ".join(p.read_text() for p in (RAIZ / "atlas").glob("*.py"))
         for prohibido in ("ccxt", "MetaTrader5", "create_order", "api_key", "urllib.request", "requests."):
             self.assertNotIn(prohibido, fuente)
+
+
+class Prospectiva(Base):
+    def test_candados_de_tiempo(self):
+        h = dt.timedelta
+        validar_prospectiva(CORTE, CORTE + h(minutes=30))
+        for ahora in (CORTE - h(minutes=1), CORTE + h(minutes=61), CORTE + h(hours=4)):
+            with self.assertRaises(ValueError):
+                validar_prospectiva(CORTE, ahora)
+
+    def test_hora_de_registro_fuera_de_la_huella(self):
+        escenario(self.tmp)
+        regs = obtener(CORTE, self.tmp)
+        a = analizar(CORTE, regs, PROSP)
+        huella = a["huella_contenido"]
+        sellar_prospectiva(a, CORTE, CORTE + dt.timedelta(minutes=5))
+        b = analizar(CORTE, cargar_instantanea(guardar_instantanea(regs, a["id"], self.tmp / "s")), PROSP)
+        self.assertEqual(b["huella_contenido"], huella)
+        self.assertEqual(a["vence_utc"], (CORTE + dt.timedelta(hours=4)).isoformat())
+        self.assertEqual(a["explicacion_prediccion"]["naturaleza"], PROSP)
+        self.assertNotEqual(analizar(CORTE, regs, RETRO)["huella_contenido"], huella)
+
+    def test_exige_prediccion_vigente(self):
+        falta = [cobertura_faltante("KT-002", "BTCUSDT", "prediccion", "x")]
+        with self.assertRaises(ValueError):
+            exigir_prediccion_reciente(falta, CORTE)
+
+    def test_cli_prospectiva_registra_en_cadena(self):
+        escenario(self.tmp)
+        bases = [r.evento_utc for r in obtener(CORTE, self.tmp) if r.tipo == "prediccion" and r.calidad != "faltante"]
+        corte = max(dt.datetime.fromisoformat(b.replace("Z", "+00:00")) for b in bases) + dt.timedelta(hours=1)
+        cadena = self.tmp / "tesis.jsonl"
+        piloto_main(["--corte", corte.isoformat(), "--raiz", str(self.tmp), "--salida", str(self.tmp / "s"),
+                     "--prospectiva", "--registro", str(cadena)], ahora=corte + dt.timedelta(minutes=10))
+        linea = json.loads(cadena.read_text().splitlines()[-1])
+        self.assertEqual(linea["tesis"]["naturaleza"], "prospectiva")
+        self.assertEqual(RegistroTesis(str(cadena)).verificar(), [])
 
 
 if __name__ == "__main__":
