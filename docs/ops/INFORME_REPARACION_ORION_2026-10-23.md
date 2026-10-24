@@ -79,3 +79,40 @@ La medición está sana; lo frágil era la vigilancia: dependía de un reloj que
 | 6 | KT-002 intacto | Sin diferencias con master en `tools/kt002_prospectivo.py`, `data/` y `docs/KT-002_registro_prospectivo.md`. El único cambio en `kt002.yml` sigue siendo el disparo de la guardia (log en `$RUNNER_TEMP`, no publicado). |
 
 Tareas programadas (autorizado por el propietario): gerente `trig_013FrUSspavgYpLTVTRWu46M` actualizada 2026-10-24T02:56:28Z ("Kensy" → "el propietario"; vigía "cada 4 h"); horario 6:30 sin cambios. Registros históricos intactos.
+
+## 15. Orden ejecutiva final (2026-10-23 21:08 CR) — estado verificable
+
+Leyenda: **[I]** implementado en la rama · **[L]** probado localmente · **[GH]** verificado en GitHub Actions real, desde la rama, sin tocar master · **[P]** verificado en producción (master).
+
+| Tema | Estado | Evidencia |
+|---|---|---|
+| Rama sincronizada con master, sin force | I | Merges de master; `git rev-list HEAD..origin/master` = 0 al cerrar |
+| Lógica de predicción de KT-002 sin cambios | I L | Sin diferencias con master en `tools/kt002_prospectivo.py`, `data/` ni el preregistro; cambios en `kt002.yml`: `actions: write`, disparo de la guardia y comentarios |
+| Integridad de KT-002 | L | `tools/kt002_integridad.py` (solo lectura): 76 filas, 72 puntuadas, 0 duplicados, objetivo 4 h, aciertos recalculados sin diferencias, `resumen.json` reproducido idéntico con `summarize()` original, 76/76 versiones en git escritas solo por `kt002-bot` y solo anexadas, reproducibilidad de modelos `identico: true`. **10 horas omitidas** en 3 huecos conocidos (20-oct 14–16 y 22–00 h; 21-oct 06–09 h UTC), anteriores a esta reparación |
+| Pruebas | L | `test_guardia_salud` 28/28, `test_kt002_integridad` 4/4 (negativas: detecta duplicado, objetivo alterado, acierto alterado, resumen alterado; los datos reales quedan con el mismo hash), simulación del paso de salud 4/4, actionlint 1.7.7 OK; suite completa: 1 error previo (`fastapi`) |
+| Guardia en verde con datos reales | GH | Corridas 40057266306 y 40057998529 (esta última con las correcciones de la auditoría): spread y tendencia (estaba vieja desde el 22-oct) medidos, publicados (`prueba-guardia/40057266306`, commit `5afa9ec`) y verificados por la API |
+| Guardia en rojo ante falla | GH | Corrida 40057434838 (simulacro): solo falló "Verificar salud"; sin avisos, por ser rama |
+| Corrida fuera de master no actúa sobre KT-002 | GH | Ninguna corrida de KT-002 creada por las pruebas (la última sigue siendo #24) |
+| Disparo desde KT-002, cierre de avisos, actualización diaria en master | **pendiente** | Requiere fusionar el PR #32 |
+| Vigía | I | Protección provisional activa (sin cancelar, reiniciar ni relanzar; escala al gerente). v2 compatible lista en `VIGIA_PROMPT_v2.md`; pasos 1–2 probados en seco con datos reales (`ok`). Se activa después de verificar la guardia en master |
+| Coordinación | I | `CLAUDE.md`, `INFORME_DIARIO.md`, `ESTRUCTURA.md`, `desarrollo-reparador.md` y la tarea del gerente: el vigía avisa, el gerente decide, solo la guardia relanza. Registros históricos intactos. La comunicación Claude–ChatGPT es manual por GitHub (issues y PR); no hay sincronización automática |
+| Reversión | I | `docs/ops/REVERSION_ORION.md` (revert sin force, apagado rápido, textos anteriores de las tareas, reemplazo de pendientes, ramas de prueba) |
+| Frecuencia real del cron | GH | Guardia: 13 corridas por cron del 21-oct 19:33 al 24-oct 01:02 UTC, intervalo mediana 4,3 h (2,5–6,1). KT-002: mediana 4,3 h (2,5–5,7). Mecanismo alternativo: KT-002 dispara la guardia en cada vuelta horaria |
+
+### Auditoría independiente (desconfiado): DUDAS ABIERTAS, sin hallazgos ALTOS
+| Hallazgo | Nivel | Resolución |
+|---|---|---|
+| GitHub reemplaza corridas pendientes (`cancelled`) y la documentación no lo decía | MEDIO | Documentado en `kt002.yml` (comentario), `REVERSION_ORION.md` y `VIGIA_PROMPT_v2.md`, con evidencia: #23 → #24 |
+| Comentarios desactualizados (`despertar.txt`, "cada hora") | BAJO | Corregidos |
+| La deduplicación podía saltar a ciegas si fallaba | BAJO | Ante cualquier error se mide |
+| Relanzar tras una falla daba verde | BAJO | Relanzar por falla deja aviso (rojo); el solape normal no |
+| `actions: write` y token en `kt002.yml` | BAJO | `actions: write` es necesario para el disparo. El token queda en línea a propósito: con `env:` quedaría expuesto como variable al código de terceros del mismo paso |
+| Margen chico del spread (45 contra 40) | BAJO | Límite 50 min |
+| El PR cambia `CLAUDE.md` | BAJO | Necesita aprobación explícita del propietario al fusionar |
+| Reversión incompleta | BAJO | Agregados: pendientes de KT-002 y ramas de prueba, con responsable |
+| Logs de las corridas | — | El proxy de esta sesión no deja bajarlos (403). Que ChatGPT o el propietario los revisen en la interfaz de GitHub: la corrida 40057434838 debe mostrar solo "SIMULACRO de falla" |
+
+### Costos
+- GitHub Actions: repositorio público, runners estándar sin costo. La guardia corre ~1 min por corrida, ~24–30 por día. KT-002 sin cambios.
+- Claude: las dos tareas programadas (gerente 1 vez por día y vigía 6 veces por día) usan Sonnet. El vigía, cuando todo está sano, hace 4 lecturas y termina. No se agregaron servicios con costo nuevo.
+- Esta reparación: 1 auditoría con subagente (desconfiado).
