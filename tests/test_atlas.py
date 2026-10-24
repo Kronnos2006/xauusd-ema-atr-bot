@@ -398,5 +398,41 @@ class Prospectiva(Base):
         self.assertEqual(RegistroTesis(str(cadena)).verificar(), [])
 
 
+
+class TestControlesRevisionChatGPT(unittest.TestCase):
+    def test_identidad_declarada_no_autoriza_simulacion(self):
+        for rol in ("propietario", "desconfiado", "chatgpt-revision", "jefe-riesgo"):
+            with self.assertRaises(TransicionInvalida):
+                transicion({"estado": "VALIDACION", "preregistro_hash": "no_autenticado"},
+                           "ACEPTADA_PARA_SIMULACION", rol, "aprobado verbalmente")
+
+    def test_calidad_de_mercado_no_validada_obliga_abstencion(self):
+        from atlas.contradicciones import revisar
+        from atlas.procedencia import Registro
+        corte = dt.datetime(2026, 3, 1, tzinfo=dt.timezone.utc)
+        r = Registro(fuente="prueba", identificador="mercado-no-verificado", activo="BTCUSDT",
+                     tipo="spread", valor={"spread_pct": 0.001}, evento_utc=corte.isoformat(),
+                     publicado_utc=corte.isoformat(), recibido_utc=None,
+                     utilizable_utc=corte.isoformat(), calidad="sin_validar")
+        out = revisar(1, [], [r], corte)
+        self.assertEqual(out["conclusion"], "INSUFICIENTE")
+        self.assertEqual(out["decision_investigacion"], "ABSTENERSE")
+        self.assertTrue(any("validados" in h["pregunta"] for h in out["hallazgos"]))
+
+    def test_costo_corresponde_al_modelo_de_la_tesis(self):
+        from atlas.contradicciones import revisar
+        from atlas.analitica import Evidencia
+        corte = dt.datetime(2026, 3, 1, tzinfo=dt.timezone.utc)
+        evid = [Evidencia(f"predictivo.{modelo}", "", "inferencia", 1,
+                          {"ret_predicho": retorno, "aciertos": 0,
+                           "n_sin_solape": 0, "siempre_sube_aciertos": 0}, [])
+                for modelo, retorno in (("kronos", 0.01), ("kt001", 0.0001))]
+        a = revisar(1, evid, [], corte, modelo_tesis="kronos")
+        b = revisar(1, evid, [], corte, modelo_tesis="kt001")
+        a_costo = next(h["resultado"] for h in a["hallazgos"] if "supera el costo" in h["pregunta"])
+        b_costo = next(h["resultado"] for h in b["hallazgos"] if "supera el costo" in h["pregunta"])
+        self.assertIn("1.000%", a_costo)
+        self.assertIn("0.010%", b_costo)
+
 if __name__ == "__main__":
     unittest.main()
