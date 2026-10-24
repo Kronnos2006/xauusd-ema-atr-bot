@@ -12,6 +12,7 @@ on:
       - 'tests/test_atlas_validacion_temporal.py'
       - 'tests/test_atlas_puente_mercado.py'
       - 'tests/test_atlas_portafolio.py'
+      - 'tests/test_atlas_cartera_integrada.py'
       - 'docs/arquitectura/**'
       - 'research/atlas/**'
       - '.github/workflows/atlas-ci.yml'
@@ -35,7 +36,7 @@ jobs:
       - name: Hash de KT-002 antes de todo
         run: sha256sum data/kt002/predicciones.csv data/kt002/resumen.json | tee "$RUNNER_TEMP/kt002.sha"
       - name: Pruebas ATLAS (leen data/kt002 real en la prueba de aislamiento)
-        run: python -m unittest tests.test_atlas tests.test_atlas_evaluador tests.test_atlas_laboratorio tests.test_atlas_validacion_temporal tests.test_atlas_puente_mercado tests.test_atlas_portafolio -v
+        run: python -m unittest tests.test_atlas tests.test_atlas_evaluador tests.test_atlas_laboratorio tests.test_atlas_validacion_temporal tests.test_atlas_puente_mercado tests.test_atlas_portafolio tests.test_atlas_cartera_integrada -v
       - name: Piloto reproducible y KT-002 intacto
         run: |
           set -euo pipefail
