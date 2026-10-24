@@ -40,6 +40,9 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       REPO: ${{ github.repository }}
       REF: ${{ github.ref_name }}
+      # Fuera de master (prueba de una rama) la guardia NO actúa sobre producción: no relanza KT-002,
+      # no abre ni cierra avisos y publica en una rama de prueba propia (no ensucia master ni el PR).
+      PUB: ${{ github.ref_name == 'master' && 'master' || format('prueba-guardia/{0}', github.run_id) }}
       ORIGEN: ${{ github.event_name == 'schedule' && 'cron' || inputs.origen || 'manual' }}
     steps:
       - uses: actions/checkout@v4
@@ -65,7 +68,9 @@ jobs:
           echo "$dec"
           accion=$(echo "$dec" | jq -r .accion); motivo=$(echo "$dec" | jq -r .motivo)
           alerta=""
-          if [ "$accion" = "relanzar" ]; then
+          if [ "$accion" = "relanzar" ] && [ "$REF" != "master" ]; then
+            echo "Prueba en rama $REF: decisión '$accion' NO ejecutada (solo master actúa sobre KT-002)"
+          elif [ "$accion" = "relanzar" ]; then
             # Un push con el token de Actions no dispara otros workflows: se usa workflow_dispatch.
             gh workflow run kt002.yml -R "$REPO" --ref master || alerta="no se pudo relanzar KT-002 ($motivo)"
           elif [ "$accion" = "alerta" ]; then
@@ -151,6 +156,11 @@ jobs:
           git add data/mercado
           if git diff --cached --quiet; then echo "nada que publicar"; exit 0; fi
           git commit -q -m "Mercado: datos de BTC $(date -u +%Y-%m-%dT%H:%MZ) (guardia)"
+          if [ "$PUB" != "master" ]; then
+            # Prueba de rama: rama nueva y propia, sin rebase (nadie más escribe en ella).
+            for i in 1 2 3; do git push -q origin "HEAD:refs/heads/$PUB" && { echo "publicado en $PUB"; exit 0; }; sleep 10; done
+            echo "::error::No se pudo publicar en $PUB"; exit 1
+          fi
           for i in 1 2 3 4; do
             if git pull -q --rebase && git push -q; then echo "publicado"; exit 0; fi
             git rebase --abort 2>/dev/null || true   # no dejar un rebase a medias para el siguiente intento
@@ -170,7 +180,7 @@ jobs:
              "velas": "${{ steps.velas.outcome }}", "publicar": "${{ steps.publicar.outcome }}"}
         run: |
           # Se verifica lo PUBLICADO en GitHub (API), no la copia local: un pull/push fallido no puede dar verde.
-          raw() { gh api -H "Accept: application/vnd.github.raw" "repos/$REPO/contents/$1?ref=$REF" > "$2" 2>/dev/null || : > "$2"; }
+          raw() { gh api -H "Accept: application/vnd.github.raw" "repos/$REPO/contents/$1?ref=$PUB" > "$2" 2>/dev/null || : > "$2"; }
           for i in 1 2 3; do
             raw data/mercado/spread_btcusdt.csv "$RUNNER_TEMP/spread_remoto.csv"
             raw data/mercado/tendencia.json "$RUNNER_TEMP/tendencia_remota.json"
@@ -186,6 +196,12 @@ jobs:
           if [ "$rc" = 0 ] && [ "$probs" = "[]" ]; then lista=""
           elif [ "$rc" = 1 ] && lista=$(echo "$probs" | jq -er 'if type=="array" and length>0 then .[] else error end'); then :
           else lista="el verificador de salud falló (rc=$rc): $probs"; fi
+          if [ "$REF" != "master" ]; then
+            # Prueba de rama: sin avisos reales; el resultado queda en el resumen y el color de la corrida.
+            echo "### Prueba en rama $REF (publicado en $PUB)" >> "$GITHUB_STEP_SUMMARY"
+            if [ -n "$lista" ]; then echo "NO SANA:"; echo "$lista" | tee -a "$GITHUB_STEP_SUMMARY"; exit 1; fi
+            echo "Sana" | tee -a "$GITHUB_STEP_SUMMARY"; exit 0
+          fi
           gh label create guardia -R "$REPO" --color B60205 --description "Aviso automático de la guardia" 2>/dev/null || true
           abierto=$(gh issue list -R "$REPO" -l guardia -s open --json number --jq '.[0].number // empty')
           run="${{ github.server_url }}/$REPO/actions/runs/${{ github.run_id }}"
