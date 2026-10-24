@@ -1,0 +1,44 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "orion-atlas/evidencia",
+ "title": "evidencia",
+ "description": "Salida de un módulo analítico (analyst_evidence). atlas/analitica.py",
+ "type": "object",
+ "required": [
+  "modulo",
+  "afirmacion",
+  "tipo",
+  "direccion",
+  "medicion",
+  "fuentes"
+ ],
+ "properties": {
+  "modulo": {
+   "type": "string"
+  },
+  "afirmacion": {
+   "type": "string"
+  },
+  "tipo": {
+   "enum": [
+    "hecho",
+    "inferencia",
+    "hipotesis_causal",
+    "ausente"
+   ]
+  },
+  "direccion": {
+   "enum": [
+    -1,
+    0,
+    1
+   ]
+  },
+  "medicion": {
+   "type": "object"
+  },
+  "fuentes": {
+   "type": "array"
+  }
+ }
+}

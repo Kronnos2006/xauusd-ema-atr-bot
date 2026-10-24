@@ -1,0 +1,53 @@
+name: ATLAS - pruebas y reproducibilidad (sin Claude, solo lectura)
+
+# Solo en pull requests que tocan ATLAS. Sin secretos, sin escritura, sin red salvo pip.
+# No toca KT-002: comprueba que data/kt002 queda idéntico.
+on:
+  pull_request:
+    paths:
+      - 'atlas/**'
+      - 'tests/test_atlas.py'
+      - 'docs/arquitectura/**'
+      - 'research/atlas/**'
+      - '.github/workflows/atlas-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  atlas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Dependencias mínimas
+        run: pip install jsonschema==4.26.0
+      - name: Hash de KT-002 antes de todo
+        run: sha256sum data/kt002/predicciones.csv data/kt002/resumen.json | tee "$RUNNER_TEMP/kt002.sha"
+      - name: Pruebas ATLAS (leen data/kt002 real en la prueba de aislamiento)
+        run: python -m unittest tests.test_atlas -v
+      - name: Piloto reproducible y KT-002 intacto
+        run: |
+          set -euo pipefail
+          for f in research/atlas/salidas/TS-*Z.json; do
+            corte=$(python -c "import json,sys;print(json.load(open(sys.argv[1]))['corte_utc'])" "$f")
+            # Revalida la instantánea: ningún dato ni resultado posterior al corte.
+            python -m atlas.piloto --corte "$corte" --validar-instantanea "${f%.json}.entradas.json"
+            vers=$(python -c "import json,sys;print(json.load(open(sys.argv[1]))['version_software'])" "$f")
+            actual=$(python -c "from atlas.piloto import VERSION;print(VERSION)")
+            if [ "$vers" != "$actual" ]; then echo "$(basename "$f"): versión $vers (histórica; la prueba unitaria exige que conste en el registro)"; continue; fi
+            # Reproduce desde la instantánea de entradas guardada (los archivos de data/ siguen creciendo).
+            python -m atlas.piloto --corte "$corte" --desde-instantanea "${f%.json}.entradas.json" --salida "$RUNNER_TEMP/atlas"
+            nueva=$(python -c "import json,sys;print(json.load(open(sys.argv[1]))['huella_contenido'])" "$RUNNER_TEMP/atlas/$(basename "$f")")
+            guardada=$(python -c "import json,sys;print(json.load(open(sys.argv[1]))['huella_contenido'])" "$f")
+            echo "$(basename "$f"): guardada=$guardada nueva=$nueva"
+            [ "$nueva" = "$guardada" ] || { echo "::error::$(basename "$f") no es reproducible"; exit 1; }
+          done
+          python -c "import json; from atlas.tesis import Registro; a=json.load(open('research/atlas/registro/ANCLA.json')); e=Registro('research/atlas/registro/tesis.jsonl').verificar(a); print(e or 'cadena OK contra el ancla'); raise SystemExit(1 if e else 0)"
+          sha256sum -c "$RUNNER_TEMP/kt002.sha" || { echo "::error::data/kt002 cambió"; exit 1; }
+          echo "### ATLAS: pruebas OK, piloto reproducible, KT-002 intacto" >> "$GITHUB_STEP_SUMMARY"
