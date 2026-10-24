@@ -73,8 +73,8 @@ En los dos cortes el sistema hizo lo que pide la orden: **no pudo justificar la 
 |---|---|---|---|
 | 1. Investigación y matriz | Hecho (lectura de código, sin ejecución) | Sección 1 | Continuar |
 | 2. Arquitectura, contratos, riesgos | Hecho | Secciones 2 y 6, contratos | Continuar |
-| 3. Registro de tesis y motor de contradicciones | Implementado y probado localmente | 24 pruebas; falta el CI del PR y la auditoría | Revisión |
-| 4. Piloto BTCUSDT | Funcional con datos reales, retrospectivo | Sección 3 | Revisión. Siguiente paso: tesis **prospectivas** registradas antes de que venza el horizonte |
+| 3. Registro de tesis y motor de contradicciones | Implementado y probado | 28 pruebas; CI del PR en verde (corrida 40065809952); falta la auditoría independiente | Revisión |
+| 4. Piloto BTCUSDT | Funcional con datos reales; modo prospectivo agregado | Sección 3. Primera tesis prospectiva `TS-BTC-20261024T0523Z` (INCONCLUSA → ABSTENERSE), registrada 05:23:41Z, vence 09:23Z; el commit en GitHub es su sello de tiempo. Candados: corte de hace ≤ 60 min, horizonte sin vencer, predicción de KT-002 de ≤ 2 h; la hora de registro queda fuera de la huella | Revisión. Puntuar la tesis al vencer, sin cambiar su contenido |
 | 5. Laboratorio de estrategias | **Bloqueado** | Ninguna hipótesis pasó la Fase 0 (HP-001 a HP-007 descartadas); simular sin hipótesis sería sobreajuste | Esperar |
 | 6. Portafolio | **Bloqueado** por el hito 5 | — | Esperar |
 | 7. Integración con el panel ORION | No iniciado | Requiere la aprobación de los hitos 3 y 4 | Después |
@@ -116,4 +116,6 @@ Lo que todavía **no** aporta: evidencia financiera. Sin una hipótesis que pase
 - `pip install` fijado por versión, no por hash;
 - el desconfiado no revisó los pilotos B2–B4.
 
-Ancla del registro de tesis: `{"lineas": 4, "ultimo_hash": "deb4d16243fa473a887a45dec6ad5199c8a7cd8a0e37ddba19e8742651a8978e"}`.
+**Trabajo en paralelo:** otra sesión de Claude (`session_01TZKgEz…`, commit `81ffa29`) agregó el modo `--prospectiva` y registró la tesis **prospectiva** `TS-BTC-20261024T0523Z` (v0.1: INCONCLUSA → ABSTENERSE, vence 2026-10-24T09:23Z). Se integró con merge, sin descartar nada. Esa tesis **no se reescribe** con v0.2, porque es un registro prospectivo; consta en la cadena con su huella original. Las salidas de versiones anteriores se aceptan si figuran en el registro; las de la versión vigente se reproducen desde su instantánea.
+
+Ancla del registro de tesis (5 líneas): `{"lineas": 5, "ultimo_hash": "42f7642a801733b2bac659aed1fb5c6322807ff5cc197d235f5dd06dcc091aae"}`.

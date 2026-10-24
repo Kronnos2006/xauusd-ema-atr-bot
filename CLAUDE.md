@@ -32,7 +32,9 @@ Cualquier hipótesis nueva pasa primero por `.claude/skills/hypothesis-gate/SKIL
 
 Leer CLAUDE.md y docs/coordination/CONTEXTO_COMPARTIDO.md antes de trabajar. Mantener objetivo, decisiones, cambios, evidencia y pendientes en ese registro. No asumir acceso al historial privado del otro agente.
 Un agente propone o implementa; el otro revisa. Identificar autor y revisor, documentar desacuerdos y no aprobar sin evidencia. Evitar editar simultaneamente los mismos archivos.
-Usar exclusivamente Claude y Codex. La coordinacion entre asistentes no autoriza nuevos backtests, hipotesis, cambios en loggers/tareas programadas ni operaciones MT5.
+Usar exclusivamente Claude y Codex. La coordinacion entre asistentes no autoriza nuevos backtests, hipotesis, cambios en loggers/tareas programadas ni operaciones MT5. *(Texto original hasta 2026-10-23; ampliado abajo por orden del propietario.)*
+
+**Colaboración ORION (orden maestra del propietario, 2026-10-23):** participan **ChatGPT** (planificación, auditoría, supervisión y revisión cruzada), **Claude** (desarrollo, implementación, pruebas y mantenimiento), **Codex** (desarrollo y revisión técnica cuando corresponda) y el **gerente** (seguimiento, prioridades y reportes); el **propietario** es la autoridad final. Ninguna IA autoaprueba cambios importantes ni se atribuye trabajo ajeno: cada commit lleva `Operated-By`, `Requested-By`, `Review-Status` y `Validation` (`docs/coordination/AUTORIA_CHATGPT.md`). GitHub (issues y PR) es el canal compartido (`docs/orion-control-cruzado.md`); no hay sincronización automática entre chats probada. Los cambios a workflows o automatizaciones activas van en rama + PR y se integran a `master` solo con aprobación del propietario después de la revisión independiente. **Nunca se cancela una corrida de GitHub Actions** (prohibición absoluta del propietario).
 
 ## Tareas descriptivas activas autorizadas por el usuario (2026-10-20)
 
@@ -44,7 +46,7 @@ La PAUSA ACTIVA sigue vigente para hipótesis y estrategias. El usuario autoriz�
 Agentes del proyecto:
 - `desconfiado` (`.claude/agents/desconfiado.md`): auditor; auditoría diaria programada que notifica al usuario.
 - `mejorador` (`.claude/agents/mejorador.md`): aprende de los resultados y propone variantes nuevas pre-registradas. Flujo: mejorador propone → desconfiado audita → el usuario da el OK explícito → recién ahí se registra y ejecuta.
-- `vigia-datos` (`.claude/agents/vigia-datos.md`): revisa los datos recogidos y el estado de los workflows; solo lee, y solo relanza lo parado o fallido.
+- `vigia-datos` (`.claude/agents/vigia-datos.md`): revisa los datos recogidos y el estado de los workflows; solo lee y avisa al gerente. El único que relanza KT-002 es la guardia (`guardia.yml`); ningún agente cancela, reinicia ni relanza corridas (orden del propietario, 2026-10-23).
 
 ## Gerencia y delegación de decisiones (2026-10-20)
 

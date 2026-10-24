@@ -38,6 +38,9 @@ jobs:
             corte=$(python -c "import json,sys;print(json.load(open(sys.argv[1]))['corte_utc'])" "$f")
             # Revalida la instantánea: ningún dato ni resultado posterior al corte.
             python -m atlas.piloto --corte "$corte" --validar-instantanea "${f%.json}.entradas.json"
+            vers=$(python -c "import json,sys;print(json.load(open(sys.argv[1]))['version_software'])" "$f")
+            actual=$(python -c "from atlas.piloto import VERSION;print(VERSION)")
+            if [ "$vers" != "$actual" ]; then echo "$(basename "$f"): versión $vers (histórica; la prueba unitaria exige que conste en el registro)"; continue; fi
             # Reproduce desde la instantánea de entradas guardada (los archivos de data/ siguen creciendo).
             python -m atlas.piloto --corte "$corte" --desde-instantanea "${f%.json}.entradas.json" --salida "$RUNNER_TEMP/atlas"
             nueva=$(python -c "import json,sys;print(json.load(open(sys.argv[1]))['huella_contenido'])" "$RUNNER_TEMP/atlas/$(basename "$f")")
