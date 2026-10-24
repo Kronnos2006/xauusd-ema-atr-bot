@@ -26,7 +26,7 @@ Un agente definido en un archivo **no** cuenta como agente en ejecución: la col
 | `orion-ci.yml`, `resumen-gerente-ci.yml`, `observatorio-kt002-ci.yml`, `orion-google-ci.yml` | OV (pruebas) | 12 / 5 / 1 / 1 corridas, todas en verde |
 | `orion-arbitro.yml`, `orion-comandos.yml` | SD/PV | Sin corridas registradas en el período; con pruebas unitarias |
 | `orion-pilot-b1.yml`, `orion-framework-smoke.yml`, `orion-upstream-pilot.yml` | ED (pilotos aislados) | 1 / 4 / 2 corridas en verde. Compilan o importan OpenHands y TradingAgents, sin agentes ni datos reales |
-| `kt002-integridad-ci.yml` (PR #3 de ChatGPT, abierto) | **DU** con el PR #32 | Inspector de CSV con SHA-256. El de PR #32 agrega aciertos recalculados, resumen reproducido e historial de git. **Propuesta:** fusionar #32 y que el CI de #3 llame al verificador más completo (decide el propietario) |
+| `kt002-integridad-ci.yml` (PR #3 de ChatGPT, abierto) | **PV, complementario** (no duplicado) | Lo corrí el 2026-10-24 ~05:00Z sobre los datos actuales: 77 filas, 73 evaluadas, 0 duplicadas, 0 objetivos con desfase, **0 pronósticos antes del cierre de la vela base**, **0 puntuaciones tempranas**, 10 horas omitidas, `SIN_ANOMALIAS_ESTRUCTURALES`. Cubre lo que el PR #32 no: SHA-256, anticipación, puntuación temprana, ventana de 24 h, antigüedad y un CI diario. El PR #32 cubre lo que #3 no: aciertos recalculados, resumen reproducido e historial de git solo anexado. **Propuesta:** no cerrar #3; integrar los dos, primero #32 y después #3 revalidado contra master |
 
 ### 1.2 Código y dependencias
 - `tools/`: 10 scripts en master, más `guardia_salud.py` y `kt002_integridad.py` en el PR #32.
@@ -44,8 +44,8 @@ Un agente definido en un archivo **no** cuenta como agente en ejecución: la col
 | desconfiado | OV en hitos | `docs/auditorias/*`, 19 menciones en decisiones; auditoría del PR #32 el 23-oct. Su tarea diaria está **desactivada** desde el 20-oct |
 | portafolio (jefe, investigador, réplica, estratega), riesgo (jefe y costos), mejorador | OL | Fase 0 HP-001 a HP-007, ES-001/002, marco de riesgo; solo se convocan bajo demanda |
 | innovación con noticias, operaciones, recursos de IA | SD/OL | 1 mención cada uno |
-| desarrollo (diseñador, programador, integrador, reparador), disciplina, documentación | **SD** | 0 menciones de ejecución |
-| `infra-guardian`, `strategy-reviewer` (era MT5/XAUUSD, Windows) | **DU** | No aplican a la nube actual. Propuesta: archivar, no borrar (decide el propietario) |
+| desarrollo (diseñador, programador, integrador, reparador), disciplina, documentación | **SD** (a demanda) | 0 ejecuciones registradas. Siguen referidos por `gerente.md`, `jefe-desarrollo.md`, `ESTRUCTURA.md`, `INFORME_DIARIO.md`, `equipo.json` y el visor; el reparador es parte del flujo vigente (lo convoca el gerente). No archivar |
+| `infra-guardian`, `strategy-reviewer` (era MT5/XAUUSD, Windows) | SD (inactivos) | No aplican a la nube actual. **No archivar:** se citan en la bóveda histórica `XAUUSD EMA/ATR/` y en `sync-knowledge`, que no se modifican |
 
 ### 1.4 Tareas programadas de Claude (3)
 - **Gerente** (`trig_013F…`): **OV**.
@@ -76,7 +76,7 @@ Fuente: metadatos de PyPI consultados el 2026-10-24. La API de GitHub para repos
 
 | Candidato | Versión / último lanzamiento | Licencia | Encaje | Decisión |
 |---|---|---|---|---|
-| VectorBT (`vectorbt`) | 1.2.0, 2026-10-19 | Apache-2.0 con Commons Clause (según el repo; **verificar**) | Simulación vectorizada rápida para la Etapa C | **Candidato principal** para el marco de simulación con costos, en un entorno separado de KT-002 y después de revisar la licencia |
+| VectorBT (`vectorbt`) | 1.2.0, 2026-10-19 | **Apache 2.0 with Commons Clause** (verificado en `LICENSE.md` del repo oficial, 2026-10-24): prohíbe vender el software o un servicio basado en él; el uso interno de investigación está permitido | Simulación vectorizada rápida para la Etapa C | **Candidato principal** para el marco de simulación con costos, en un entorno separado de KT-002 y después de revisar la licencia |
 | Backtrader | 1.9.78.123, 2023-04-19 | GPL-3.0+ | Motor por eventos maduro, sin mantenimiento desde 2023 | Descartar como base (sin mantenimiento; GPL) |
 | backtesting.py | 0.6.6, 2026-07-22 | AGPL-3.0 | Simple | Descartar para integrar (AGPL) |
 | QuantConnect LEAN (`lean` CLI) | 1.0.230, 2026-10-15 | Apache-2.0 | Motor completo en C# y nube; alto costo de adopción | Mantener como referencia, no adoptar |
@@ -124,7 +124,7 @@ No se crea un panel nuevo. Las preguntas se responden así:
 La guardia cubre infraestructura y publicación, `kt002_integridad.py` cubre datos y el desconfiado cubre modelo y método.
 
 ## 5. Costos (observados)
-- **GitHub Actions** desde 2026-10-20: unas 6 905 min de runner. KT-002 suma 6 537 (95 %), KT-003 183 y el resto menos de 200. Costo $0 (repositorio público).
+- **GitHub Actions** desde 2026-10-20: unas 6 905 min de runner. KT-002 suma 6 537 (95 %), KT-003 183 y el resto menos de 200. Costo $0, verificado en la documentación oficial de GitHub (docs.github.com, *GitHub Actions billing*): «GitHub Actions usage is free for self-hosted runners and for public repositories that use standard GitHub-hosted runners». Los runners grandes sí se cobran; ORION no los usa.
 - **Guardia:** unos 20 s por corrida.
 - **Claude:**
   - consumo de tokens: no se puede consultar desde esta sesión;
@@ -146,9 +146,21 @@ Los criterios son medibles. Una etapa no avanza porque su documentación esté e
 | **D. Inteligencia operativa** | Avisos por excepción con cierre automático; informe del gerente con evidencia enlazada; ningún agente con autoaprobación | Parcial: avisos listos en el PR #32; informe diario operativo |
 | **E. Plataforma** | Panel único consolidado; poder agregar estudios sin tocar los vigentes | Panel ORION v2 operativo; consolidación pendiente |
 
+**Separación de avances** (observación 3 de ChatGPT): la **reparación del PR #32** es un proyecto con su propio criterio de terminado, la orden maestra definitiva. Las etapas A–E son la **evolución** y no miden el avance de esa reparación. La Etapa A solo puede empezar a contar cuando el PR #32 esté en master y verificado.
+
 **Prioridades justificadas:**
 1. Fusionar el PR #32 y verificar en master.
-2. Resolver el duplicado PR #3 contra PR #32.
-3. Archivar los agentes de la era MT5 y los que nunca se ejecutaron, por decisión del propietario.
+2. Integrar el PR #3 (complementario), revalidado contra master, después del PR #32.
+3. Sin archivar agentes: los que nunca se ejecutaron quedan como a demanda; no se crean agentes nuevos.
 4. Dejar acumular KT-002 sin tocarlo.
-5. Revisar la licencia de VectorBT antes de cualquier marco de simulación.
+5. VectorBT (Commons Clause verificada) sirve solo para investigación interna. Cualquier marco de simulación espera una hipótesis que pase la Fase 0.
+
+## 7. Respuesta a la revisión de ChatGPT (2026-10-24T04:46Z)
+| # | Observación | Respuesta |
+|---|---|---|
+| 1 | No cerrar #3 sin comparar cobertura | Comparado y ejecutado sobre los datos actuales: es complementario (sección 1.1). Se propone integrarlo, no cerrarlo |
+| 2 | Archivar requiere revisar dependencias | Revisadas: hay referencias activas y referencias en registros históricos. Se retira la propuesta de archivar (sección 1.3) |
+| 3 | Separar las etapas A–E del avance del #32 | Hecho (sección 6) |
+| 4 | Verificar la licencia de VectorBT y las tarifas de Actions | Verificadas en fuentes oficiales (secciones 2 y 5) |
+| 5 | Revalidar el estado antes de cualquier integración | Corte de este documento: master `dcfab87` (KT-002, 04:07Z). Antes de fusionar se revalida contra el master vigente |
+| 6 | Vigencia de las cifras; nada de rentabilidad con n=17 | Las cifras de KT-002 tienen corte 2026-10-24T04:07Z (n=17 sin solape). La sección 3 no afirma ventaja ni rentabilidad |
