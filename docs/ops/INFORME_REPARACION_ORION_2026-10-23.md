@@ -61,3 +61,15 @@ Commits de esta rama y PR enlazados en la issue #31. Corridas citadas: guardia `
 
 ## 12. Opinión del gerente
 La medición está sana; lo frágil era la vigilancia: dependía de un reloj que GitHub no respeta y declaraba éxito sin comprobar nada, y el vigía tomó una decisión destructiva con un solo dato. Con la lógica única probada, la salud verificada y la prohibición de cancelar, el sistema queda más simple y auditable. Recomiendo integrar rápido el punto 4 (vigía v2), porque es el único riesgo activo sobre datos reales.
+
+## 14. Adenda 2026-10-23 21:00 (hora CR) — observaciones de la revisión cruzada de ChatGPT
+| # | Observación | Resultado |
+|---|---|---|
+| 1 | Rama 4 commits detrás de master | Reconciliada con **merge** (sin rebase ni force): 4 commits de datos (KT-002 01:07/01:08/02:07Z, spread 01:03Z), sin conflictos; `data/` de la rama idéntico a master. |
+| 2 | `git pull --rebase \|\| true` en la verificación | **Eliminado.** La verificación ya no usa la copia local. Además se corrigió `frescura ... \|\| true`: si el verificador se caía, la lista quedaba vacía y la corrida salía verde. Ahora solo es verde con rc=0 y `[]`; cualquier otro resultado es falla. En publicar se agregó `git rebase --abort` entre reintentos. |
+| 3 | Comprobar contra GitHub que los datos quedaron publicados | La verificación lee `spread_btcusdt.csv` y `tendencia.json` por la API de GitHub (`contents?ref=`) y exige que la fila de spread **de esta corrida** y el `generado_utc` de la tendencia **de esta corrida** estén publicados (3 intentos). |
+| 4 | La deduplicación podía ocultar fallos | Ahora solo salta la **medición de spread** (<40 min desde el último publicado). KT-002, velas, publicación y verificación corren siempre. Límite de frescura del spread 45 min (> ventana de 40) para que un salto no dé falso rojo. |
+| 5 | Pruebas | `tests/test_guardia_salud.py`: **28/28 OK** (15 originales + 13 de regresión: no publicado, remoto ilegible, tendencia no publicada, pasos fallidos, ventana de dedupe, salto sin ocultar KT-002 ni tendencia, CLI). Simulación del script real del paso con `gh` falso: sano rc=0; no publicado rc=1; KT-002 200 min rc=1; verificador roto rc=1. actionlint 1.7.7 OK. Suite completa: 72 pruebas, 1 error previo (`fastapi`, P8). |
+| 6 | KT-002 intacto | Sin diferencias con master en `tools/kt002_prospectivo.py`, `data/` y `docs/KT-002_registro_prospectivo.md`. El único cambio en `kt002.yml` sigue siendo el disparo de la guardia (log en `$RUNNER_TEMP`, no publicado). |
+
+Tareas programadas (autorizado por el propietario): gerente `trig_013FrUSspavgYpLTVTRWu46M` actualizada 2026-10-24T02:56:28Z ("Kensy" → "el propietario"; vigía "cada 4 h"); horario 6:30 sin cambios. Registros históricos intactos.

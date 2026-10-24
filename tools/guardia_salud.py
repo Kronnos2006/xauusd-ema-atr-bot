@@ -84,12 +84,54 @@ def tendencia_vieja(generado_utc: str | None, ahora: dt.datetime, horas: float =
     return generado_utc is None or minutos(generado_utc, ahora) > horas * 60
 
 
+DEDUPE_MIN = 40
+# Límites de frescura medidos sobre lo publicado en GitHub. El spread usa 45 min (> DEDUPE_MIN) para que una
+# corrida saltada por deduplicación no se marque vieja por diseño.
+LIMITES_MIN = {"tendencia.json": 26 * 60, "spread_btcusdt.csv": 45, "registro KT-002": REGISTRO_SANO}
+
+
+def saltar_duplicada(ultimo_spread_publicado: str | None, origen: str, ahora: dt.datetime) -> bool:
+    """Solo se salta la medición de spread (nunca la verificación de salud). Manual nunca se salta."""
+    if origen == "manual" or not ultimo_spread_publicado:
+        return False
+    return minutos(ultimo_spread_publicado, ahora) < DEDUPE_MIN
+
+
+def _filas_spread(csv_texto: str | None) -> list[str]:
+    return [l for l in (csv_texto or "").splitlines() if l.strip() and not l.startswith("utc,")]
+
+
+def verificar_salud(spread_csv_remoto: str | None, tendencia_remota: dict | None, registro_kt002: str | None,
+                    esperado_spread_utc: str | None, esperado_tendencia: str | None,
+                    pasos: dict[str, str], alerta: str | None, ahora: dt.datetime) -> list[str]:
+    """Todo se mide contra lo publicado en GitHub (no contra la copia local). Vacío = sano."""
+    filas = _filas_spread(spread_csv_remoto)
+    ult_spread = filas[-1].split(",")[0] if filas else None
+    gen = (tendencia_remota or {}).get("generado_utc")
+    probs = frescura({"tendencia.json": gen, "spread_btcusdt.csv": ult_spread, "registro KT-002": registro_kt002},
+                     LIMITES_MIN, ahora)
+    if esperado_spread_utc and not any(f.split(",")[0] == esperado_spread_utc for f in filas):
+        probs.append(f"spread de esta corrida ({esperado_spread_utc}) no aparece publicado en GitHub")
+    if esperado_tendencia and gen != esperado_tendencia:
+        probs.append("tendencia.json de esta corrida no aparece publicada en GitHub")
+    for paso, resultado in pasos.items():
+        if resultado == "failure":
+            probs.append(f"paso {paso} falló")
+    if alerta:
+        probs.append(alerta)
+    return probs
+
+
 def _main(argv: list[str]) -> int:
     p = argparse.ArgumentParser()
     sub = p.add_subparsers(dest="cmd", required=True)
     a = sub.add_parser("kt002"); a.add_argument("--corridas", required=True); a.add_argument("--registro")
     b = sub.add_parser("frescura"); b.add_argument("--json", required=True)
     c = sub.add_parser("tendencia-vieja"); c.add_argument("--archivo", default="data/mercado/tendencia.json")
+    d = sub.add_parser("saltar"); d.add_argument("--ultimo-spread", default=""); d.add_argument("--origen", required=True)
+    e = sub.add_parser("salud"); e.add_argument("--spread-remoto", required=True); e.add_argument("--tendencia-remota", required=True)
+    e.add_argument("--registro", default=""); e.add_argument("--esperado-spread", default="")
+    e.add_argument("--esperado-tendencia", default=""); e.add_argument("--pasos", default="{}"); e.add_argument("--alerta", default="")
     args = p.parse_args(argv)
     ahora = dt.datetime.now(dt.timezone.utc)
     if args.cmd == "kt002":
@@ -97,6 +139,21 @@ def _main(argv: list[str]) -> int:
     elif args.cmd == "frescura":
         cfg = json.load(open(args.json))
         probs = frescura(cfg["archivos"], cfg["limites_min"], ahora)
+        print(json.dumps(probs, ensure_ascii=False))
+        return 1 if probs else 0
+    elif args.cmd == "saltar":
+        print("si" if saltar_duplicada(args.ultimo_spread or None, args.origen, ahora) else "no")
+    elif args.cmd == "salud":
+        try:
+            csv_txt = open(args.spread_remoto, encoding="utf-8").read()
+        except OSError:
+            csv_txt = None
+        try:
+            tend = json.load(open(args.tendencia_remota, encoding="utf-8"))
+        except (OSError, ValueError):
+            tend = None
+        probs = verificar_salud(csv_txt, tend, args.registro or None, args.esperado_spread or None,
+                                args.esperado_tendencia or None, json.loads(args.pasos), args.alerta or None, ahora)
         print(json.dumps(probs, ensure_ascii=False))
         return 1 if probs else 0
     else:

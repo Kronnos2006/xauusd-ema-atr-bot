@@ -100,5 +100,98 @@ class Cli(unittest.TestCase):
             self.assertEqual(json.loads(r.stdout)["accion"], "ok")
 
 
+CAB = "utc,bid,ask,spread_pct,desliz_compra_1k_pct,desliz_compra_10k_pct,desliz_compra_100k_pct\n"
+
+
+def csv_con(*mins):
+    return CAB + "".join(f"{iso(m)},1,1,0,0,0,0\n" for m in mins)
+
+
+SANO = dict(tendencia_remota={"generado_utc": iso(60)}, registro_kt002=iso(20), esperado_tendencia=None,
+            pasos={"kt002": "success", "spread": "success", "velas": "success", "publicar": "success"}, alerta=None)
+
+
+class Salud(unittest.TestCase):
+    """Revisión cruzada ChatGPT 2026-10-23: verificar contra GitHub, no ignorar fallos de sincronización."""
+
+    def salud(self, **kw):
+        a = dict(SANO, spread_csv_remoto=csv_con(90, 2), esperado_spread_utc=iso(2)); a.update(kw)
+        return g.verificar_salud(ahora=AHORA, **a)
+
+    def test_sano_si_lo_de_esta_corrida_esta_en_github(self):
+        self.assertEqual(self.salud(), [])
+
+    def test_commit_local_sin_publicar_no_pasa(self):
+        # el remoto no tiene la fila de esta corrida (falló pull/push): no puede salir verde
+        p = self.salud(spread_csv_remoto=csv_con(90, 30))
+        self.assertTrue(any("no aparece publicado" in x for x in p), p)
+
+    def test_remoto_ilegible_no_pasa(self):
+        p = self.salud(spread_csv_remoto=None, tendencia_remota=None)
+        self.assertIn("spread_btcusdt.csv: falta", p)
+        self.assertIn("tendencia.json: falta", p)
+
+    def test_tendencia_de_esta_corrida_no_publicada(self):
+        p = self.salud(esperado_tendencia=iso(1))
+        self.assertTrue(any("tendencia.json de esta corrida" in x for x in p), p)
+
+    def test_paso_fallido_y_alerta(self):
+        p = self.salud(pasos={"publicar": "failure"}, alerta="KT-002: x")
+        self.assertIn("paso publicar falló", p)
+        self.assertIn("KT-002: x", p)
+
+
+class Dedupe(unittest.TestCase):
+    def test_manual_nunca_se_salta(self):
+        self.assertFalse(g.saltar_duplicada(iso(1), "manual", AHORA))
+
+    def test_ventana(self):
+        self.assertTrue(g.saltar_duplicada(iso(39), "kt002", AHORA))
+        self.assertFalse(g.saltar_duplicada(iso(40), "cron", AHORA))
+        self.assertFalse(g.saltar_duplicada(None, "cron", AHORA))
+
+    def test_corrida_saltada_con_spread_de_39_min_sigue_sana(self):
+        p = g.verificar_salud(csv_con(39), {"generado_utc": iso(60)}, iso(20), None, None, {}, None, AHORA)
+        self.assertEqual(p, [])
+
+    def test_salto_no_oculta_fallas_de_kt002(self):
+        # aunque se salte el spread, la verificación corre y ve el registro viejo y la alerta
+        p = g.verificar_salud(csv_con(10), {"generado_utc": iso(60)}, iso(200), None, None,
+                              {"spread": "skipped"}, "KT-002: corrida viva sin registros", AHORA)
+        self.assertTrue(any(x.startswith("registro KT-002") for x in p), p)
+        self.assertIn("KT-002: corrida viva sin registros", p)
+
+    def test_salto_no_oculta_tendencia_vieja(self):
+        p = g.verificar_salud(csv_con(10), {"generado_utc": iso(30 * 60)}, iso(20), None, None, {}, None, AHORA)
+        self.assertTrue(any(x.startswith("tendencia.json") for x in p), p)
+
+
+class CliSalud(unittest.TestCase):
+    TOOL = os.path.join(os.path.dirname(__file__), "..", "tools", "guardia_salud.py")
+
+    def test_archivos_remotos_faltantes_da_rc1_con_lista(self):
+        r = subprocess.run([sys.executable, self.TOOL, "salud", "--spread-remoto", "/no/existe",
+                            "--tendencia-remota", "/no/existe"], capture_output=True, text=True)
+        self.assertEqual(r.returncode, 1)
+        self.assertTrue(json.loads(r.stdout))
+
+    def test_sano_rc0_lista_vacia(self):
+        ya = dt.datetime.now(dt.timezone.utc)
+        with tempfile.TemporaryDirectory() as d:
+            sp, te = os.path.join(d, "s.csv"), os.path.join(d, "t.json")
+            utc = (ya - dt.timedelta(minutes=1)).isoformat(timespec="seconds")
+            open(sp, "w").write(CAB + utc + ",1,1,0,0,0,0\n")
+            json.dump({"generado_utc": (ya - dt.timedelta(hours=1)).isoformat()}, open(te, "w"))
+            r = subprocess.run([sys.executable, self.TOOL, "salud", "--spread-remoto", sp, "--tendencia-remota", te,
+                                "--registro", ya.isoformat(), "--esperado-spread", utc,
+                                "--pasos", '{"spread":"success"}'], capture_output=True, text=True)
+            self.assertEqual((r.returncode, json.loads(r.stdout)), (0, []))
+
+    def test_saltar_cli(self):
+        r = subprocess.run([sys.executable, self.TOOL, "saltar", "--origen", "manual",
+                            "--ultimo-spread", dt.datetime.now(dt.timezone.utc).isoformat()], capture_output=True, text=True)
+        self.assertEqual(r.stdout.strip(), "no")
+
+
 if __name__ == "__main__":
     unittest.main()

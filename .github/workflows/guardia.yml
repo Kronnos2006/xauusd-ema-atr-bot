@@ -37,24 +37,24 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       REPO: ${{ github.repository }}
+      REF: ${{ github.ref_name }}
       ORIGEN: ${{ github.event_name == 'schedule' && 'cron' || inputs.origen || 'manual' }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Evitar corridas duplicadas
+      - name: Evitar mediciones de spread duplicadas
         id: dedupe
         run: |
-          saltar=no
-          if [ "$ORIGEN" != "manual" ]; then
-            ult=$(gh run list -R "$REPO" -w guardia.yml -s success -L 1 --json createdAt --jq '.[0].createdAt // empty')
-            if [ -n "$ult" ] && [ $(( ( $(date +%s) - $(date -d "$ult" +%s) ) / 60 )) -lt 40 ]; then saltar=si; fi
-          fi
+          # Solo se salta la medición de spread (si se publicó hace <40 min). KT-002, velas y la
+          # verificación de salud corren SIEMPRE: un salto nunca oculta una falla (tools/guardia_salud.py saltar).
+          ult=$(gh api "repos/$REPO/commits?path=data/mercado/spread_btcusdt.csv&sha=$REF&per_page=1" --jq '.[0].commit.committer.date // empty' || echo "")
+          saltar=$(python3 tools/guardia_salud.py saltar --origen "$ORIGEN" --ultimo-spread "$ult")
           echo "saltar=$saltar" >> "$GITHUB_OUTPUT"
-          echo "### Guardia (origen: $ORIGEN) — saltar por duplicada: $saltar" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Guardia (origen: $ORIGEN) — spread saltado por duplicado: $saltar" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Revisar KT-002
         id: kt002
-        if: steps.dedupe.outputs.saltar == 'no'
+        if: always()
         run: |
           set -euo pipefail
           gh run list -R "$REPO" -w kt002.yml -L 10 --json databaseId,status,conclusion,createdAt > "$RUNNER_TEMP/corridas.json"
@@ -97,19 +97,20 @@ jobs:
           with open(f, "a") as h:
               if nuevo: h.write("utc,bid,ask,spread_pct,desliz_compra_1k_pct,desliz_compra_10k_pct,desliz_compra_100k_pct\n")
               h.write(",".join("" if x is None else str(x) for x in fila) + "\n")
+          open(os.environ["GITHUB_OUTPUT"], "a").write(f"utc={fila[0]}\n")
           print(fila)
           PY
 
       - name: Velas de BTC y régimen de tendencia (si tienen más de 20 h)
         id: velas
-        if: always() && steps.dedupe.outputs.saltar == 'no'
+        if: always()
         run: |
           vieja=$(python3 tools/guardia_salud.py tendencia-vieja)
           echo "tendencia vieja: $vieja"
           if [ "$vieja" != "si" ] && [ "$ORIGEN" != "manual" ]; then exit 0; fi
           mkdir -p data/mercado
           python3 - <<'PY'
-          import json, urllib.request, datetime as dt
+          import json, urllib.request, datetime as dt, os
           def kl(iv, n):
               u = f"https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval={iv}&limit={n}"
               rows = json.load(urllib.request.urlopen(u, timeout=30))
@@ -136,12 +137,13 @@ jobs:
           json.dump(out, open("data/mercado/tendencia.json", "w"), indent=1)
           json.dump([r[:6] for r in d], open("data/mercado/btc_1d.json", "w"))
           json.dump([r[:6] for r in h4], open("data/mercado/btc_4h.json", "w"))
+          open(os.environ["GITHUB_OUTPUT"], "a").write(f"generado={out['generado_utc']}\n")
           print(rd, r4)
           PY
 
       - name: Publicar datos de mercado
         id: publicar
-        if: always() && steps.dedupe.outputs.saltar == 'no'
+        if: always()
         run: |
           git config user.name "guardia-bot"; git config user.email "guardia-bot@users.noreply.github.com"
           git add data/mercado
@@ -149,35 +151,39 @@ jobs:
           git commit -q -m "Mercado: datos de BTC $(date -u +%Y-%m-%dT%H:%MZ) (guardia)"
           for i in 1 2 3 4; do
             if git pull -q --rebase && git push -q; then echo "publicado"; exit 0; fi
+            git rebase --abort 2>/dev/null || true   # no dejar un rebase a medias para el siguiente intento
             sleep $(( i * 10 ))
           done
           echo "::error::No se pudo publicar data/mercado tras 4 intentos"; exit 1
 
-      - name: Verificar salud y avisar
-        if: always() && steps.dedupe.outputs.saltar == 'no'
+      - name: Verificar salud contra GitHub y avisar
+        if: always()
         env:
           ALERTA_KT002: ${{ steps.kt002.outputs.alerta }}
           REGISTRO: ${{ steps.kt002.outputs.registro }}
-          OUT_KT002: ${{ steps.kt002.outcome }}
-          OUT_SPREAD: ${{ steps.spread.outcome }}
-          OUT_VELAS: ${{ steps.velas.outcome }}
-          OUT_PUBLICAR: ${{ steps.publicar.outcome }}
+          ESPERADO_SPREAD: ${{ steps.spread.outputs.utc }}
+          ESPERADO_TENDENCIA: ${{ steps.velas.outputs.generado }}
+          PASOS: >-
+            {"KT-002": "${{ steps.kt002.outcome }}", "spread": "${{ steps.spread.outcome }}",
+             "velas": "${{ steps.velas.outcome }}", "publicar": "${{ steps.publicar.outcome }}"}
         run: |
-          git pull -q --rebase || true
-          ult_spread=$(tail -1 data/mercado/spread_btcusdt.csv | cut -d, -f1)
-          gen=$(python3 -c "import json;print(json.load(open('data/mercado/tendencia.json')).get('generado_utc',''))" 2>/dev/null || echo "")
-          python3 - > "$RUNNER_TEMP/frescura.json" <<PY
-          import json
-          print(json.dumps({"archivos": {"tendencia.json": "$gen" or None, "spread_btcusdt.csv": "$ult_spread" or None, "registro KT-002": "$REGISTRO" or None},
-                            "limites_min": {"tendencia.json": 26*60, "spread_btcusdt.csv": 30, "registro KT-002": 130}}))
-          PY
-          probs=$(python3 tools/guardia_salud.py frescura --json "$RUNNER_TEMP/frescura.json" || true)
-          lista=$(echo "$probs" | jq -r '.[]' 2>/dev/null || true)
-          for s in "KT-002:$OUT_KT002" "spread:$OUT_SPREAD" "velas:$OUT_VELAS" "publicar:$OUT_PUBLICAR"; do
-            [ "${s#*:}" = "failure" ] && lista="$lista"$'\n'"paso ${s%%:*} falló"
+          # Se verifica lo PUBLICADO en GitHub (API), no la copia local: un pull/push fallido no puede dar verde.
+          raw() { gh api -H "Accept: application/vnd.github.raw" "repos/$REPO/contents/$1?ref=$REF" > "$2" 2>/dev/null || : > "$2"; }
+          for i in 1 2 3; do
+            raw data/mercado/spread_btcusdt.csv "$RUNNER_TEMP/spread_remoto.csv"
+            raw data/mercado/tendencia.json "$RUNNER_TEMP/tendencia_remota.json"
+            if [ -z "$ESPERADO_SPREAD" ] || grep -qF "$ESPERADO_SPREAD," "$RUNNER_TEMP/spread_remoto.csv"; then break; fi
+            sleep $(( i * 10 ))
           done
-          [ -n "$ALERTA_KT002" ] && lista="$lista"$'\n'"$ALERTA_KT002"
-          lista=$(echo "$lista" | sed '/^$/d')
+          rc=0
+          probs=$(python3 tools/guardia_salud.py salud --spread-remoto "$RUNNER_TEMP/spread_remoto.csv" \
+                  --tendencia-remota "$RUNNER_TEMP/tendencia_remota.json" --registro "$REGISTRO" \
+                  --esperado-spread "$ESPERADO_SPREAD" --esperado-tendencia "$ESPERADO_TENDENCIA" \
+                  --pasos "$PASOS" --alerta "$ALERTA_KT002") || rc=$?
+          # Verde solo si rc=0 y la lista es []; cualquier otro resultado (verificador caído) es falla.
+          if [ "$rc" = 0 ] && [ "$probs" = "[]" ]; then lista=""
+          elif [ "$rc" = 1 ] && lista=$(echo "$probs" | jq -er 'if type=="array" and length>0 then .[] else error end'); then :
+          else lista="el verificador de salud falló (rc=$rc): $probs"; fi
           gh label create guardia -R "$REPO" --color B60205 --description "Aviso automático de la guardia" 2>/dev/null || true
           abierto=$(gh issue list -R "$REPO" -l guardia -s open --json number --jq '.[0].number // empty')
           run="${{ github.server_url }}/$REPO/actions/runs/${{ github.run_id }}"
