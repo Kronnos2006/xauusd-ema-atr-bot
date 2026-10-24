@@ -46,7 +46,7 @@ La PAUSA ACTIVA sigue vigente para hipótesis y estrategias. El usuario autoriz�
 Agentes del proyecto:
 - `desconfiado` (`.claude/agents/desconfiado.md`): auditor; auditoría diaria programada que notifica al usuario.
 - `mejorador` (`.claude/agents/mejorador.md`): aprende de los resultados y propone variantes nuevas pre-registradas. Flujo: mejorador propone → desconfiado audita → el usuario da el OK explícito → recién ahí se registra y ejecuta.
-- `vigia-datos` (`.claude/agents/vigia-datos.md`): revisa los datos recogidos y el estado de los workflows; solo lee, y solo relanza lo parado o fallido.
+- `vigia-datos` (`.claude/agents/vigia-datos.md`): revisa los datos recogidos y el estado de los workflows; solo lee y avisa al gerente. El único que relanza KT-002 es la guardia (`guardia.yml`); ningún agente cancela, reinicia ni relanza corridas (orden del propietario, 2026-10-23).
 
 ## Gerencia y delegación de decisiones (2026-10-20)
 

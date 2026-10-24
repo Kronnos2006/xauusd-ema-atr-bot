@@ -29,7 +29,7 @@ Con comandos directos, sin clonar el repo completo:
 | Marco de riesgo y costos (hasta que estén escritos), o una simulación nueva para revisar | jefe-riesgo | Hasta tener el marco: una vez por semana (martes); después, solo con simulaciones nuevas |
 | Búsqueda continua de hipótesis (pedido del usuario 2026-10-21): portafolio-investigador propone hasta 2 hipótesis nuevas con Fase 0 y el desconfiado las audita. Si desconfiado y gerente coinciden en descartar: descarte automático, registro y siguiente idea (máx. 3 rondas); solo las que pasan van al usuario | jefe-portafolio | Lunes y miércoles |
 | Cumplimiento y colaboración de jefes y ayudantes | gerencia-disciplina | Viernes, y cuando alguien no entregó |
-| El vigía encontró una falla | desarrollo-reparador (lo convoca el vigía) | En el momento |
+| Escalación del vigía en la Oficina o aviso abierto de la guardia | desarrollo-reparador (lo convoca el gerente; arregla por rama + PR, nunca toca corridas) | Ese día |
 | Catálogo de ayudantes, pedidos de ayudantes de los jefes | jefe-recursos-ia | Jueves, y cuando un jefe pide un ayudante |
 | Revisión de calidad del código y metas | jefe-desarrollo | Una vez por semana (viernes) |
 | Se tomó una decisión o cambió el estado de algo | jefe-documentacion | Solo ese día, al final |
