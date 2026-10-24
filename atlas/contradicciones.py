@@ -32,7 +32,7 @@ def fugas(registros: list[Registro], corte: dt.datetime) -> list[str]:
     return out
 
 
-def revisar(direccion_tesis: int, evid: list[Evidencia], registros: list[Registro], corte: dt.datetime) -> dict:
+def revisar(direccion_tesis: int, evid: list[Evidencia], registros: list[Registro], corte: dt.datetime, modelo_tesis: str = "kt001") -> dict:
     """direccion_tesis: +1 o -1 (la tesis que se pone a prueba); 0 = no hay tesis direccional que evaluar."""
     h = []  # hallazgos: {pregunta, resultado, critico}
     add = lambda p, r, c=False: h.append({"pregunta": p, "resultado": r, "critico": c})
@@ -105,17 +105,23 @@ def revisar(direccion_tesis: int, evid: list[Evidencia], registros: list[Registr
     vol = por.get("tecnico.volatilidad")
     mov = vol.medicion.get("mov_tipico_4h") if vol and vol.tipo != "ausente" else None
     if pred:
-        r = abs(pred[-1].medicion["ret_predicho"]) if pred else 0
+        modelo_objetivo = next((e for e in pred if e.modulo == f"predictivo.{modelo_tesis}"), None)
+        r = abs(modelo_objetivo.medicion["ret_predicho"]) if modelo_objetivo else 0
         add("¿El movimiento predicho supera el costo de ida y vuelta?",
             f"|predicho| {r:.3%} contra costo {COSTO_IDA_VUELTA:.2%}; ruido típico 4 h {mov:.2%}" if mov else
             f"|predicho| {r:.3%} contra costo {COSTO_IDA_VUELTA:.2%}", False)
-        costo_supera = r < COSTO_IDA_VUELTA
+        costo_supera = modelo_objetivo is None or r < COSTO_IDA_VUELTA
     else:
         costo_supera = True
     liq = por.get("mercado.liquidez")
     iliquido = bool(liq and liq.medicion.get("insuficiente"))
     if iliquido:
         add("¿Hay liquidez suficiente?", liq.afirmacion, True)
+
+    # Calidad de evidencias: material sin validar, corregido o contradictorio no justifica continuar.
+    no_validados = [r.identificador for r in registros if r.calidad in ("sin_validar", "corregido", "contradictorio") and r.tipo != "evento"]
+    if no_validados:
+        add("¿Los datos utilizados están validados?", f"{len(no_validados)} registros sin validación decisoria", True)
 
     # Conclusión
     criticos = [x for x in h if x["critico"]]
