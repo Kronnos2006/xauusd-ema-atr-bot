@@ -1,16 +1,31 @@
 name: Guardia (vigía sin costo de Claude)
 
-# Hace el trabajo mecánico del vigía de datos sin gastar tokens de Claude:
-#  - cada hora: mantiene KT-002 solapado (nueva corrida en cola cada ~4 h) y lo relanza si la última falló;
-#    si hay una corrida viva pero sin registros hace más de 2 h, abre un aviso (issue "guardia").
-#  - una vez al día: guarda velas de BTC (1d y 4h) y el régimen de tendencia con reglas fijas
-#    en data/mercado/, para que el analista no dependa de Binance desde Claude.
-# No toca la medición de KT-002 (ni tools/kt002_prospectivo.py ni kt002.yml). Sin órdenes ni capital.
+# Trabajo mecánico del vigía de datos, sin gastar tokens de Claude (rediseño ORION 2026-10-23):
+#  - KT-002: decide con tools/guardia_salud.py (probado en tests/test_guardia_salud.py). Puede relanzar
+#    o alertar; NUNCA cancela una corrida viva (prohibición absoluta del propietario).
+#  - Mercado: spread/deslizamiento de BTCUSDT en cada corrida; velas y régimen cuando tendencia.json
+#    tiene más de 20 h (antes dependía de correr justo a las 00 UTC y por eso quedó viejo desde el 22-oct).
+#  - Salud: la corrida solo termina en verde si las operaciones obligatorias quedaron verificadas
+#    (datos frescos y publicados). Si no, abre/actualiza un aviso (issue "guardia") y termina en rojo.
+# Arranque: cron horario (GitHub lo retrasa a 4–6 h en este repo) + KT-002 la dispara en cada vuelta
+# horaria (origen=kt002). Si el spread se publicó hace <40 min, solo se salta esa medición; la
+# verificación de salud corre siempre contra lo publicado en GitHub.
+# La guardia es el ÚNICO que relanza KT-002 (agentes y vigía solo avisan): evita relanzamientos duplicados.
+# No toca la medición de KT-002 (tools/kt002_prospectivo.py, registros ni preregistro). Sin órdenes ni capital.
 
 on:
   schedule:
     - cron: '37 * * * *'
   workflow_dispatch:
+    inputs:
+      origen:
+        description: "manual | kt002"
+        required: false
+        default: manual
+      simulacro:
+        description: "si = agrega una falla ficticia para probar avisos de punta a punta (solo manual)"
+        required: false
+        default: "no"
 
 permissions:
   contents: write
@@ -24,53 +39,56 @@ concurrency:
 jobs:
   guardia:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     env:
       GH_TOKEN: ${{ github.token }}
       REPO: ${{ github.repository }}
+      REF: ${{ github.ref_name }}
+      # Fuera de master (prueba de una rama) la guardia NO actúa sobre producción: no relanza KT-002,
+      # no abre ni cierra avisos y publica en una rama de prueba propia (no ensucia master ni el PR).
+      PUB: ${{ github.ref_name == 'master' && 'master' || format('prueba-guardia/{0}', github.run_id) }}
+      ORIGEN: ${{ github.event_name == 'schedule' && 'cron' || inputs.origen || 'manual' }}
     steps:
       - uses: actions/checkout@v4
 
+      - name: Evitar mediciones de spread duplicadas
+        id: dedupe
+        run: |
+          # Solo se salta la medición de spread (si se publicó hace <40 min). KT-002, velas y la
+          # verificación de salud corren SIEMPRE: un salto nunca oculta una falla (tools/guardia_salud.py saltar).
+          ult=$(gh api "repos/$REPO/commits?path=data/mercado/spread_btcusdt.csv&sha=$REF&per_page=1" --jq '.[0].commit.committer.date // empty' || echo "")
+          saltar=$(python3 tools/guardia_salud.py saltar --origen "$ORIGEN" --ultimo-spread "$ult") || saltar=no
+          [ "$saltar" = "si" ] || saltar=no   # ante cualquier error se mide (nunca se salta a ciegas)
+          echo "saltar=$saltar" >> "$GITHUB_OUTPUT"
+          echo "### Guardia (origen: $ORIGEN) — spread saltado por duplicado: $saltar" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Revisar KT-002
+        id: kt002
+        if: always()
         run: |
-          set -u
-          ahora=$(date +%s)
-          vivas=$(gh run list -R "$REPO" -w kt002.yml --json status --jq '[.[]|select(.status=="in_progress" or .status=="queued")]|length')
-          ult=$(gh run list -R "$REPO" -w kt002.yml -L 1 --json databaseId,status,conclusion,createdAt --jq '.[0]')
-          ult_id=$(echo "$ult" | jq -r .databaseId); ult_conc=$(echo "$ult" | jq -r .conclusion)
-          ult_ini=$(date -d "$(echo "$ult" | jq -r .createdAt)" +%s)
+          set -euo pipefail
+          gh run list -R "$REPO" -w kt002.yml -L 10 --json databaseId,status,conclusion,createdAt > "$RUNNER_TEMP/corridas.json"
           reg=$(gh api "repos/$REPO/commits?path=data/kt002/predicciones.csv&per_page=1" --jq '.[0].commit.committer.date')
-          edad_reg=$(( (ahora - $(date -d "$reg" +%s)) / 60 ))
-          echo "vivas=$vivas ultima=$ult_id ($ult_conc) min_desde_registro=$edad_reg"
-          accion="ninguna"
-          enc=$(gh run list -R "$REPO" -w kt002.yml --json status --jq '[.[]|select(.status=="queued")]|length')
-          # Solape cada ~4 h: si no hay ninguna en cola y la ultima se creo hace >240 min, se encola otra
-          # (aunque haya una en curso: espera en el grupo kt002 y arranca apenas termina). Si la ultima fallo
-          # y no queda nada vivo, se lanza una nueva (no rerun: evita 4 h 45 con checkout viejo).
-          motivo=""
-          if [ "$enc" = "0" ] && [ $(( ahora - ult_ini )) -gt $(( 240*60 )) ]; then motivo="solape 4 h"
-          elif [ "$vivas" = "0" ] && { [ "$ult_conc" = "failure" ] || [ "$ult_conc" = "timed_out" ]; }; then motivo="ultima $ult_id termino en $ult_conc"; fi
-          if [ -n "$motivo" ]; then
-            # Un push hecho con el token de Actions no dispara otros workflows: se usa workflow_dispatch.
-            gh workflow run kt002.yml -R "$REPO" --ref master && accion="KT-002 relanzado ($motivo)" || accion="no se pudo relanzar KT-002 ($motivo)"
+          dec=$(python3 tools/guardia_salud.py kt002 --corridas "$RUNNER_TEMP/corridas.json" --registro "$reg")
+          echo "$dec"
+          accion=$(echo "$dec" | jq -r .accion); motivo=$(echo "$dec" | jq -r .motivo)
+          alerta=""
+          if [ "$accion" = "relanzar" ] && [ "$REF" != "master" ]; then
+            echo "Prueba en rama $REF: decisión '$accion' NO ejecutada (solo master actúa sobre KT-002)"
+          elif [ "$accion" = "relanzar" ]; then
+            # Un push con el token de Actions no dispara otros workflows: se usa workflow_dispatch.
+            if ! gh workflow run kt002.yml -R "$REPO" --ref master; then alerta="no se pudo relanzar KT-002 ($motivo)"
+            elif [[ "$motivo" != solape* ]]; then alerta="KT-002 relanzado por la guardia: $motivo"; fi
+          elif [ "$accion" = "alerta" ]; then
+            alerta="KT-002: $motivo"
           fi
-          if [ "$vivas" != "0" ] && [ "$edad_reg" -gt 130 ]; then
-            accion="$accion; falla silenciosa: corrida viva sin registro hace ${edad_reg} min"
-          fi
-          echo "ACCION=$accion" >> "$GITHUB_ENV"
-          echo "### Guardia: $accion" >> "$GITHUB_STEP_SUMMARY"
+          echo "registro=$reg" >> "$GITHUB_OUTPUT"
+          { echo "alerta<<FIN"; echo "$alerta"; echo "FIN"; } >> "$GITHUB_OUTPUT"
+          echo "- KT-002: $accion ${motivo:+($motivo)}" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Avisar si hay algo que reparar
-        if: contains(env.ACCION, 'falla silenciosa') || contains(env.ACCION, 'no se pudo')
-        run: |
-          gh label create guardia -R "$REPO" --color B60205 --description "Aviso automático de la guardia" 2>/dev/null || true
-          abierto=$(gh issue list -R "$REPO" -l guardia -s open --json number --jq '.[0].number // empty')
-          msg="$(date -u +%Y-%m-%dT%H:%MZ): $ACCION"
-          if [ -n "$abierto" ]; then gh issue comment "$abierto" -R "$REPO" -b "$msg"
-          else gh issue create -R "$REPO" -l guardia -t "Guardia: KT-002 necesita reparación" -b "$msg"; fi
-
-      - name: Spread y deslizamiento de Binance (cada hora, para riesgo-costos)
-        continue-on-error: true
+      - name: Spread y deslizamiento de Binance
+        id: spread
+        if: always() && steps.dedupe.outputs.saltar == 'no'
         run: |
           mkdir -p data/mercado
           python3 - <<'PY'
@@ -79,6 +97,7 @@ jobs:
           bt = json.load(urllib.request.urlopen(f"{B}/ticker/bookTicker?symbol=BTCUSDT", timeout=20))
           d = json.load(urllib.request.urlopen(f"{B}/depth?symbol=BTCUSDT&limit=500", timeout=20))
           bid, ask = float(bt["bidPrice"]), float(bt["askPrice"]); mid = (bid + ask) / 2
+          assert 0 < bid <= ask, "libro inválido"
           def slip(levels, usd):  # costo de barrer el libro por "usd" dólares, en % sobre el precio medio
               q = usd; cost = 0.0; got = 0.0
               for p, a in levels:
@@ -91,18 +110,20 @@ jobs:
           with open(f, "a") as h:
               if nuevo: h.write("utc,bid,ask,spread_pct,desliz_compra_1k_pct,desliz_compra_10k_pct,desliz_compra_100k_pct\n")
               h.write(",".join("" if x is None else str(x) for x in fila) + "\n")
+          open(os.environ["GITHUB_OUTPUT"], "a").write(f"utc={fila[0]}\n")
           print(fila)
           PY
-          git config user.name "guardia-bot"; git config user.email "guardia-bot@users.noreply.github.com"
-          git add data/mercado/spread_btcusdt.csv && git commit -q -m "Mercado: spread BTCUSDT $(date -u +%Y-%m-%dT%H:%MZ)" && for i in 1 2 3; do git pull -q --rebase && git push -q && break; sleep 10; done || true
 
-      - name: Velas de BTC y régimen de tendencia (una vez al día)
-        if: github.event_name == 'workflow_dispatch' || github.event.schedule == '37 * * * *'
+      - name: Velas de BTC y régimen de tendencia (si tienen más de 20 h)
+        id: velas
+        if: always()
         run: |
-          [ "$(date -u +%H)" = "00" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ ! -f data/mercado/tendencia.json ] || exit 0
+          vieja=$(python3 tools/guardia_salud.py tendencia-vieja)
+          echo "tendencia vieja: $vieja"
+          if [ "$vieja" != "si" ] && [ "$ORIGEN" != "manual" ]; then exit 0; fi
           mkdir -p data/mercado
           python3 - <<'PY'
-          import json, urllib.request, datetime as dt
+          import json, urllib.request, datetime as dt, os
           def kl(iv, n):
               u = f"https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval={iv}&limit={n}"
               rows = json.load(urllib.request.urlopen(u, timeout=30))
@@ -116,6 +137,7 @@ jobs:
               else: r = "LATERAL"
               return r, dict(cierre=c[-1], ma50=round(m50, 2), ma200=round(m200, 2), ma50_hace_10=round(m50p, 2))
           d, h4 = kl("1d", 260), kl("4h", 210)
+          assert len(d) >= 210 and len(h4) >= 200, "velas insuficientes"
           cd, c4 = [float(r[4]) for r in d], [float(r[4]) for r in h4]
           rd, nd = regimen(cd); r4, n4 = regimen(c4)
           ret = [cd[i] / cd[i - 1] - 1 for i in range(len(cd) - 30, len(cd))]
@@ -128,7 +150,77 @@ jobs:
           json.dump(out, open("data/mercado/tendencia.json", "w"), indent=1)
           json.dump([r[:6] for r in d], open("data/mercado/btc_1d.json", "w"))
           json.dump([r[:6] for r in h4], open("data/mercado/btc_4h.json", "w"))
+          open(os.environ["GITHUB_OUTPUT"], "a").write(f"generado={out['generado_utc']}\n")
           print(rd, r4)
           PY
+
+      - name: Publicar datos de mercado
+        id: publicar
+        if: always()
+        run: |
           git config user.name "guardia-bot"; git config user.email "guardia-bot@users.noreply.github.com"
-          git add data/mercado && git diff --cached --quiet || { git commit -q -m "Mercado: velas y régimen de BTC $(date -u +%Y-%m-%d)"; for i in 1 2 3; do git pull -q --rebase && git push -q && break; sleep 10; done; }
+          git add data/mercado
+          if git diff --cached --quiet; then echo "nada que publicar"; exit 0; fi
+          git commit -q -m "Mercado: datos de BTC $(date -u +%Y-%m-%dT%H:%MZ) (guardia)"
+          if [ "$PUB" != "master" ]; then
+            # Prueba de rama: rama nueva y propia, sin rebase (nadie más escribe en ella).
+            for i in 1 2 3; do git push -q origin "HEAD:refs/heads/$PUB" && { echo "publicado en $PUB"; exit 0; }; sleep 10; done
+            echo "::error::No se pudo publicar en $PUB"; exit 1
+          fi
+          for i in 1 2 3 4; do
+            if git pull -q --rebase && git push -q; then echo "publicado"; exit 0; fi
+            git rebase --abort 2>/dev/null || true   # no dejar un rebase a medias para el siguiente intento
+            sleep $(( i * 10 ))
+          done
+          echo "::error::No se pudo publicar data/mercado tras 4 intentos"; exit 1
+
+      - name: Verificar salud contra GitHub y avisar
+        if: always()
+        env:
+          ALERTA_KT002: ${{ steps.kt002.outputs.alerta }}
+          REGISTRO: ${{ steps.kt002.outputs.registro }}
+          ESPERADO_SPREAD: ${{ steps.spread.outputs.utc }}
+          ESPERADO_TENDENCIA: ${{ steps.velas.outputs.generado }}
+          SIMULACRO: ${{ inputs.simulacro || 'no' }}
+          PASOS: >-
+            {"KT-002": "${{ steps.kt002.outcome }}", "spread": "${{ steps.spread.outcome }}",
+             "velas": "${{ steps.velas.outcome }}", "publicar": "${{ steps.publicar.outcome }}"}
+        run: |
+          # Se verifica lo PUBLICADO en GitHub (API), no la copia local: un pull/push fallido no puede dar verde.
+          raw() { gh api -H "Accept: application/vnd.github.raw" "repos/$REPO/contents/$1?ref=$PUB" > "$2" 2>/dev/null || : > "$2"; }
+          for i in 1 2 3; do
+            raw data/mercado/spread_btcusdt.csv "$RUNNER_TEMP/spread_remoto.csv"
+            raw data/mercado/tendencia.json "$RUNNER_TEMP/tendencia_remota.json"
+            if [ -z "$ESPERADO_SPREAD" ] || grep -qF "$ESPERADO_SPREAD," "$RUNNER_TEMP/spread_remoto.csv"; then break; fi
+            sleep $(( i * 10 ))
+          done
+          rc=0
+          probs=$(python3 tools/guardia_salud.py salud --spread-remoto "$RUNNER_TEMP/spread_remoto.csv" \
+                  --tendencia-remota "$RUNNER_TEMP/tendencia_remota.json" --registro "$REGISTRO" \
+                  --esperado-spread "$ESPERADO_SPREAD" --esperado-tendencia "$ESPERADO_TENDENCIA" \
+                  --pasos "$PASOS" --alerta "$ALERTA_KT002") || rc=$?
+          # Verde solo si rc=0 y la lista es []; cualquier otro resultado (verificador caído) es falla.
+          if [ "$rc" = 0 ] && [ "$probs" = "[]" ]; then lista=""
+          elif [ "$rc" = 1 ] && lista=$(echo "$probs" | jq -er 'if type=="array" and length>0 then .[] else error end'); then :
+          else lista="el verificador de salud falló (rc=$rc): $probs"; fi
+          if [ "$SIMULACRO" = "si" ] && [ "$ORIGEN" = "manual" ]; then
+            lista=$(printf '%s\n%s' "$lista" "SIMULACRO de falla (prueba manual de avisos; no es una falla real)" | sed '/^$/d')
+          fi
+          if [ "$REF" != "master" ]; then
+            # Prueba de rama: sin avisos reales; el resultado queda en el resumen y el color de la corrida.
+            echo "### Prueba en rama $REF (publicado en $PUB)" >> "$GITHUB_STEP_SUMMARY"
+            if [ -n "$lista" ]; then echo "NO SANA:"; echo "$lista" | tee -a "$GITHUB_STEP_SUMMARY"; exit 1; fi
+            echo "Sana" | tee -a "$GITHUB_STEP_SUMMARY"; exit 0
+          fi
+          gh label create guardia -R "$REPO" --color B60205 --description "Aviso automático de la guardia" 2>/dev/null || true
+          abierto=$(gh issue list -R "$REPO" -l guardia -s open --json number --jq '.[0].number // empty')
+          run="${{ github.server_url }}/$REPO/actions/runs/${{ github.run_id }}"
+          if [ -n "$lista" ]; then
+            msg=$(printf '%s — %s\n\n%s\n\nCorrida: %s' "$(date -u +%Y-%m-%dT%H:%MZ)" "origen $ORIGEN" "$lista" "$run")
+            if [ -n "$abierto" ]; then gh issue comment "$abierto" -R "$REPO" -b "$msg"
+            else gh issue create -R "$REPO" -l guardia -t "Guardia: algo necesita reparación" -b "$msg"; fi
+            echo "### NO SANA" >> "$GITHUB_STEP_SUMMARY"; echo "$lista" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          if [ -n "$abierto" ]; then gh issue close "$abierto" -R "$REPO" -c "Recuperado y verificado en $run"; fi
+          echo "### Sana: KT-002, spread, velas y publicación verificados" >> "$GITHUB_STEP_SUMMARY"
