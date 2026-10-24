@@ -41,8 +41,8 @@ def transicion(tesis: dict, nuevo: str, revisor: str, motivo: str, evidencia_nue
         raise TransicionInvalida("reabrir una tesis rechazada exige evidencia nueva con fuente, hora de uso y descripción")
     if revisor not in REVISORES_REGISTRADOS:
         raise TransicionInvalida(f"revisor no registrado: {revisor!r} (válidos: {sorted(REVISORES_REGISTRADOS)})")
-    if nuevo == "ACEPTADA_PARA_SIMULACION" and not tesis.get("preregistro_hash"):
-        raise TransicionInvalida("sin preregistro no se acepta para simulación")
+    if nuevo == "ACEPTADA_PARA_SIMULACION":
+        raise TransicionInvalida("la aceptación para simulación requiere aprobación externa autenticada; una identidad declarada no basta")
     t2 = dict(tesis, estado=nuevo)
     t2["revisiones"] = tesis.get("revisiones", []) + [{"de": viejo, "a": nuevo, "revisor": revisor, "motivo": motivo,
                                                        "evidencia_nueva": evidencia_nueva or []}]

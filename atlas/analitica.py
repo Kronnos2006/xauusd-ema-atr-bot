@@ -49,7 +49,7 @@ def _ausente(modulo, regs, motivo):
 
 def tendencia(velas: list[Registro]) -> Evidencia:
     """Reglas fijas del analista-tendencia (MA50/MA200 diarias, pendiente de MA50 a 10 velas)."""
-    ok = [r for r in velas if r.calidad != "faltante"]
+    ok = [r for r in velas if r.calidad == "validado"]
     if len(ok) < 210:
         return _ausente("tecnico.tendencia", velas, f"{len(ok)} velas diarias cerradas (< 210)")
     c = [r.valor["c"] for r in ok]
@@ -89,7 +89,7 @@ def volumen(velas: list[Registro]) -> Evidencia:
 
 
 def liquidez(spreads: list[Registro], corte: dt.datetime | None = None, max_edad=dt.timedelta(hours=6)) -> Evidencia:
-    ok = [r for r in spreads if r.calidad != "faltante"]
+    ok = [r for r in spreads if r.calidad == "validado"]
     if not ok:
         return _ausente("mercado.liquidez", spreads, "sin mediciones de spread antes del corte")
     if corte is not None and corte - t(ok[-1].utilizable_utc) > max_edad:
