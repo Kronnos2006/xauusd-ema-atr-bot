@@ -8,7 +8,9 @@ name: Guardia (vigía sin costo de Claude)
 #  - Salud: la corrida solo termina en verde si las operaciones obligatorias quedaron verificadas
 #    (datos frescos y publicados). Si no, abre/actualiza un aviso (issue "guardia") y termina en rojo.
 # Arranque: cron horario (GitHub lo retrasa a 4–6 h en este repo) + KT-002 la dispara en cada vuelta
-# horaria (origen=kt002). Se deduplica: si hubo una corrida sana hace <40 min, no se repite.
+# horaria (origen=kt002). Si el spread se publicó hace <40 min, solo se salta esa medición; la
+# verificación de salud corre siempre contra lo publicado en GitHub.
+# La guardia es el ÚNICO que relanza KT-002 (agentes y vigía solo avisan): evita relanzamientos duplicados.
 # No toca la medición de KT-002 (tools/kt002_prospectivo.py, registros ni preregistro). Sin órdenes ni capital.
 
 on:

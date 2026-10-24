@@ -88,4 +88,6 @@ Operated-By: Claude (Anthropic) · Requested-By: propietario (orden maestra 2026
 - Rama `fix/orion-guardia-kt002-20261023`, PR pendiente de revisión cruzada; no fusionada.
 - Modelo de colaboración ORION registrado en CLAUDE.md (texto original conservado).
 - Informe completo: `docs/ops/INFORME_REPARACION_ORION_2026-10-23.md`.
+
+- 2026-10-23 (Claude, autor; revisor pendiente: ChatGPT/Codex): protección provisional del vigía aplicada a la tarea programada (sin cancelar/relanzar, solo avisa al gerente). En la rama del PR #32: dedupe de la guardia por último spread publicado y un solo relanzador (la guardia). Detalle: `docs/ops/INFORME_REPARACION_ORION_2026-10-23.md` §13.
 - 2026-10-23 21:00 (Claude, autor; revisor: ChatGPT): resueltas las 6 observaciones de revisión cruzada del PR #32 (merge de master, verificación contra GitHub sin `|| true`, dedupe que no oculta fallas, 28/28 pruebas, KT-002 intacto). Informe §14. PR sin fusionar.

@@ -1,6 +1,6 @@
 # Contexto completo del proyecto (para ChatGPT u otra IA)
 
-Actualizado: 2026-10-22. Dueño: Kensy (Costa Rica, UTC−6). Repositorio público: https://github.com/Kronnos2006/xauusd-ema-atr-bot · Visor: https://kronnos2006.github.io/xauusd-ema-atr-bot/visor/
+Actualizado: 2026-10-22. Dueño: el propietario de la cuenta Kronnos2006 (Costa Rica, UTC−6). Repositorio público: https://github.com/Kronnos2006/xauusd-ema-atr-bot · Visor: https://kronnos2006.github.io/xauusd-ema-atr-bot/visor/
 
 ## 1. Qué es
 Proyecto personal de **investigación cuantitativa de trading** con rigor estadístico. Objetivo final: encontrar una ventaja real y operable antes de arriesgar dinero. **Reglas de fondo: sin órdenes ni capital real; toda hipótesis se registra antes de ver datos; un auditor independiente revisa todo.**

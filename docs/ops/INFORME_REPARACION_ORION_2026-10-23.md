@@ -62,6 +62,12 @@ Commits de esta rama y PR enlazados en la issue #31. Corridas citadas: guardia `
 ## 12. Opinión del gerente
 La medición está sana; lo frágil era la vigilancia: dependía de un reloj que GitHub no respeta y declaraba éxito sin comprobar nada, y el vigía tomó una decisión destructiva con un solo dato. Con la lógica única probada, la salud verificada y la prohibición de cancelar, el sistema queda más simple y auditable. Recomiendo integrar rápido el punto 4 (vigía v2), porque es el único riesgo activo sobre datos reales.
 
+## 13. Adenda 2026-10-23 18:58 (hora CR) — protección inmediata del vigía (autorizada por el propietario)
+- **Aplicado en producción (solo esto):** se reemplazó el texto de la tarea programada "Vigía de datos" (`trig_01R2brVLcYG6yfbMzA5uimhm`, actualizada 2026-10-24T01:22:44Z UTC). Prohíbe cancelar, reiniciar, relanzar o re-ejecutar corridas; solo lectura (`gh run list`, `gh api` REST); ya no convoca al reparador; ante una corrida sospechosa deja una escalación `esperando` para el gerente en la Oficina. No depende de código del PR #32. Vigía v2 completo: **no activado**.
+- **Riesgo de relanzamientos duplicados (corregido en la rama):** (a) la deduplicación de la guardia comparaba contra la última corrida `success`, pero una corrida saltada también termina en `success` → podía encadenar saltos (cron + disparo de KT-002 a <40 min). Ahora compara contra el último commit de `data/mercado/spread_btcusdt.csv`. (b) Había 4 relanzadores posibles (guardia, vigía, reparador, vigia-datos/jefe-operaciones con `despertar.txt` o `rerun-failed-jobs`). Ahora el **único** que relanza KT-002 es la guardia; los agentes solo avisan.
+- **Referencias al propietario:** se quitó el nombre personal en archivos operativos (`gerente.md`, `CONTEXTO_PARA_OTRA_IA.md`, `VIGIA_PROMPT_v2.md`, tarea del vigía) y se usa "el propietario". Registros históricos (decisiones.md, hipótesis, estrategias) **no se reescribieron**: cambiarlos es decisión del propietario. La tarea del gerente (`trig_013FrUSspavgYpLTVTRWu46M`) todavía nombra a "Kensy": pendiente de autorización.
+- **KT-002 al 2026-10-24T01:25Z:** corrida #24 en curso, registros 23:07, 00:07 y 01:07 UTC; 74 filas. Sin cambios en predicciones, datos ni criterios.
+- Pruebas: 15/15 OK; actionlint OK.
 ## 14. Adenda 2026-10-23 21:00 (hora CR) — observaciones de la revisión cruzada de ChatGPT
 | # | Observación | Resultado |
 |---|---|---|
