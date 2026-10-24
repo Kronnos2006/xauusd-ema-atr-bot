@@ -22,5 +22,16 @@ class TestPuenteMercado(unittest.TestCase):
             p.write_text(json.dumps([[0,100,100,100,100,1],[0,100,100,100,100,1]]))
             with self.assertRaises(ValueError):
                 cargar_barras(p)
+
+    def test_archivo_real_repo_solo_lectura(self):
+        raiz = Path(__file__).resolve().parents[1]
+        ruta = raiz / "data/mercado/btc_4h.json"
+        antes = ruta.read_bytes()
+        corte = "2026-10-24T04:00:00Z"
+        r = cargar_barras(ruta, "4h", corte)
+        self.assertGreater(r["n_barras_cerradas"], 0)
+        self.assertTrue(all(b.cierre_utc <= "2026-10-24T04:00:00+00:00" for b in r["barras"]))
+        self.assertEqual(ruta.read_bytes(), antes)
+
 if __name__ == "__main__":
     unittest.main()
