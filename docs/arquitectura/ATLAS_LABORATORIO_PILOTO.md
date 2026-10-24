@@ -21,3 +21,8 @@ resultado = simular(barras, senales, costo_lado=0.0015)
 3. Protocolo walk-forward, benchmark y holdout sellado sin filtración.
 4. Risk officer y aprobación auténtica, sin confiar en identidades de cadena.
 5. CI en GitHub con pruebas de regresión y evidencia de que KT-002 permanece intacto.
+
+## Versión metodológica de costos (2026-10-24)
+- **v1** (commits hasta `4cb744e`): cobraba entrada y salida en **cada barra**, también al benchmark. Con precio plano, 180 barras de 4 h, el benchmark perdía −41,7 % solo por costos y una estrategia en efectivo "le ganaba". Sesgo a favor de cualquier estrategia con tiempo fuera del mercado.
+- **v2** (`MODELO_COSTOS = "costo-por-cambio-de-posicion-v2"`): costo por unidad de posición que cambia (entrada, salida, giro), liquidación de lo abierto al final; el benchmark paga una entrada y una salida. Con el mismo precio plano: benchmark −0,30 %.
+- Ningún resultado guardado en el repo usaba `simular()` (las salidas `research/atlas/salidas/` son del piloto de tesis), así que no hay resultados v1 que conservar. Cualquier cifra v1 citada fuera del repo debe leerse como sesgada.

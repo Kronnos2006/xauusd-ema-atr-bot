@@ -11,6 +11,11 @@ from datetime import datetime, timezone
 from math import isfinite
 from typing import Sequence
 
+# v1 (hasta 2026-10-24): cobraba ida y vuelta en cada barra, también al benchmark.
+# v2: costo solo cuando cambia la posición (entrada, salida, giro), mismo criterio
+# para estrategia y benchmark; al final se liquida lo abierto. Ver ATLAS_LABORATORIO_PILOTO.md.
+MODELO_COSTOS = "costo-por-cambio-de-posicion-v2"
+
 
 def instante(valor: str) -> datetime:
     d = datetime.fromisoformat(valor.replace("Z", "+00:00"))
@@ -52,8 +57,10 @@ def simular(barras: Sequence[Barra], senales: Sequence[Senal],
     """Señales consumidas desde el cierre de barra anterior; operación en siguiente apertura.
 
     Rendimiento de la posición open->close; sin overnight, para no inventar precios
-    ni el costo de huecos entre barras. Costo por entrada y salida en cada barra.
-    Benchmark buy-and-hold intrabar con idéntica convención y costos.
+    ni el costo de huecos entre barras. El costo se cobra por unidad de posición que
+    cambia (entrada, salida o giro: |nueva - anterior|), y lo abierto se liquida al
+    final. Benchmark buy-and-hold con idéntica convención: entra en la primera barra
+    y sale en la última (un costo por lado en total).
     El resultado no es rentabilidad de una cartera ejecutable.
     """
     if not (isfinite(costo_lado) and 0 <= costo_lado < 1):
@@ -74,6 +81,7 @@ def simular(barras: Sequence[Barra], senales: Sequence[Senal],
     efectivo, referencia = capital_inicial, capital_inicial
     maximo, peor_caida = efectivo, 0.0
     historial = []
+    anterior = 0
     for i in range(1, len(barras)):
         # La publicación debe preceder o coincidir con el cierre anterior:
         # no basta con publicarse justo antes de la apertura actual.
@@ -82,9 +90,14 @@ def simular(barras: Sequence[Barra], senales: Sequence[Senal],
         s = elegibles[-1] if elegibles else None
         posicion = s.posicion if s else 0
         cambio = barras[i].cierre / barras[i].apertura - 1
-        # Retorno neto por operación independiente, con costo efectivo en ambos lados.
-        factor = (1 + posicion * cambio) * (1 - costo_lado) ** (2 * abs(posicion))
-        benchmark_factor = (1 + cambio) * (1 - costo_lado) ** 2
+        ultima = i == len(barras) - 1
+        # Rotación = unidades que se compran o venden en esta barra; en la última
+        # barra se suma la liquidación de lo que quede abierto.
+        rotacion = abs(posicion - anterior) + (abs(posicion) if ultima else 0)
+        rotacion_bm = (1 if i == 1 else 0) + (1 if ultima else 0)
+        factor = (1 + posicion * cambio) * (1 - costo_lado) ** rotacion
+        benchmark_factor = (1 + cambio) * (1 - costo_lado) ** rotacion_bm
+        anterior = posicion
         if factor <= 0 or benchmark_factor <= 0:
             raise ValueError("pérdida excede capital: modelo lineal no válido")
         efectivo *= factor
@@ -92,7 +105,8 @@ def simular(barras: Sequence[Barra], senales: Sequence[Senal],
         maximo = max(maximo, efectivo)
         peor_caida = max(peor_caida, (maximo - efectivo) / maximo)
         historial.append({"barra": i, "senal": s.id if s else None,
-                          "posicion": posicion, "retorno_bruto": posicion * cambio,
+                          "posicion": posicion, "rotacion": rotacion,
+                          "retorno_bruto": posicion * cambio,
                           "capital_simulado": round(efectivo, 12),
                           "benchmark_capital": round(referencia, 12)})
     return {"periodos": len(historial), "capital_final_simulado": round(efectivo, 12),
@@ -100,5 +114,5 @@ def simular(barras: Sequence[Barra], senales: Sequence[Senal],
             "retorno_neto_simulado": round(efectivo / capital_inicial - 1, 12),
             "retorno_benchmark": round(referencia / capital_inicial - 1, 12),
             "max_drawdown_simulado": round(peor_caida, 12),
-            "historial": historial,
+            "historial": historial, "modelo_costos": MODELO_COSTOS,
             "limitaciones": "intrabar, sin financiación/borrow, gaps ni ejecución real; no demuestra ventaja"}
