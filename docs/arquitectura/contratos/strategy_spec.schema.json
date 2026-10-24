@@ -1,0 +1,141 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "orion/strategy_spec",
+ "title": "strategy_spec",
+ "description": "Módulo D → E/F. Solo para tesis que pasaron Fase 0, Fase 1 y preregistro.",
+ "type": "object",
+ "required": [
+  "id",
+  "tesis_id",
+  "preregistro",
+  "reglas",
+  "costos",
+  "limites_riesgo",
+  "validacion",
+  "estado"
+ ],
+ "properties": {
+  "id": {
+   "type": "string",
+   "pattern": "^ES-[0-9]{3,}$"
+  },
+  "tesis_id": {
+   "type": "string"
+  },
+  "preregistro": {
+   "type": "object",
+   "required": [
+    "ruta",
+    "hash_sha256",
+    "fecha_utc"
+   ],
+   "properties": {
+    "ruta": {
+     "type": "string"
+    },
+    "hash_sha256": {
+     "type": "string"
+    },
+    "fecha_utc": {
+     "type": "string",
+     "format": "date-time"
+    }
+   }
+  },
+  "reglas": {
+   "type": "object",
+   "required": [
+    "entrada",
+    "salida",
+    "tamano"
+   ],
+   "properties": {
+    "entrada": {
+     "type": "string"
+    },
+    "salida": {
+     "type": "string"
+    },
+    "tamano": {
+     "type": "string"
+    },
+    "usa_salida_llm": {
+     "const": false,
+     "description": "Prohibido: ninguna regla puede depender de la salida de un LLM"
+    }
+   }
+  },
+  "costos": {
+   "type": "object",
+   "required": [
+    "comision_pct",
+    "spread_pct",
+    "deslizamiento_pct"
+   ]
+  },
+  "limites_riesgo": {
+   "type": "object",
+   "description": "De MARCO_DE_RIESGO.md"
+  },
+  "validacion": {
+   "type": "object",
+   "required": [
+    "walk_forward",
+    "dsr",
+    "neto_de_costos"
+   ]
+  },
+  "estado": {
+   "enum": [
+    "borrador",
+    "fase0",
+    "fase1",
+    "preregistrada",
+    "simulada",
+    "paper",
+    "rechazada"
+   ]
+  }
+ },
+ "$defs": {
+  "fuente": {
+   "type": "object",
+   "required": [
+    "fuente",
+    "disponible_utc"
+   ],
+   "anyOf": [
+    {
+     "required": [
+      "url"
+     ]
+    },
+    {
+     "required": [
+      "ruta"
+     ]
+    }
+   ],
+   "properties": {
+    "fuente": {
+     "type": "string",
+     "minLength": 1
+    },
+    "url": {
+     "type": "string"
+    },
+    "ruta": {
+     "type": "string"
+    },
+    "hash_sha256": {
+     "type": "string",
+     "pattern": "^[0-9a-f]{64}$"
+    },
+    "disponible_utc": {
+     "type": "string",
+     "format": "date-time"
+    }
+   }
+  }
+ }
+}

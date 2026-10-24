@@ -1,0 +1,87 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "orion-atlas/registro",
+ "title": "registro",
+ "description": "Dato con procedencia (market_data, news_events, macro_events, model_forecasts). atlas/procedencia.py",
+ "type": "object",
+ "required": [
+  "fuente",
+  "identificador",
+  "activo",
+  "tipo",
+  "valor",
+  "evento_utc",
+  "publicado_utc",
+  "recibido_utc",
+  "utilizable_utc",
+  "calidad",
+  "licencia"
+ ],
+ "properties": {
+  "fuente": {
+   "type": "string",
+   "minLength": 1
+  },
+  "identificador": {
+   "type": "string"
+  },
+  "activo": {
+   "type": "string"
+  },
+  "tipo": {
+   "type": "string"
+  },
+  "valor": {},
+  "evento_utc": {
+   "type": [
+    "string",
+    "null"
+   ],
+   "format": "date-time"
+  },
+  "publicado_utc": {
+   "type": [
+    "string",
+    "null"
+   ],
+   "format": "date-time"
+  },
+  "recibido_utc": {
+   "type": [
+    "string",
+    "null"
+   ],
+   "format": "date-time"
+  },
+  "utilizable_utc": {
+   "type": [
+    "string",
+    "null"
+   ],
+   "format": "date-time",
+   "description": "null = sin disponibilidad temporal verificable: se excluye"
+  },
+  "calidad": {
+   "enum": [
+    "validado",
+    "sin_validar",
+    "corregido",
+    "contradictorio",
+    "faltante"
+   ]
+  },
+  "hash_sha256": {
+   "type": [
+    "string",
+    "null"
+   ],
+   "pattern": "^[0-9a-f]{64}$"
+  },
+  "licencia": {
+   "type": "string"
+  },
+  "nota": {
+   "type": "string"
+  }
+ }
+}

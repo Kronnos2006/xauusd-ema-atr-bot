@@ -1,0 +1,300 @@
+{
+ "activo": "BTCUSDT",
+ "condiciones_invalidez": [
+  "dato utilizable después del corte",
+  "velas diarias de más de 2 días al corte"
+ ],
+ "contradicciones": {
+  "conclusion": "INCONCLUSA",
+  "contra": [],
+  "decision_investigacion": "ABSTENERSE",
+  "favor": [
+   "Régimen diario ALCISTA (cierre 84093, MA50 81743, MA200 72774)"
+  ],
+  "hallazgos": [
+   {
+    "critico": false,
+    "pregunta": "¿Se usa información posterior al corte?",
+    "resultado": "0 registros posteriores al corte"
+   },
+   {
+    "critico": false,
+    "pregunta": "¿Los datos son suficientemente actuales?",
+    "resultado": "viejos: ninguno; faltantes: ['spread']"
+   },
+   {
+    "critico": false,
+    "pregunta": "¿La predicción tiene respaldo independiente?",
+    "resultado": "ningún modelo con ventaja demostrada al corte"
+   },
+   {
+    "critico": false,
+    "pregunta": "¿La señal supera una referencia sencilla («siempre sube»)?",
+    "resultado": "predictivo.kronos: 0/4 contra 4; predictivo.timesfm: 1/4 contra 4; predictivo.kt001: 0/4 contra 4"
+   },
+   {
+    "critico": false,
+    "pregunta": "¿El modelo está fuera de su régimen de evaluación?",
+    "resultado": "historial insuficiente para evaluarlo por régimen"
+   },
+   {
+    "critico": false,
+    "pregunta": "¿Los modelos coinciden entre sí?",
+    "resultado": "desacuerdo: {'predictivo.kronos': -1, 'predictivo.timesfm': 1}"
+   },
+   {
+    "critico": false,
+    "pregunta": "¿Qué información contradice el escenario?",
+    "resultado": "nada independiente en contra"
+   },
+   {
+    "critico": false,
+    "pregunta": "¿Las noticias son relevantes para el horizonte?",
+    "resultado": "sin cobertura de noticias verificables: no se puede evaluar"
+   },
+   {
+    "critico": false,
+    "pregunta": "¿Se confunde correlación con causalidad?",
+    "resultado": "ningún evento se usa como causa: solo como hipótesis no demostrada"
+   },
+   {
+    "critico": false,
+    "pregunta": "¿El movimiento predicho supera el costo de ida y vuelta?",
+    "resultado": "|predicho| 0.042% contra costo 0.30%; ruido típico 4 h 0.50%"
+   },
+   {
+    "critico": false,
+    "pregunta": "¿La incertidumbre justifica abstenerse?",
+    "resultado": "sí"
+   }
+  ]
+ },
+ "corte_utc": "2026-10-22T00:00:00+00:00",
+ "criterios_prueba": [
+  "no aplica: piloto de evaluación, no estrategia"
+ ],
+ "datos_faltantes": [
+  "mercado.liquidez: sin datos: sin mediciones de spread antes del corte",
+  "noticias.eventos: sin datos: sin cobertura: no hay fuente de eventos con fecha de publicación verificable configurada (no es ausencia de evento)"
+ ],
+ "efectos_noticias": [
+  "sin cobertura de noticias: no se puede evaluar"
+ ],
+ "estado": "INCONCLUSA",
+ "evidencia": [
+  {
+   "afirmacion": "Régimen diario ALCISTA (cierre 84093, MA50 81743, MA200 72774)",
+   "direccion": 1,
+   "fuentes": [
+    {
+     "fuente": "Binance spot BTCUSDT (data-api.binance.vision), copia del repo",
+     "hash_sha256": "36e6d149bbb6a2ed1c0eee78239ed74c16f59c014babd8ad6853a560ee2bc4ef",
+     "ultimo_utilizable_utc": "2026-10-22T00:00:00+00:00"
+    }
+   ],
+   "medicion": {
+    "cierre": 84093.42,
+    "ma200": 72773.95,
+    "ma50": 81742.66,
+    "ma50_hace_10": 80964.41,
+    "regimen": "ALCISTA"
+   },
+   "modulo": "tecnico.tendencia",
+   "tipo": "hecho"
+  },
+  {
+   "afirmacion": "Volatilidad anualizada 30 d 23.1%; movimiento típico a 4 h ≈ 0.49%",
+   "direccion": 0,
+   "fuentes": [
+    {
+     "fuente": "Binance spot BTCUSDT (data-api.binance.vision), copia del repo",
+     "hash_sha256": "36e6d149bbb6a2ed1c0eee78239ed74c16f59c014babd8ad6853a560ee2bc4ef",
+     "ultimo_utilizable_utc": "2026-10-22T00:00:00+00:00"
+    }
+   ],
+   "medicion": {
+    "mov_tipico_4h": 0.00495,
+    "vol_30d_anual": 0.2314
+   },
+   "modulo": "tecnico.volatilidad",
+   "tipo": "hecho"
+  },
+  {
+   "afirmacion": "Volumen de la última vela 1.17× el promedio de 20",
+   "direccion": 0,
+   "fuentes": [
+    {
+     "fuente": "Binance spot BTCUSDT (data-api.binance.vision), copia del repo",
+     "hash_sha256": "36e6d149bbb6a2ed1c0eee78239ed74c16f59c014babd8ad6853a560ee2bc4ef",
+     "ultimo_utilizable_utc": "2026-10-22T00:00:00+00:00"
+    }
+   ],
+   "medicion": {
+    "volumen_relativo_20": 1.165
+   },
+   "modulo": "tecnico.volumen",
+   "tipo": "hecho"
+  },
+  {
+   "afirmacion": "sin datos: sin mediciones de spread antes del corte",
+   "direccion": 0,
+   "fuentes": [
+    {
+     "fuente": "Binance spot BTCUSDT (data-api.binance.vision), copia del repo",
+     "hash_sha256": null,
+     "ultimo_utilizable_utc": ""
+    }
+   ],
+   "medicion": {},
+   "modulo": "mercado.liquidez",
+   "tipo": "ausente"
+  },
+  {
+   "afirmacion": "kronos predice -0.004% a 4 h desde 2026-10-21T22:00:00+00:00; historial al corte: 0/4 sin solape (siempre sube 4), McNemar p=0.125",
+   "direccion": -1,
+   "fuentes": [
+    {
+     "fuente": "KT-002 (Kronos-small, TimesFM 2.5, KT-001)",
+     "hash_sha256": "38792eefd79b3fc61d8ed448d8751f46869ee1cf7434f4ac7401428c9cd2106d",
+     "ultimo_utilizable_utc": "2026-10-21T23:07:00.957096+00:00"
+    }
+   ],
+   "medicion": {
+    "aciertos": 0,
+    "base_open_utc": "2026-10-21T22:00:00+00:00",
+    "mcnemar_p": 0.125,
+    "n_sin_solape": 4,
+    "ret_predicho": -4.389527255543868e-05,
+    "run_utc": "2026-10-21T23:07:00.957096+00:00",
+    "siempre_sube_aciertos": 4,
+    "ventaja_demostrada": false
+   },
+   "modulo": "predictivo.kronos",
+   "tipo": "inferencia"
+  },
+  {
+   "afirmacion": "timesfm predice +0.088% a 4 h desde 2026-10-21T22:00:00+00:00; historial al corte: 1/4 sin solape (siempre sube 4), McNemar p=0.25",
+   "direccion": 1,
+   "fuentes": [
+    {
+     "fuente": "KT-002 (Kronos-small, TimesFM 2.5, KT-001)",
+     "hash_sha256": "38792eefd79b3fc61d8ed448d8751f46869ee1cf7434f4ac7401428c9cd2106d",
+     "ultimo_utilizable_utc": "2026-10-21T23:07:00.957096+00:00"
+    }
+   ],
+   "medicion": {
+    "aciertos": 1,
+    "base_open_utc": "2026-10-21T22:00:00+00:00",
+    "mcnemar_p": 0.25,
+    "n_sin_solape": 4,
+    "ret_predicho": 0.0008790081986391751,
+    "run_utc": "2026-10-21T23:07:00.957096+00:00",
+    "siempre_sube_aciertos": 4,
+    "ventaja_demostrada": false
+   },
+   "modulo": "predictivo.timesfm",
+   "tipo": "inferencia"
+  },
+  {
+   "afirmacion": "kt001 predice +0.042% a 4 h desde 2026-10-21T22:00:00+00:00; historial al corte: 0/4 sin solape (siempre sube 4), McNemar p=0.125",
+   "direccion": 1,
+   "fuentes": [
+    {
+     "fuente": "KT-002 (Kronos-small, TimesFM 2.5, KT-001)",
+     "hash_sha256": "38792eefd79b3fc61d8ed448d8751f46869ee1cf7434f4ac7401428c9cd2106d",
+     "ultimo_utilizable_utc": "2026-10-21T23:07:00.957096+00:00"
+    }
+   ],
+   "medicion": {
+    "aciertos": 0,
+    "base_open_utc": "2026-10-21T22:00:00+00:00",
+    "mcnemar_p": 0.125,
+    "n_sin_solape": 4,
+    "ret_predicho": 0.0004175564630418682,
+    "run_utc": "2026-10-21T23:07:00.957096+00:00",
+    "siempre_sube_aciertos": 4,
+    "ventaja_demostrada": false
+   },
+   "modulo": "predictivo.kt001",
+   "tipo": "inferencia"
+  },
+  {
+   "afirmacion": "sin datos: sin cobertura: no hay fuente de eventos con fecha de publicación verificable configurada (no es ausencia de evento)",
+   "direccion": 0,
+   "fuentes": [
+    {
+     "fuente": "noticias/macro",
+     "hash_sha256": null,
+     "ultimo_utilizable_utc": ""
+    }
+   ],
+   "medicion": {},
+   "modulo": "noticias.eventos",
+   "tipo": "ausente"
+  }
+ ],
+ "evidencia_contraria": [],
+ "evidencia_favorable": [
+  "Régimen diario ALCISTA (cierre 84093, MA50 81743, MA200 72774)"
+ ],
+ "explicacion_prediccion": {
+  "decision_de_investigacion": "ABSTENERSE",
+  "hechos_comprobados": [
+   "Régimen diario ALCISTA (cierre 84093, MA50 81743, MA200 72774)",
+   "Volatilidad anualizada 30 d 23.1%; movimiento típico a 4 h ≈ 0.49%",
+   "Volumen de la última vela 1.17× el promedio de 20"
+  ],
+  "hipotesis_causales_no_demostradas": [],
+  "inferencias_fundamentadas": [
+   "kronos predice -0.004% a 4 h desde 2026-10-21T22:00:00+00:00; historial al corte: 0/4 sin solape (siempre sube 4), McNemar p=0.125",
+   "timesfm predice +0.088% a 4 h desde 2026-10-21T22:00:00+00:00; historial al corte: 1/4 sin solape (siempre sube 4), McNemar p=0.25",
+   "kt001 predice +0.042% a 4 h desde 2026-10-21T22:00:00+00:00; historial al corte: 0/4 sin solape (siempre sube 4), McNemar p=0.125"
+  ],
+  "informacion_ausente": [
+   "mercado.liquidez: sin datos: sin mediciones de spread antes del corte",
+   "noticias.eventos: sin datos: sin cobertura: no hay fuente de eventos con fecha de publicación verificable configurada (no es ausencia de evento)"
+  ],
+  "naturaleza": "retrospectiva (corte histórico), no prospectiva"
+ },
+ "fuentes": [
+  {
+   "fuente": "Binance spot BTCUSDT (data-api.binance.vision), copia del repo",
+   "hash_sha256": "36e6d149bbb6a2ed1c0eee78239ed74c16f59c014babd8ad6853a560ee2bc4ef"
+  },
+  {
+   "fuente": "Binance spot BTCUSDT (data-api.binance.vision), copia del repo",
+   "hash_sha256": null
+  },
+  {
+   "fuente": "KT-002 (Kronos-small, TimesFM 2.5, KT-001)",
+   "hash_sha256": "38792eefd79b3fc61d8ed448d8751f46869ee1cf7434f4ac7401428c9cd2106d"
+  },
+  {
+   "fuente": "noticias/macro",
+   "hash_sha256": null
+  }
+ ],
+ "hipotesis": "BTC sube en las 4 h siguientes a 2026-10-21T22:00:00+00:00, como predice KT-001",
+ "horizonte": "4h",
+ "huella_contenido": "51476351cf51ec69e256df3ae30a72dfae810d6b0a4285066adb417e28def2a5",
+ "id": "TS-BTC-20261022T0000Z",
+ "incertidumbre": "alta: muestra predictiva pequeña",
+ "interpretaciones_alternativas": [
+  "ruido de corto plazo: movimiento a 4 h comparable al desvío típico",
+  "la predicción no supera a «siempre sube» con la muestra disponible"
+ ],
+ "mecanismo": "estadístico: modelos de series de tiempo (Kronos/TimesFM) sin mecanismo económico propuesto",
+ "mercado": "Binance spot",
+ "pregunta": "¿La predicción publicada de KT-001 al corte está respaldada por evidencia independiente?",
+ "revisiones": [],
+ "riesgos": [
+  "sobreinterpretar n pequeño",
+  "contaminación por información futura (controlada)"
+ ],
+ "supuestos": [
+  "velas y predicciones con hora de disponibilidad verificable",
+  "costos de peor caso 0,30 % ida y vuelta"
+ ],
+ "version": 1,
+ "version_software": "atlas-piloto-0.1"
+}
