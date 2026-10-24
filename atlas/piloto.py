@@ -13,12 +13,12 @@ import sys
 from pathlib import Path
 
 from . import analitica as an
-from .contradicciones import revisar
+from .contradicciones import fugas, revisar
 from .datos import EventosArchivo, PrediccionesKT002, SpreadArchivo, VelasArchivo
 from .procedencia import Registro, t
 from .tesis import huella
 
-VERSION = "atlas-piloto-0.1"
+VERSION = "atlas-piloto-0.2"  # 0.2: correcciones de la auditoría del desconfiado (2026-10-24)
 PROHIBIDO = ("data/kt002",)  # aislamiento: jamás se escribe ahí
 
 
@@ -38,22 +38,23 @@ def analizar(corte: dt.datetime, registros: list[Registro]) -> dict:
     por = lambda pre: [r for r in registros if r.tipo.startswith(pre)]
     velas, spreads, preds, evs = por("vela_1d"), por("spread"), por("prediccion"), por("evento")
 
-    evid = [an.tendencia(velas), an.volatilidad(velas), an.volumen(velas), an.liquidez(spreads),
+    evid = [an.tendencia(velas), an.volatilidad(velas), an.volumen(velas), an.liquidez(spreads, corte),
             *an.predictivo(preds), an.eventos(evs)]
     p = next((e for e in evid if e.modulo == "predictivo.kt001" and e.tipo != "ausente"), None)
-    direccion = p.direccion if p and p.direccion else 1
+    direccion = p.direccion if p else 0   # sin predicción (o nula) no se fabrica una tesis
     rev = revisar(direccion, evid, registros, corte)
 
     hechos = [e.afirmacion for e in evid if e.tipo == "hecho"]
     inferencias = [e.afirmacion for e in evid if e.tipo == "inferencia"]
     causales = [e.afirmacion for e in evid if e.tipo == "hipotesis_causal"]
     ausente = [f"{e.modulo}: {e.afirmacion}" for e in evid if e.tipo == "ausente"]
-    lado = "sube" if direccion > 0 else "baja"
+    lado = {1: "sube", -1: "baja"}.get(direccion)
     tesis = {
         "id": f"TS-BTC-{corte.strftime('%Y%m%dT%H%MZ')}", "version": 1, "corte_utc": corte.isoformat(),
         "activo": "BTCUSDT", "mercado": "Binance spot", "horizonte": "4h",
         "pregunta": "¿La predicción publicada de KT-001 al corte está respaldada por evidencia independiente?",
-        "hipotesis": f"BTC {lado} en las 4 h siguientes a {p.medicion['base_open_utc'] if p else 'la última vela'}, como predice KT-001",
+        "hipotesis": (f"BTC {lado} en las 4 h siguientes a {p.medicion['base_open_utc']}, como predice KT-001" if lado
+                      else "sin hipótesis direccional: no hay predicción de KT-001 no nula publicada antes del corte"),
         "mecanismo": "estadístico: modelos de series de tiempo (Kronos/TimesFM) sin mecanismo económico propuesto",
         "evidencia_favorable": rev["favor"], "evidencia_contraria": rev["contra"],
         "interpretaciones_alternativas": ["ruido de corto plazo: movimiento a 4 h comparable al desvío típico",
@@ -113,8 +114,13 @@ def main(argv=None) -> int:
     a.add_argument("--salida", default="research/atlas/salidas")
     a.add_argument("--raiz", default=".")
     a.add_argument("--desde-instantanea", help="reproduce una tesis desde sus entradas guardadas")
+    a.add_argument("--validar-instantanea", help="solo valida que una instantánea no tenga fugas (código 1 si las hay)")
     o = a.parse_args(argv)
     corte = t(o.corte)
+    if o.validar_instantanea:
+        f = fugas(cargar_instantanea(Path(o.validar_instantanea)), corte)
+        print(json.dumps({"instantanea": o.validar_instantanea, "fugas": f}, ensure_ascii=False))
+        return 1 if f else 0
     regs = cargar_instantanea(Path(o.desde_instantanea)) if o.desde_instantanea else obtener(corte, Path(o.raiz), o.eventos)
     tesis = analizar(corte, regs)
     f = guardar(tesis, Path(o.salida))

@@ -132,6 +132,8 @@ class CasosAdversos(Base):
         ev = [{"fuente": "C", "url": "u3", "publicado_utc": None, "hecho": "z", "direccion": 1}]
         t = self.piloto(eventos=ev)
         self.assertTrue(any("sin disponibilidad temporal" in h["pregunta"] for h in t["contradicciones"]["hallazgos"]))
+        e = next(x for x in t["evidencia"] if x["modulo"] == "noticias.eventos")
+        self.assertEqual(e["medicion"], {})  # excluida de verdad, no solo etiquetada
 
     def test_datos_desactualizados(self):
         t = self.piloto(dias_viejos=5)
@@ -163,13 +165,80 @@ class CasosAdversos(Base):
         ev = [an.Evidencia("tecnico.a", "a", "hecho", 1, {}, []), an.Evidencia("tecnico.b", "b", "hecho", 1, {}, []),
               an.Evidencia("predictivo.kt001", "p", "inferencia", 1, {"ret_predicho": 0.02, "aciertos": 70,
                            "n_sin_solape": 120, "siempre_sube_aciertos": 50, "ventaja_demostrada": True}, [])]
-        regs = VelasArchivo(self.tmp / "data/mercado/btc_1d.json", "1d").obtener(CORTE) + \
-            PrediccionesKT002(self.tmp / "data/kt002/predicciones.csv").obtener(CORTE)
+        regs = obtener(CORTE, self.tmp)
         r = revisar(1, ev, regs, CORTE)
         self.assertEqual(r["conclusion"], "FAVORABLE_CONTINUAR")
         self.assertEqual(r["decision_investigacion"], "CONTINUAR_INVESTIGANDO")  # nunca una orden
         ev[2].medicion["ventaja_demostrada"] = False
         self.assertNotEqual(revisar(1, ev, regs, CORTE)["conclusion"], "FAVORABLE_CONTINUAR")
+
+
+class Auditoria20261024(Base):
+    """Casos pedidos por el desconfiado (auditoría del PR #34)."""
+
+    def test_modelo_contrario_con_ventaja_no_da_favorable(self):
+        escenario(self.tmp)
+        ev = [an.Evidencia("tecnico.a", "a", "hecho", 1, {}, []), an.Evidencia("tecnico.b", "b", "hecho", 1, {}, []),
+              an.Evidencia("predictivo.kronos", "k", "inferencia", -1, {"ret_predicho": -0.02, "aciertos": 70,
+                           "n_sin_solape": 120, "siempre_sube_aciertos": 50, "ventaja_demostrada": True}, [])]
+        r = revisar(1, ev, obtener(CORTE, self.tmp), CORTE)
+        self.assertNotEqual(r["conclusion"], "FAVORABLE_CONTINUAR")
+        self.assertIn("k", r["contra"])
+
+    def test_ventaja_nunca_sale_de_datos_descriptivos(self):
+        escenario(self.tmp)
+        p = PrediccionesKT002(self.tmp / "data/kt002/predicciones.csv").obtener(CORTE)
+        self.assertFalse(an.historial_modelo(p, "kronos")["ventaja_demostrada"])
+        self.assertTrue(an.historial_modelo(p, "kronos", {"kronos": "EC-001"})["ventaja_demostrada"])
+
+    def test_sin_predicciones_insuficiente_y_sin_hipotesis_inventada(self):
+        escenario(self.tmp)
+        (self.tmp / "data/kt002/predicciones.csv").write_text(CAB)
+        t = evaluar(CORTE, self.tmp)
+        self.assertEqual(t["contradicciones"]["conclusion"], "INSUFICIENTE")
+        self.assertTrue(t["hipotesis"].startswith("sin hipótesis direccional"))
+
+    def test_prediccion_nula_insuficiente(self):
+        t = self.piloto(ret_pred=(0.0, 0.0, 0.0))
+        self.assertEqual(t["contradicciones"]["conclusion"], "INSUFICIENTE")
+        self.assertNotIn("sube", t["hipotesis"])
+
+    def test_prediccion_vieja_insuficiente(self):
+        escenario(self.tmp)
+        t = evaluar(CORTE + dt.timedelta(hours=4), self.tmp)  # última predicción de hace 5 h
+        self.assertEqual(t["contradicciones"]["conclusion"], "INSUFICIENTE")
+
+    def test_spread_viejo_no_se_usa_como_liquidez_actual(self):
+        escenario(self.tmp)
+        (self.tmp / "data/mercado/spread_btcusdt.csv").write_text(
+            "utc,bid,ask,spread_pct,desliz_compra_1k_pct,desliz_compra_10k_pct,desliz_compra_100k_pct\n"
+            f"{(CORTE - dt.timedelta(days=30)).isoformat()},1,1,0.00001,0,0,0\n")
+        t = evaluar(CORTE, self.tmp)
+        liq = next(e for e in t["evidencia"] if e["modulo"] == "mercado.liquidez")
+        self.assertEqual(liq["tipo"], "ausente")
+        self.assertEqual(t["contradicciones"]["conclusion"], "INSUFICIENTE")
+
+    def test_instantanea_con_resultado_futuro_es_insuficiente(self):
+        escenario(self.tmp)
+        regs = obtener(CORTE, self.tmp)
+        i = next(i for i, r in enumerate(regs) if r.tipo == "prediccion")
+        v = dict(regs[i].valor, actual_ret="0.01", kronos_hit="1", scored_utc=(CORTE + dt.timedelta(hours=1)).isoformat())
+        regs[i] = Registro(**{**regs[i].como_dict(), "valor": v})
+        t = analizar(CORTE, regs)
+        self.assertEqual(t["contradicciones"]["conclusion"], "INSUFICIENTE")
+        f = guardar_instantanea(regs, "TS-X", self.tmp / "out")
+        from atlas.piloto import main
+        self.assertEqual(main(["--corte", CORTE.isoformat(), "--validar-instantanea", str(f)]), 1)
+
+    def test_evento_sin_hora_queda_fuera(self):
+        ev = [{"fuente": "C", "url": "u3", "publicado_utc": None, "hecho": "z", "direccion": 1},
+              {"fuente": "D", "url": "u4", "publicado_utc": "2026-02-28T10:00:00Z", "evento_utc": "2026-03-02T00:00:00Z",
+               "hecho": "futuro", "direccion": -1}]
+        t = self.piloto(eventos=ev)
+        e = next(x for x in t["evidencia"] if x["modulo"] == "noticias.eventos")
+        self.assertEqual(e["tipo"], "ausente")
+        self.assertNotIn("z", json.dumps(t["efectos_noticias"]))
+        self.assertNotIn("futuro", json.dumps(t["efectos_noticias"]))
 
 
 class Reproducibilidad(Base):
@@ -206,6 +275,8 @@ class Procedencia(unittest.TestCase):
 
 
 class EstadosYRegistro(unittest.TestCase):
+    EV = [{"fuente": "Binance", "utilizable_utc": "2026-10-24T00:00:00Z", "descripcion": "dato nuevo"}]
+
     def test_rechazada_no_pasa_a_aceptada_sin_evidencia_y_revision(self):
         t = {"estado": "RECHAZADA"}
         with self.assertRaises(TransicionInvalida):
@@ -213,8 +284,43 @@ class EstadosYRegistro(unittest.TestCase):
         with self.assertRaises(TransicionInvalida):
             transicion(t, "INVESTIGACION", "desconfiado", "x")  # sin evidencia nueva
         with self.assertRaises(TransicionInvalida):
-            transicion(t, "INVESTIGACION", "llm", "x", ["e"])
-        self.assertEqual(transicion(t, "INVESTIGACION", "desconfiado", "x", ["e"])["estado"], "INVESTIGACION")
+            transicion(t, "INVESTIGACION", "desconfiado", "x", ["cualquier cosa"])  # evidencia sin estructura
+        for falso in ("Claude", "gpt-4", "a", "rosiver-MLL", "llm"):
+            with self.assertRaises(TransicionInvalida):
+                transicion(t, "INVESTIGACION", falso, "x", self.EV)
+        self.assertEqual(transicion(t, "INVESTIGACION", "desconfiado", "x", self.EV)["estado"], "INVESTIGACION")
+
+    def test_registro_rechaza_saltos_de_estado(self):
+        with tempfile.TemporaryDirectory() as d:
+            r = RegistroTesis(Path(d) / "t.jsonl")
+            with self.assertRaises(TransicionInvalida):
+                r.anexar({"id": "TS-1", "estado": "ACEPTADA_PARA_SIMULACION"})  # no puede empezar aceptada
+            r.anexar({"id": "TS-1", "estado": "INVESTIGACION"})
+            r.anexar({"id": "TS-1", "estado": "INVESTIGACION"})  # reevaluación en el mismo estado
+            with self.assertRaises(TransicionInvalida):
+                r.anexar({"id": "TS-1", "estado": "ACEPTADA_PARA_SIMULACION"})
+            with self.assertRaises(TransicionInvalida):  # transición válida pero sin revisión registrada
+                r.anexar({"id": "TS-1", "estado": "RECHAZADA", "revisiones": [{"revisor": "Claude"}]})
+            r.anexar({"id": "TS-1", "estado": "RECHAZADA", "revisiones": [{"revisor": "desconfiado"}]})
+
+    def test_ancla_detecta_truncado_reescritura_y_lineas_malformadas(self):
+        with tempfile.TemporaryDirectory() as d:
+            ruta = Path(d) / "t.jsonl"
+            r = RegistroTesis(ruta)
+            for i in range(3):
+                r.anexar({"id": f"TS-{i}", "estado": "INCONCLUSA"})
+            ancla = r.ancla()
+            self.assertEqual(r.verificar(ancla), [])
+            lineas = ruta.read_text().splitlines()
+            ruta.write_text("\n".join(lineas[:2]) + "\n")
+            self.assertTrue(any("truncado" in e for e in r.verificar(ancla)))
+            ruta.unlink()
+            for i in range(3):
+                r.anexar({"id": f"TS-{i}", "estado": "INVESTIGACION"})  # cadena rehecha entera
+            self.assertEqual(r.verificar(), [])                        # sin ancla no se nota…
+            self.assertTrue(any("reescrito" in e for e in r.verificar(ancla)))  # …con ancla sí
+            ruta.write_text(ruta.read_text() + "{no es json\n")
+            self.assertTrue(any("malformada" in e for e in r.verificar()))
 
     def test_sin_preregistro_no_se_acepta(self):
         with self.assertRaises(TransicionInvalida):
@@ -223,7 +329,7 @@ class EstadosYRegistro(unittest.TestCase):
     def test_registro_detecta_alteracion(self):
         with tempfile.TemporaryDirectory() as d:
             r = RegistroTesis(Path(d) / "tesis.jsonl")
-            r.anexar({"id": "TS-1"}); r.anexar({"id": "TS-2"})
+            r.anexar({"id": "TS-1", "estado": "INCONCLUSA"}); r.anexar({"id": "TS-2", "estado": "INCONCLUSA"})
             self.assertEqual(r.verificar(), [])
             lineas = r.ruta.read_text().splitlines()
             lineas[0] = lineas[0].replace("TS-1", "TS-9")

@@ -6,14 +6,16 @@ Tipos de evidencia: hecho | inferencia | hipotesis_causal | ausente. Dirección:
 from __future__ import annotations
 
 import dataclasses as dc
+import datetime as dt
 import math
 import statistics
 
-from .procedencia import Registro
+from .procedencia import Registro, t
 
-# Regla propia de ATLAS (no cambia nada de KT-002): una señal predictiva solo cuenta como respaldo si tiene
-# n sin solape >= 100 y McNemar exacto contra «siempre sube» p < 0,05, medido solo con resultados conocidos al corte.
-VENTAJA_N_MIN, VENTAJA_P_MAX = 100, 0.05
+# Regla de ATLAS, alineada con el preregistro de KT-002 (Enmienda A: «ninguna p se interpreta como prueba de
+# edge»): los datos descriptivos de KT-002 NUNCA bastan. Una señal predictiva cuenta como respaldo solo si hay un
+# estudio confirmatorio aprobado (desconfiado + propietario) y registrado aparte, pasado en `aprobaciones`.
+ESTUDIOS_CONFIRMATORIOS: dict[str, str] = {}   # modelo -> id del estudio aprobado; hoy vacío
 COSTO_IDA_VUELTA = 0.0030      # peor caso de docs/riesgo/MARCO_DE_RIESGO.md
 SPREAD_MAX_PCT = 0.05          # % sobre el precio medio; por encima, liquidez insuficiente para la tesis
 
@@ -86,10 +88,12 @@ def volumen(velas: list[Registro]) -> Evidencia:
                      {"volumen_relativo_20": round(rel, 3)}, _fuentes(ok))
 
 
-def liquidez(spreads: list[Registro]) -> Evidencia:
+def liquidez(spreads: list[Registro], corte: dt.datetime | None = None, max_edad=dt.timedelta(hours=6)) -> Evidencia:
     ok = [r for r in spreads if r.calidad != "faltante"]
     if not ok:
         return _ausente("mercado.liquidez", spreads, "sin mediciones de spread antes del corte")
+    if corte is not None and corte - t(ok[-1].utilizable_utc) > max_edad:
+        return _ausente("mercado.liquidez", spreads, f"último spread {ok[-1].utilizable_utc}: más de {max_edad} antes del corte")
     s = ok[-1].valor["spread_pct"]
     return Evidencia("mercado.liquidez", f"Spread más reciente {s:.5f} % ({ok[-1].utilizable_utc})", "hecho", 0,
                      {"spread_pct": s, "medido_utc": ok[-1].utilizable_utc, "insuficiente": s > SPREAD_MAX_PCT}, _fuentes(ok))
@@ -103,45 +107,47 @@ def _mcnemar_p(b: int, c: int) -> float:
     return min(1.0, 2 * sum(math.comb(n, i) for i in range(k + 1)) / 2 ** n)
 
 
-def historial_modelo(preds: list[Registro], modelo: str) -> dict:
-    """Acierto sin solape (base cada 4 h) usando SOLO resultados conocidos al corte."""
+def historial_modelo(preds: list[Registro], modelo: str, aprobaciones: dict | None = None) -> dict:
+    """Acierto sin solape (base cada 4 h) usando SOLO resultados conocidos al corte. Descriptivo."""
     filas = [r.valor for r in preds if r.calidad != "faltante" and r.valor.get("actual_ret")]
-    filas = [f for f in filas if int(f["base_open_utc"][11:13]) % 4 == 0]
+    filas = [f for f in filas if t(f["base_open_utc"]).astimezone(dt.timezone.utc).hour % 4 == 0]
     hit = [int(float(f[f"{modelo}_hit"])) for f in filas if f.get(f"{modelo}_hit") not in ("", None)]
     sube = [1 if float(f["actual_ret"]) > 0 else 0 for f in filas if f.get(f"{modelo}_hit") not in ("", None)]
     b = sum(1 for h, s in zip(hit, sube) if h == 1 and s == 0)
     c = sum(1 for h, s in zip(hit, sube) if h == 0 and s == 1)
     p = _mcnemar_p(b, c)
-    return {"n_sin_solape": len(hit), "aciertos": sum(hit), "siempre_sube_aciertos": sum(sube), "mcnemar_p": round(p, 4),
-            "ventaja_demostrada": len(hit) >= VENTAJA_N_MIN and p < VENTAJA_P_MAX and sum(hit) > sum(sube)}
+    estudio = (aprobaciones if aprobaciones is not None else ESTUDIOS_CONFIRMATORIOS).get(modelo)
+    return {"n_sin_solape": len(hit), "aciertos": sum(hit), "siempre_sube_aciertos": sum(sube),
+            "mcnemar_p_descriptivo": round(p, 4), "estudio_confirmatorio": estudio, "ventaja_demostrada": bool(estudio)}
 
 
-def predictivo(preds: list[Registro]) -> list[Evidencia]:
-    ok = [r for r in preds if r.calidad != "faltante"]
+def predictivo(preds: list[Registro], aprobaciones: dict | None = None) -> list[Evidencia]:
+    ok = sorted((r for r in preds if r.calidad != "faltante"), key=lambda r: t(r.utilizable_utc))
     if not ok:
         return [_ausente("predictivo", preds, "sin predicciones publicadas antes del corte")]
     ult = ok[-1].valor
     out = []
     for m in ("kronos", "timesfm", "kt001"):
         ret = float(ult[f"{m}_ret"])
-        h = historial_modelo(ok, m)
+        h = historial_modelo(ok, m, aprobaciones)
         d = 1 if ret > 0 else -1 if ret < 0 else 0
         out.append(Evidencia(f"predictivo.{m}",
                              f"{m} predice {ret:+.3%} a 4 h desde {ult['base_open_utc']}; historial al corte: "
                              f"{h['aciertos']}/{h['n_sin_solape']} sin solape (siempre sube {h['siempre_sube_aciertos']}), "
-                             f"McNemar p={h['mcnemar_p']}", "inferencia", d,
+                             f"McNemar p={h['mcnemar_p_descriptivo']} (descriptivo, no prueba ventaja)", "inferencia", d,
                              {"ret_predicho": ret, "base_open_utc": ult["base_open_utc"], "run_utc": ult["run_utc"], **h},
                              _fuentes(ok)))
     return out
 
 
 def eventos(evs: list[Registro]) -> Evidencia:
-    ok = [r for r in evs if r.calidad != "faltante"]
+    ok = [r for r in evs if r.calidad != "faltante" and r.utilizable_utc]  # sin hora verificable: excluido
     if not ok:
-        return _ausente("noticias.eventos", evs, (evs[0].nota if evs else "sin fuente"))
-    dirs = [r.valor["direccion"] for r in ok if r.utilizable_utc]
+        return _ausente("noticias.eventos", evs, (evs[0].nota if evs and evs[0].calidad == "faltante"
+                                                  else "ningún evento con hora de publicación verificable"))
+    dirs = [r.valor["direccion"] for r in ok]
     return Evidencia("noticias.eventos", f"{len(ok)} eventos antes del corte ({sum(1 for x in dirs if x > 0)} a favor, "
                      f"{sum(1 for x in dirs if x < 0)} en contra); relación causal NO demostrada", "hipotesis_causal",
                      0, {"n": len(ok), "a_favor": sum(1 for x in dirs if x > 0), "en_contra": sum(1 for x in dirs if x < 0),
-                         "sin_disponibilidad_verificable": sum(1 for r in ok if not r.utilizable_utc),
+                         "excluidos_sin_hora": sum(1 for r in evs if r.calidad != "faltante" and not r.utilizable_utc),
                          "hechos": [r.valor["hecho"] for r in ok]}, _fuentes(ok))

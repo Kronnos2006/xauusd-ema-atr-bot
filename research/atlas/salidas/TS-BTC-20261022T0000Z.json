@@ -5,7 +5,7 @@
   "velas diarias de más de 2 días al corte"
  ],
  "contradicciones": {
-  "conclusion": "INCONCLUSA",
+  "conclusion": "INSUFICIENTE",
   "contra": [],
   "decision_investigacion": "ABSTENERSE",
   "favor": [
@@ -15,17 +15,17 @@
    {
     "critico": false,
     "pregunta": "¿Se usa información posterior al corte?",
-    "resultado": "0 registros posteriores al corte"
+    "resultado": "0 fugas"
    },
    {
-    "critico": false,
+    "critico": true,
     "pregunta": "¿Los datos son suficientemente actuales?",
     "resultado": "viejos: ninguno; faltantes: ['spread']"
    },
    {
     "critico": false,
     "pregunta": "¿La predicción tiene respaldo independiente?",
-    "resultado": "ningún modelo con ventaja demostrada al corte"
+    "resultado": "ningún modelo a favor con estudio confirmatorio aprobado"
    },
    {
     "critico": false,
@@ -150,7 +150,7 @@
    "tipo": "ausente"
   },
   {
-   "afirmacion": "kronos predice -0.004% a 4 h desde 2026-10-21T22:00:00+00:00; historial al corte: 0/4 sin solape (siempre sube 4), McNemar p=0.125",
+   "afirmacion": "kronos predice -0.004% a 4 h desde 2026-10-21T22:00:00+00:00; historial al corte: 0/4 sin solape (siempre sube 4), McNemar p=0.125 (descriptivo, no prueba ventaja)",
    "direccion": -1,
    "fuentes": [
     {
@@ -162,7 +162,8 @@
    "medicion": {
     "aciertos": 0,
     "base_open_utc": "2026-10-21T22:00:00+00:00",
-    "mcnemar_p": 0.125,
+    "estudio_confirmatorio": null,
+    "mcnemar_p_descriptivo": 0.125,
     "n_sin_solape": 4,
     "ret_predicho": -4.389527255543868e-05,
     "run_utc": "2026-10-21T23:07:00.957096+00:00",
@@ -173,7 +174,7 @@
    "tipo": "inferencia"
   },
   {
-   "afirmacion": "timesfm predice +0.088% a 4 h desde 2026-10-21T22:00:00+00:00; historial al corte: 1/4 sin solape (siempre sube 4), McNemar p=0.25",
+   "afirmacion": "timesfm predice +0.088% a 4 h desde 2026-10-21T22:00:00+00:00; historial al corte: 1/4 sin solape (siempre sube 4), McNemar p=0.25 (descriptivo, no prueba ventaja)",
    "direccion": 1,
    "fuentes": [
     {
@@ -185,7 +186,8 @@
    "medicion": {
     "aciertos": 1,
     "base_open_utc": "2026-10-21T22:00:00+00:00",
-    "mcnemar_p": 0.25,
+    "estudio_confirmatorio": null,
+    "mcnemar_p_descriptivo": 0.25,
     "n_sin_solape": 4,
     "ret_predicho": 0.0008790081986391751,
     "run_utc": "2026-10-21T23:07:00.957096+00:00",
@@ -196,7 +198,7 @@
    "tipo": "inferencia"
   },
   {
-   "afirmacion": "kt001 predice +0.042% a 4 h desde 2026-10-21T22:00:00+00:00; historial al corte: 0/4 sin solape (siempre sube 4), McNemar p=0.125",
+   "afirmacion": "kt001 predice +0.042% a 4 h desde 2026-10-21T22:00:00+00:00; historial al corte: 0/4 sin solape (siempre sube 4), McNemar p=0.125 (descriptivo, no prueba ventaja)",
    "direccion": 1,
    "fuentes": [
     {
@@ -208,7 +210,8 @@
    "medicion": {
     "aciertos": 0,
     "base_open_utc": "2026-10-21T22:00:00+00:00",
-    "mcnemar_p": 0.125,
+    "estudio_confirmatorio": null,
+    "mcnemar_p_descriptivo": 0.125,
     "n_sin_solape": 4,
     "ret_predicho": 0.0004175564630418682,
     "run_utc": "2026-10-21T23:07:00.957096+00:00",
@@ -246,9 +249,9 @@
   ],
   "hipotesis_causales_no_demostradas": [],
   "inferencias_fundamentadas": [
-   "kronos predice -0.004% a 4 h desde 2026-10-21T22:00:00+00:00; historial al corte: 0/4 sin solape (siempre sube 4), McNemar p=0.125",
-   "timesfm predice +0.088% a 4 h desde 2026-10-21T22:00:00+00:00; historial al corte: 1/4 sin solape (siempre sube 4), McNemar p=0.25",
-   "kt001 predice +0.042% a 4 h desde 2026-10-21T22:00:00+00:00; historial al corte: 0/4 sin solape (siempre sube 4), McNemar p=0.125"
+   "kronos predice -0.004% a 4 h desde 2026-10-21T22:00:00+00:00; historial al corte: 0/4 sin solape (siempre sube 4), McNemar p=0.125 (descriptivo, no prueba ventaja)",
+   "timesfm predice +0.088% a 4 h desde 2026-10-21T22:00:00+00:00; historial al corte: 1/4 sin solape (siempre sube 4), McNemar p=0.25 (descriptivo, no prueba ventaja)",
+   "kt001 predice +0.042% a 4 h desde 2026-10-21T22:00:00+00:00; historial al corte: 0/4 sin solape (siempre sube 4), McNemar p=0.125 (descriptivo, no prueba ventaja)"
   ],
   "informacion_ausente": [
    "mercado.liquidez: sin datos: sin mediciones de spread antes del corte",
@@ -276,7 +279,7 @@
  ],
  "hipotesis": "BTC sube en las 4 h siguientes a 2026-10-21T22:00:00+00:00, como predice KT-001",
  "horizonte": "4h",
- "huella_contenido": "51476351cf51ec69e256df3ae30a72dfae810d6b0a4285066adb417e28def2a5",
+ "huella_contenido": "c772acd50979b58ca981cc1d0dd70d77dd72334aabbef095f4fa95b9e16b6a6e",
  "id": "TS-BTC-20261022T0000Z",
  "incertidumbre": "alta: muestra predictiva pequeña",
  "interpretaciones_alternativas": [
@@ -296,5 +299,5 @@
   "costos de peor caso 0,30 % ida y vuelta"
  ],
  "version": 1,
- "version_software": "atlas-piloto-0.1"
+ "version_software": "atlas-piloto-0.2"
 }

@@ -140,9 +140,9 @@ class EventosArchivo:
             return [cobertura_faltante("noticias/macro", self.activo, "evento", str(e))]
         h, out = sha256_bytes(raw), []
         for e in items:
-            pub = t(e.get("publicado_utc"))
-            if pub is not None and pub > corte:
-                continue
+            pub, ocurr = t(e.get("publicado_utc")), t(e.get("evento_utc"))
+            if (pub is not None and pub > corte) or (ocurr is not None and ocurr > corte):
+                continue  # publicado u ocurrido después del corte
             out.append(Registro(e.get("fuente", "?"), e.get("url", "-"), self.activo, "evento",
                                 {"tipo": e.get("tipo"), "hecho": e.get("hecho"), "direccion": int(e.get("direccion", 0))},
                                 e.get("evento_utc"), e.get("publicado_utc"), None, e.get("publicado_utc"),

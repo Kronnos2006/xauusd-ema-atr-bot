@@ -9,22 +9,38 @@ from __future__ import annotations
 import datetime as dt
 
 from .analitica import COSTO_IDA_VUELTA, Evidencia
-from .procedencia import Registro, frescura
+from .procedencia import Registro, frescura, t
 
 CONCLUSIONES = ("FAVORABLE_CONTINUAR", "CONTRADICTORIA", "INCONCLUSA", "INSUFICIENTE")
 LIMITE_FRESCURA = {"vela_1d": dt.timedelta(days=2), "prediccion": dt.timedelta(hours=3),
                    "spread": dt.timedelta(hours=6)}
 
 
+def fugas(registros: list[Registro], corte: dt.datetime) -> list[str]:
+    """Revalida TODO registro (también los que vienen de una instantánea): hora de uso, hora del evento y
+    puntuaciones de predicciones conocidas después del corte."""
+    out = []
+    for r in registros:
+        if r.utilizable_utc and frescura(r, corte, dt.timedelta(0)) == "futuro":
+            out.append(f"{r.identificador}: utilizable después del corte")
+        if r.tipo == "evento" and r.evento_utc and t(r.evento_utc) > corte:
+            out.append(f"{r.identificador}: evento posterior al corte")
+        if r.tipo == "prediccion" and isinstance(r.valor, dict) and r.valor.get("actual_ret") not in ("", None):
+            s = t(r.valor.get("scored_utc"))
+            if s is None or s > corte:
+                out.append(f"{r.identificador}: resultado conocido después del corte")
+    return out
+
+
 def revisar(direccion_tesis: int, evid: list[Evidencia], registros: list[Registro], corte: dt.datetime) -> dict:
-    """direccion_tesis: +1 o -1 (la tesis que se pone a prueba)."""
+    """direccion_tesis: +1 o -1 (la tesis que se pone a prueba); 0 = no hay tesis direccional que evaluar."""
     h = []  # hallazgos: {pregunta, resultado, critico}
     add = lambda p, r, c=False: h.append({"pregunta": p, "resultado": r, "critico": c})
 
     # 7. ¿Se usa información posterior al corte? (y fuentes sin hora verificable)
-    futuros = [r for r in registros if r.utilizable_utc and frescura(r, corte, dt.timedelta(0)) == "futuro"]
+    futuros = fugas(registros, corte)
     sin_hora = [r for r in registros if r.calidad != "faltante" and not r.utilizable_utc]
-    add("¿Se usa información posterior al corte?", f"{len(futuros)} registros posteriores al corte", bool(futuros))
+    add("¿Se usa información posterior al corte?", f"{len(futuros)} fugas" + (f": {futuros[:3]}" if futuros else ""), bool(futuros))
     if sin_hora:
         add("¿Hay fuentes sin disponibilidad temporal verificable?",
             f"{len(sin_hora)} excluidas del análisis (sin hora de publicación)", False)
@@ -39,17 +55,23 @@ def revisar(direccion_tesis: int, evid: list[Evidencia], registros: list[Registr
         ult = max((r for r in rs if r.utilizable_utc), key=lambda r: r.utilizable_utc, default=None)
         if ult is None or frescura(ult, corte, lim) == "viejo":
             viejos.append(tipo)
+    # Sin velas, predicción o liquidez actuales no se puede justificar ninguna tesis: INSUFICIENTE.
     add("¿Los datos son suficientemente actuales?", f"viejos: {viejos or 'ninguno'}; faltantes: {faltan or 'ninguno'}",
-        "vela_1d" in viejos + faltan)
+        bool(viejos or faltan))
+    if direccion_tesis == 0:
+        add("¿Hay una tesis direccional que evaluar?", "no: sin predicción o predicción nula", True)
 
     por = {e.modulo: e for e in evid}
     pred = [e for e in evid if e.modulo.startswith("predictivo.") and e.tipo != "ausente"]
     indep = [e for e in evid if not e.modulo.startswith("predictivo.") and e.tipo == "hecho" and e.direccion != 0]
 
-    # 1. ¿La predicción tiene respaldo independiente?
-    con_ventaja = [e for e in pred if e.medicion.get("ventaja_demostrada")]
+    # 1. ¿La predicción tiene respaldo independiente? Solo cuenta la ventaja (estudio confirmatorio aprobado)
+    # de un modelo que predice EN LA DIRECCIÓN de la tesis; uno con ventaja en contra es evidencia contraria.
+    con_ventaja = [e for e in pred if e.medicion.get("ventaja_demostrada") and e.direccion == direccion_tesis]
+    ventaja_contra = [e for e in pred if e.medicion.get("ventaja_demostrada") and e.direccion == -direccion_tesis]
     add("¿La predicción tiene respaldo independiente?",
-        "ningún modelo con ventaja demostrada al corte" if not con_ventaja else f"con ventaja: {[e.modulo for e in con_ventaja]}")
+        (f"a favor: {[e.modulo for e in con_ventaja]}" if con_ventaja else "ningún modelo a favor con estudio confirmatorio aprobado")
+        + (f"; en contra con ventaja: {[e.modulo for e in ventaja_contra]}" if ventaja_contra else ""))
     # 9. ¿La señal supera una referencia sencilla?
     add("¿La señal supera una referencia sencilla («siempre sube»)?",
         "; ".join(f"{e.modulo}: {e.medicion['aciertos']}/{e.medicion['n_sin_solape']} contra {e.medicion['siempre_sube_aciertos']}"
@@ -64,7 +86,7 @@ def revisar(direccion_tesis: int, evid: list[Evidencia], registros: list[Registr
         add("¿Los modelos coinciden entre sí?", f"desacuerdo: {dirs}")
 
     # 2. ¿Qué contradice el escenario?
-    contra = [e for e in indep if e.direccion == -direccion_tesis]
+    contra = [e for e in indep if e.direccion == -direccion_tesis] + ventaja_contra
     favor = [e for e in indep if e.direccion == direccion_tesis]
     add("¿Qué información contradice el escenario?", [e.afirmacion for e in contra] or "nada independiente en contra")
 
