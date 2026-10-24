@@ -85,9 +85,9 @@ def tendencia_vieja(generado_utc: str | None, ahora: dt.datetime, horas: float =
 
 
 DEDUPE_MIN = 40
-# Límites de frescura medidos sobre lo publicado en GitHub. El spread usa 45 min (> DEDUPE_MIN) para que una
-# corrida saltada por deduplicación no se marque vieja por diseño.
-LIMITES_MIN = {"tendencia.json": 26 * 60, "spread_btcusdt.csv": 45, "registro KT-002": REGISTRO_SANO}
+# Límites de frescura medidos sobre lo publicado en GitHub. El spread usa 50 min (DEDUPE_MIN + margen para los
+# reintentos de publicación y verificación) para que una corrida saltada no se marque vieja por diseño.
+LIMITES_MIN = {"tendencia.json": 26 * 60, "spread_btcusdt.csv": 50, "registro KT-002": REGISTRO_SANO}
 
 
 def saltar_duplicada(ultimo_spread_publicado: str | None, origen: str, ahora: dt.datetime) -> bool:

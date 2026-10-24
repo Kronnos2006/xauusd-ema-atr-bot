@@ -57,7 +57,8 @@ jobs:
           # Solo se salta la medición de spread (si se publicó hace <40 min). KT-002, velas y la
           # verificación de salud corren SIEMPRE: un salto nunca oculta una falla (tools/guardia_salud.py saltar).
           ult=$(gh api "repos/$REPO/commits?path=data/mercado/spread_btcusdt.csv&sha=$REF&per_page=1" --jq '.[0].commit.committer.date // empty' || echo "")
-          saltar=$(python3 tools/guardia_salud.py saltar --origen "$ORIGEN" --ultimo-spread "$ult")
+          saltar=$(python3 tools/guardia_salud.py saltar --origen "$ORIGEN" --ultimo-spread "$ult") || saltar=no
+          [ "$saltar" = "si" ] || saltar=no   # ante cualquier error se mide (nunca se salta a ciegas)
           echo "saltar=$saltar" >> "$GITHUB_OUTPUT"
           echo "### Guardia (origen: $ORIGEN) — spread saltado por duplicado: $saltar" >> "$GITHUB_STEP_SUMMARY"
 
@@ -76,7 +77,8 @@ jobs:
             echo "Prueba en rama $REF: decisión '$accion' NO ejecutada (solo master actúa sobre KT-002)"
           elif [ "$accion" = "relanzar" ]; then
             # Un push con el token de Actions no dispara otros workflows: se usa workflow_dispatch.
-            gh workflow run kt002.yml -R "$REPO" --ref master || alerta="no se pudo relanzar KT-002 ($motivo)"
+            if ! gh workflow run kt002.yml -R "$REPO" --ref master; then alerta="no se pudo relanzar KT-002 ($motivo)"
+            elif [[ "$motivo" != solape* ]]; then alerta="KT-002 relanzado por la guardia: $motivo"; fi
           elif [ "$accion" = "alerta" ]; then
             alerta="KT-002: $motivo"
           fi

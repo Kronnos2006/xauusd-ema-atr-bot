@@ -12,7 +12,7 @@ on:
     paths:
       - tools/kt002_prospectivo.py
       - .github/workflows/kt002.yml
-      - data/kt002/despertar.txt   # lo toca el despertador (guardia.yml) cada ~4 h
+      - data/kt002/despertar.txt   # despertador manual de emergencia (la guardia ya no lo toca; relanza por workflow_dispatch)
 
 permissions:
   contents: write
@@ -59,10 +59,11 @@ jobs:
 
       - name: Pronosticar cada hora durante ~4 h 45 min
         run: |
-          # El cron horario de GitHub no se ejecuta en este repo: el job se queda vivo y corre
-          # el mismo script en cada hora (minuto 7 UTC). La guardia (guardia.yml) lo relanza cada ~4 h:
-          # como el job dura ~4 h 45 min, el relanzamiento queda en cola (grupo kt002) y arranca
-          # apenas termina el anterior. Nunca corren dos a la vez.
+          # El cron horario de GitHub llega cada 2,5–6 h en este repo: el job se queda vivo y corre el
+          # mismo script en cada hora (minuto 7 UTC). La siguiente corrida la encola el cron o la guardia
+          # (solape a las 4 h); espera en el grupo kt002 y arranca apenas termina esta. Nunca corren dos a
+          # la vez. GitHub deja una sola corrida PENDIENTE por grupo: si llega otra, reemplaza (cancela) la
+          # pendiente anterior que nunca arrancó. Eso no pierde datos ni toca la corrida en curso.
           git config user.name "kt002-bot"
           git config user.email "kt002-bot@users.noreply.github.com"
           set -o pipefail
@@ -102,6 +103,7 @@ jobs:
             fi
             # Despertar a la guardia (el cron de GitHub la retrasa 4–6 h). No afecta la medición:
             # si falla, solo deja un aviso; la guardia se deduplica sola.
+            # Token en línea (no en env:) para que el código de terceros de esta vuelta no lo vea como variable.
             GH_TOKEN="${{ github.token }}" gh workflow run guardia.yml -R "${{ github.repository }}" --ref master -f origen=kt002 >>"$log" 2>&1 \
               || echo "::warning::No se pudo disparar la guardia en esta vuelta"
             prox=$(( ( $(date +%s) / 3600 + 1 ) * 3600 + 7*60 ))

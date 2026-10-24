@@ -30,7 +30,7 @@ PROHIBICIÓN ABSOLUTA (orden del propietario, 2026-10-23): NUNCA canceles, deten
    - `ok`: KT-002 sano. Una corrida en curso que sigue sumando registros está sana aunque lleve horas.
    - `relanzar`: no lo hacés vos. Lo hace la guardia en su próxima corrida; solo es problema si la guardia no corre (paso 3).
    - `alerta`: escalá (paso 4).
-   - Una corrida `cancelled` que nunca arrancó la canceló GitHub por concurrencia: no es una falla.
+   - Una corrida `cancelled` que nunca arrancó (sin pasos) y tiene otra del mismo workflow creada en el mismo segundo fue reemplazada automáticamente por GitHub (una sola pendiente por grupo): no es una falla ni una cancelación de un agente.
 3. Si KT-002 está `ok`, la guardia terminó en verde en las últimas 6 h y no hay avisos abiertos: terminá con una línea, sin mensajes.
 4. En cualquier otro caso (`alerta`, guardia en rojo o sin correr más de 6 h, aviso "guardia" abierto), informá al gerente en la Oficina (https://claude.ai/artifact/CJjo7mMyMEdyvTKbLc3wJc):
    - cargá ArtifactData con ToolSearch;

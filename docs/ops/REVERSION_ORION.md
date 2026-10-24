@@ -4,7 +4,9 @@ Fecha: 2026-10-23. Autor: Claude (Anthropic). Revisor: ChatGPT (pendiente). Ning
 
 ## 1. Código (después de fusionar el PR #32)
 - Reversión normal, sin force: `git revert -m 1 <sha del merge del PR #32>` en una rama `revert/orion-AAAAMMDD`, PR y aprobación del propietario. Restaura la guardia anterior y quita del `kt002.yml` el disparo de la guardia y `actions: write`.
-- Efecto en KT-002: ninguno sobre la medición. Cambiar `kt002.yml` en master encola una corrida de KT-002 (disparador `push` por ruta). Esa corrida espera en el grupo `kt002` detrás de la que esté en curso, sin cancelarla.
+- Efecto en KT-002: ninguno sobre la medición. Cambiar `kt002.yml` en master encola una corrida de KT-002 (disparador `push` por ruta). Esa corrida espera en el grupo `kt002` detrás de la que esté en curso, sin tocarla.
+- **Reemplazo automático de GitHub:** con `concurrency` y `cancel-in-progress: false`, GitHub deja **una sola corrida pendiente** por grupo. Si llega otra (cron, push, guardia o manual), marca como `cancelled` la pendiente anterior, que nunca arrancó. No es una cancelación de un agente, no pierde datos y no toca la corrida en curso. Se reconoce porque la cancelada nunca tuvo pasos y otra corrida del mismo grupo se creó en el mismo segundo. Ejemplo real: KT-002 #23 (creada 22:02:41Z) pasó a `cancelled` a las 00:30:38Z, al crearse #24 (00:30:37Z). Con la guardia nueva habrá más reemplazos de corridas pendientes de la propia guardia (disparo horario de KT-002, más cron, más manual), todos inocuos.
+- Corridas KT-002 pendientes al revertir: no hace falta tocarlas. Esperan en el grupo y corren con el `kt002.yml` vigente cuando arrancan (sin el disparo de la guardia si ya se revirtió).
 - Apagado rápido de la guardia, sin código (decisión del propietario): `gh workflow disable guardia.yml`. KT-002 sigue igual: su disparo a la guardia falla con un aviso (`::warning::`) y la medición continúa.
 
 ## 2. Tareas programadas de Claude
@@ -25,4 +27,4 @@ Las dos se cambian con `update_trigger` (mismo id, se conserva el historial).
 - Para revertir: volver a poner esas frases; el resto del texto no cambió.
 
 ## 3. Ramas de prueba
-`prueba-guardia/<run_id>` las crean las corridas de prueba de la guardia lanzadas desde una rama: datos de mercado de prueba, fuera de master. Borrarlas no afecta nada, y queda a criterio del propietario porque es una operación destructiva.
+`prueba-guardia/<run_id>` las crean las corridas de prueba de la guardia lanzadas desde una rama: datos de mercado de prueba, fuera de master. Borrarlas no afecta nada, y queda a criterio del propietario porque es una operación destructiva. Hoy existen `prueba-guardia/40057266306` y `prueba-guardia/40057434838`. Responsable de borrarlas: el propietario, con `git push origin --delete <rama>` o desde GitHub.
