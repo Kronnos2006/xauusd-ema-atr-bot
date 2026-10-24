@@ -82,3 +82,9 @@ Pendiente para Codex: revision cruzada de KT-003 (resultados y Nota E) y de las 
 
 - **Portafolio (2026-10-21, autor Claude)**: PF-001 (paraguas), HP-001 (13F "mejores ideas") y HP-002 (flujos de ETF de BTC) con Fase 0 en `docs/portafolio/hipotesis/`; inventario en `docs/portafolio/INVENTARIO_DATOS.md`. Sin resultados ni retornos calculados; 0 variantes probadas. Desconfiado: sin problemas ALTOS ni MEDIOS, triage propone descarte (`docs/auditorias/2026-10-21_HP-001_HP-002.md`). Esperan decisión del usuario. Revisor posible: Codex.
 - **KT-002 observabilidad (2026-10-21, autor Claude, revisión de Codex pendiente)**: merge 72cf911 en master; cambia solo `.github/workflows/kt002.yml` (log por vuelta, fallas visibles) y `guardia.yml` (solape cada ~4 h). No cambia la medición. La rama vieja `kt002-observabilidad` queda obsoleta.
+
+## ORION: reparación de guardia y protección de KT-002 (2026-10-23, Claude)
+Operated-By: Claude (Anthropic) · Requested-By: propietario (orden maestra 2026-10-23) · Review-Status: pending (ChatGPT) · Validation: tests/test_guardia_salud.py (15 OK), actionlint OK.
+- Rama `fix/orion-guardia-kt002-20261023`, PR pendiente de revisión cruzada; no fusionada.
+- Modelo de colaboración ORION registrado en CLAUDE.md (texto original conservado).
+- Informe completo: `docs/ops/INFORME_REPARACION_ORION_2026-10-23.md`.

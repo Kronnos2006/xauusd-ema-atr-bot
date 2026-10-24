@@ -16,6 +16,7 @@ on:
 
 permissions:
   contents: write
+  actions: write   # solo para disparar la guardia en cada vuelta (no cambia la medición)
 
 concurrency:
   group: kt002
@@ -99,6 +100,10 @@ jobs:
                 fallas=$((fallas + 1))
               fi
             fi
+            # Despertar a la guardia (el cron de GitHub la retrasa 4–6 h). No afecta la medición:
+            # si falla, solo deja un aviso; la guardia se deduplica sola.
+            GH_TOKEN="${{ github.token }}" gh workflow run guardia.yml -R "${{ github.repository }}" --ref master -f origen=kt002 >>"$log" 2>&1 \
+              || echo "::warning::No se pudo disparar la guardia en esta vuelta"
             prox=$(( ( $(date +%s) / 3600 + 1 ) * 3600 + 7*60 ))
             [ "$prox" -gt "$fin" ] && break
             sleep $(( prox - $(date +%s) ))

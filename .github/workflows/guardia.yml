@@ -1,16 +1,25 @@
 name: Guardia (vigía sin costo de Claude)
 
-# Hace el trabajo mecánico del vigía de datos sin gastar tokens de Claude:
-#  - cada hora: mantiene KT-002 solapado (nueva corrida en cola cada ~4 h) y lo relanza si la última falló;
-#    si hay una corrida viva pero sin registros hace más de 2 h, abre un aviso (issue "guardia").
-#  - una vez al día: guarda velas de BTC (1d y 4h) y el régimen de tendencia con reglas fijas
-#    en data/mercado/, para que el analista no dependa de Binance desde Claude.
-# No toca la medición de KT-002 (ni tools/kt002_prospectivo.py ni kt002.yml). Sin órdenes ni capital.
+# Trabajo mecánico del vigía de datos, sin gastar tokens de Claude (rediseño ORION 2026-10-23):
+#  - KT-002: decide con tools/guardia_salud.py (probado en tests/test_guardia_salud.py). Puede relanzar
+#    o alertar; NUNCA cancela una corrida viva (prohibición absoluta del propietario).
+#  - Mercado: spread/deslizamiento de BTCUSDT en cada corrida; velas y régimen cuando tendencia.json
+#    tiene más de 20 h (antes dependía de correr justo a las 00 UTC y por eso quedó viejo desde el 22-oct).
+#  - Salud: la corrida solo termina en verde si las operaciones obligatorias quedaron verificadas
+#    (datos frescos y publicados). Si no, abre/actualiza un aviso (issue "guardia") y termina en rojo.
+# Arranque: cron horario (GitHub lo retrasa a 4–6 h en este repo) + KT-002 la dispara en cada vuelta
+# horaria (origen=kt002). Se deduplica: si hubo una corrida sana hace <40 min, no se repite.
+# No toca la medición de KT-002 (tools/kt002_prospectivo.py, registros ni preregistro). Sin órdenes ni capital.
 
 on:
   schedule:
     - cron: '37 * * * *'
   workflow_dispatch:
+    inputs:
+      origen:
+        description: "manual | kt002"
+        required: false
+        default: manual
 
 permissions:
   contents: write
@@ -24,53 +33,49 @@ concurrency:
 jobs:
   guardia:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     env:
       GH_TOKEN: ${{ github.token }}
       REPO: ${{ github.repository }}
+      ORIGEN: ${{ github.event_name == 'schedule' && 'cron' || inputs.origen || 'manual' }}
     steps:
       - uses: actions/checkout@v4
 
+      - name: Evitar corridas duplicadas
+        id: dedupe
+        run: |
+          saltar=no
+          if [ "$ORIGEN" != "manual" ]; then
+            ult=$(gh run list -R "$REPO" -w guardia.yml -s success -L 1 --json createdAt --jq '.[0].createdAt // empty')
+            if [ -n "$ult" ] && [ $(( ( $(date +%s) - $(date -d "$ult" +%s) ) / 60 )) -lt 40 ]; then saltar=si; fi
+          fi
+          echo "saltar=$saltar" >> "$GITHUB_OUTPUT"
+          echo "### Guardia (origen: $ORIGEN) — saltar por duplicada: $saltar" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Revisar KT-002
+        id: kt002
+        if: steps.dedupe.outputs.saltar == 'no'
         run: |
-          set -u
-          ahora=$(date +%s)
-          vivas=$(gh run list -R "$REPO" -w kt002.yml --json status --jq '[.[]|select(.status=="in_progress" or .status=="queued")]|length')
-          ult=$(gh run list -R "$REPO" -w kt002.yml -L 1 --json databaseId,status,conclusion,createdAt --jq '.[0]')
-          ult_id=$(echo "$ult" | jq -r .databaseId); ult_conc=$(echo "$ult" | jq -r .conclusion)
-          ult_ini=$(date -d "$(echo "$ult" | jq -r .createdAt)" +%s)
+          set -euo pipefail
+          gh run list -R "$REPO" -w kt002.yml -L 10 --json databaseId,status,conclusion,createdAt > "$RUNNER_TEMP/corridas.json"
           reg=$(gh api "repos/$REPO/commits?path=data/kt002/predicciones.csv&per_page=1" --jq '.[0].commit.committer.date')
-          edad_reg=$(( (ahora - $(date -d "$reg" +%s)) / 60 ))
-          echo "vivas=$vivas ultima=$ult_id ($ult_conc) min_desde_registro=$edad_reg"
-          accion="ninguna"
-          enc=$(gh run list -R "$REPO" -w kt002.yml --json status --jq '[.[]|select(.status=="queued")]|length')
-          # Solape cada ~4 h: si no hay ninguna en cola y la ultima se creo hace >240 min, se encola otra
-          # (aunque haya una en curso: espera en el grupo kt002 y arranca apenas termina). Si la ultima fallo
-          # y no queda nada vivo, se lanza una nueva (no rerun: evita 4 h 45 con checkout viejo).
-          motivo=""
-          if [ "$enc" = "0" ] && [ $(( ahora - ult_ini )) -gt $(( 240*60 )) ]; then motivo="solape 4 h"
-          elif [ "$vivas" = "0" ] && { [ "$ult_conc" = "failure" ] || [ "$ult_conc" = "timed_out" ]; }; then motivo="ultima $ult_id termino en $ult_conc"; fi
-          if [ -n "$motivo" ]; then
-            # Un push hecho con el token de Actions no dispara otros workflows: se usa workflow_dispatch.
-            gh workflow run kt002.yml -R "$REPO" --ref master && accion="KT-002 relanzado ($motivo)" || accion="no se pudo relanzar KT-002 ($motivo)"
+          dec=$(python3 tools/guardia_salud.py kt002 --corridas "$RUNNER_TEMP/corridas.json" --registro "$reg")
+          echo "$dec"
+          accion=$(echo "$dec" | jq -r .accion); motivo=$(echo "$dec" | jq -r .motivo)
+          alerta=""
+          if [ "$accion" = "relanzar" ]; then
+            # Un push con el token de Actions no dispara otros workflows: se usa workflow_dispatch.
+            gh workflow run kt002.yml -R "$REPO" --ref master || alerta="no se pudo relanzar KT-002 ($motivo)"
+          elif [ "$accion" = "alerta" ]; then
+            alerta="KT-002: $motivo"
           fi
-          if [ "$vivas" != "0" ] && [ "$edad_reg" -gt 130 ]; then
-            accion="$accion; falla silenciosa: corrida viva sin registro hace ${edad_reg} min"
-          fi
-          echo "ACCION=$accion" >> "$GITHUB_ENV"
-          echo "### Guardia: $accion" >> "$GITHUB_STEP_SUMMARY"
+          echo "registro=$reg" >> "$GITHUB_OUTPUT"
+          { echo "alerta<<FIN"; echo "$alerta"; echo "FIN"; } >> "$GITHUB_OUTPUT"
+          echo "- KT-002: $accion ${motivo:+($motivo)}" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Avisar si hay algo que reparar
-        if: contains(env.ACCION, 'falla silenciosa') || contains(env.ACCION, 'no se pudo')
-        run: |
-          gh label create guardia -R "$REPO" --color B60205 --description "Aviso automático de la guardia" 2>/dev/null || true
-          abierto=$(gh issue list -R "$REPO" -l guardia -s open --json number --jq '.[0].number // empty')
-          msg="$(date -u +%Y-%m-%dT%H:%MZ): $ACCION"
-          if [ -n "$abierto" ]; then gh issue comment "$abierto" -R "$REPO" -b "$msg"
-          else gh issue create -R "$REPO" -l guardia -t "Guardia: KT-002 necesita reparación" -b "$msg"; fi
-
-      - name: Spread y deslizamiento de Binance (cada hora, para riesgo-costos)
-        continue-on-error: true
+      - name: Spread y deslizamiento de Binance
+        id: spread
+        if: always() && steps.dedupe.outputs.saltar == 'no'
         run: |
           mkdir -p data/mercado
           python3 - <<'PY'
@@ -79,6 +84,7 @@ jobs:
           bt = json.load(urllib.request.urlopen(f"{B}/ticker/bookTicker?symbol=BTCUSDT", timeout=20))
           d = json.load(urllib.request.urlopen(f"{B}/depth?symbol=BTCUSDT&limit=500", timeout=20))
           bid, ask = float(bt["bidPrice"]), float(bt["askPrice"]); mid = (bid + ask) / 2
+          assert 0 < bid <= ask, "libro inválido"
           def slip(levels, usd):  # costo de barrer el libro por "usd" dólares, en % sobre el precio medio
               q = usd; cost = 0.0; got = 0.0
               for p, a in levels:
@@ -93,13 +99,14 @@ jobs:
               h.write(",".join("" if x is None else str(x) for x in fila) + "\n")
           print(fila)
           PY
-          git config user.name "guardia-bot"; git config user.email "guardia-bot@users.noreply.github.com"
-          git add data/mercado/spread_btcusdt.csv && git commit -q -m "Mercado: spread BTCUSDT $(date -u +%Y-%m-%dT%H:%MZ)" && for i in 1 2 3; do git pull -q --rebase && git push -q && break; sleep 10; done || true
 
-      - name: Velas de BTC y régimen de tendencia (una vez al día)
-        if: github.event_name == 'workflow_dispatch' || github.event.schedule == '37 * * * *'
+      - name: Velas de BTC y régimen de tendencia (si tienen más de 20 h)
+        id: velas
+        if: always() && steps.dedupe.outputs.saltar == 'no'
         run: |
-          [ "$(date -u +%H)" = "00" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ ! -f data/mercado/tendencia.json ] || exit 0
+          vieja=$(python3 tools/guardia_salud.py tendencia-vieja)
+          echo "tendencia vieja: $vieja"
+          if [ "$vieja" != "si" ] && [ "$ORIGEN" != "manual" ]; then exit 0; fi
           mkdir -p data/mercado
           python3 - <<'PY'
           import json, urllib.request, datetime as dt
@@ -116,6 +123,7 @@ jobs:
               else: r = "LATERAL"
               return r, dict(cierre=c[-1], ma50=round(m50, 2), ma200=round(m200, 2), ma50_hace_10=round(m50p, 2))
           d, h4 = kl("1d", 260), kl("4h", 210)
+          assert len(d) >= 210 and len(h4) >= 200, "velas insuficientes"
           cd, c4 = [float(r[4]) for r in d], [float(r[4]) for r in h4]
           rd, nd = regimen(cd); r4, n4 = regimen(c4)
           ret = [cd[i] / cd[i - 1] - 1 for i in range(len(cd) - 30, len(cd))]
@@ -130,5 +138,55 @@ jobs:
           json.dump([r[:6] for r in h4], open("data/mercado/btc_4h.json", "w"))
           print(rd, r4)
           PY
+
+      - name: Publicar datos de mercado
+        id: publicar
+        if: always() && steps.dedupe.outputs.saltar == 'no'
+        run: |
           git config user.name "guardia-bot"; git config user.email "guardia-bot@users.noreply.github.com"
-          git add data/mercado && git diff --cached --quiet || { git commit -q -m "Mercado: velas y régimen de BTC $(date -u +%Y-%m-%d)"; for i in 1 2 3; do git pull -q --rebase && git push -q && break; sleep 10; done; }
+          git add data/mercado
+          if git diff --cached --quiet; then echo "nada que publicar"; exit 0; fi
+          git commit -q -m "Mercado: datos de BTC $(date -u +%Y-%m-%dT%H:%MZ) (guardia)"
+          for i in 1 2 3 4; do
+            if git pull -q --rebase && git push -q; then echo "publicado"; exit 0; fi
+            sleep $(( i * 10 ))
+          done
+          echo "::error::No se pudo publicar data/mercado tras 4 intentos"; exit 1
+
+      - name: Verificar salud y avisar
+        if: always() && steps.dedupe.outputs.saltar == 'no'
+        env:
+          ALERTA_KT002: ${{ steps.kt002.outputs.alerta }}
+          REGISTRO: ${{ steps.kt002.outputs.registro }}
+          OUT_KT002: ${{ steps.kt002.outcome }}
+          OUT_SPREAD: ${{ steps.spread.outcome }}
+          OUT_VELAS: ${{ steps.velas.outcome }}
+          OUT_PUBLICAR: ${{ steps.publicar.outcome }}
+        run: |
+          git pull -q --rebase || true
+          ult_spread=$(tail -1 data/mercado/spread_btcusdt.csv | cut -d, -f1)
+          gen=$(python3 -c "import json;print(json.load(open('data/mercado/tendencia.json')).get('generado_utc',''))" 2>/dev/null || echo "")
+          python3 - > "$RUNNER_TEMP/frescura.json" <<PY
+          import json
+          print(json.dumps({"archivos": {"tendencia.json": "$gen" or None, "spread_btcusdt.csv": "$ult_spread" or None, "registro KT-002": "$REGISTRO" or None},
+                            "limites_min": {"tendencia.json": 26*60, "spread_btcusdt.csv": 30, "registro KT-002": 130}}))
+          PY
+          probs=$(python3 tools/guardia_salud.py frescura --json "$RUNNER_TEMP/frescura.json" || true)
+          lista=$(echo "$probs" | jq -r '.[]' 2>/dev/null || true)
+          for s in "KT-002:$OUT_KT002" "spread:$OUT_SPREAD" "velas:$OUT_VELAS" "publicar:$OUT_PUBLICAR"; do
+            [ "${s#*:}" = "failure" ] && lista="$lista"$'\n'"paso ${s%%:*} falló"
+          done
+          [ -n "$ALERTA_KT002" ] && lista="$lista"$'\n'"$ALERTA_KT002"
+          lista=$(echo "$lista" | sed '/^$/d')
+          gh label create guardia -R "$REPO" --color B60205 --description "Aviso automático de la guardia" 2>/dev/null || true
+          abierto=$(gh issue list -R "$REPO" -l guardia -s open --json number --jq '.[0].number // empty')
+          run="${{ github.server_url }}/$REPO/actions/runs/${{ github.run_id }}"
+          if [ -n "$lista" ]; then
+            msg=$(printf '%s — %s\n\n%s\n\nCorrida: %s' "$(date -u +%Y-%m-%dT%H:%MZ)" "origen $ORIGEN" "$lista" "$run")
+            if [ -n "$abierto" ]; then gh issue comment "$abierto" -R "$REPO" -b "$msg"
+            else gh issue create -R "$REPO" -l guardia -t "Guardia: algo necesita reparación" -b "$msg"; fi
+            echo "### NO SANA" >> "$GITHUB_STEP_SUMMARY"; echo "$lista" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          if [ -n "$abierto" ]; then gh issue close "$abierto" -R "$REPO" -c "Recuperado y verificado en $run"; fi
+          echo "### Sana: KT-002, spread, velas y publicación verificados" >> "$GITHUB_STEP_SUMMARY"
