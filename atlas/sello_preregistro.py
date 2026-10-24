@@ -9,8 +9,6 @@ import json
 import re
 import subprocess
 from datetime import datetime,timezone
-from urllib.request import Request,urlopen
-from urllib.parse import quote
 from .laboratorio import instante,Senal
 
 _SHA = re.compile(r"^[0-9a-f]{40}$")
@@ -32,12 +30,10 @@ def verificar_sello(senal: Senal, repo: str, commit: str, ruta: str,
             return False
     except (OSError,ValueError,subprocess.SubprocessError):
         return False
+    # ATLAS está aislado de red: la capa de auditoría suministra observaciones
+    # obtenidas de GitHub Actions. Sin un proveedor externo: fallo cerrado.
     if obtener_anclas is None:
-        def obtener_anclas(repo,sha):
-            url=f"https://api.github.com/repos/{repo}/actions/runs?head_sha={quote(sha)}&per_page=100"
-            with urlopen(Request(url,headers={"Accept":"application/vnd.github+json",
-                                               "User-Agent":"ATLAS-auditoria"}),timeout=10) as resp:
-                return json.load(resp).get("workflow_runs",[])
+        return False
     try:
         runs=obtener_anclas(repo,commit)
         pub=instante(senal.publicada_utc)
