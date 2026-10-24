@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from .laboratorio import Barra, Senal, instante, simular
+from .barreras_estadisticas import evaluar_folds_operaciones, MIN_OPERACIONES, UMBRAL_DSR
 
 
 @dataclass(frozen=True)
@@ -61,3 +62,22 @@ def evaluar_fuera_muestra(barras: list[Barra], senales: list[Senal],
             "superan_referencia": sum(x["retorno_neto"] > x["retorno_referencia"] for x in salidas),
             "metodologia": "evaluación fuera de muestra de señales fijas; sin entrenamiento automático ni estadística confirmatoria",
             "restriccion": "ninguna promoción automática, ni afirmación de rentabilidad"}
+
+
+def evaluar_confirmatorio(folds_operaciones: list[list[float]], n_total_real: int,
+                          n_total_declarado: int, senales: list[Senal],
+                          repo: str, referencias: dict[str,tuple[str,str]],
+                          obtener_anclas=None, leer_git=None) -> dict:
+    """Puerta estricta adicional. No usa los folds de barras retrospectivos como resultado confirmatorio.
+
+    Los retornos por operación deben provenir de una fuente pre-registrada y auditada;
+    este método no genera señales, variantes ni métricas de ningún experimento.
+    """
+    from .sello_preregistro import verificar_sello
+    if not senales or len({s.id for s in senales}) != len(senales):
+        raise ValueError("se requieren señales únicas pre-registradas")
+    for senal in senales:
+        ref = referencias.get(senal.id)
+        if not ref or not verificar_sello(senal,repo,ref[0],ref[1],obtener_anclas,leer_git):
+            raise ValueError(f"sello remoto no verificable: {senal.id}")
+    return evaluar_folds_operaciones(folds_operaciones,n_total_real,n_total_declarado)
