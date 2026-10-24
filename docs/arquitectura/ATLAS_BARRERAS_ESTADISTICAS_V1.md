@@ -1,0 +1,11 @@
+# ATLAS — barreras estadísticas v1 (infraestructura en revisión)
+
+- Se agrega `evaluar_confirmatorio` en `atlas/validacion_temporal.py`. No sustituye ni declara confirmatoria la evaluación exploratoria `evaluar_fuera_muestra`.
+- `evaluar_folds_operaciones`: un fold con <30 operaciones es `INVALIDO`, no interviene en DSR ni t-stat ni puede promoverse. DSR del módulo raíz `deflated_sharpe.py`, umbral fijo ≥0.95; t-stat con todos los folds válidos y excluyendo el dominante (mayor valor absoluto de la suma de retornos netos por operación).
+- `N_total` se conserva sin reducción mediante igualdad exacta entre censo y número declarado. **Limitación crítica:** ese censo todavía lo proporciona el invocador; esta infraestructura no puede certificar que incluya absolutamente todas las variantes históricas. Auditoría independiente obligatoria.
+- `verificar_sello` confirma que un documento con `id` de preregistro aparece en un commit git concreto y exige una observación de GitHub Actions, con `head_sha` coincidente y fecha de creación **estrictamente anterior** a la señal. El booleano de `Senal` se ignora para la nueva puerta. **Limitación crítica:** GitHub Actions run no demuestra que el contenido completo del diseño experimental estuviera congelado ni que la fuente de anclas inyectada sea confiable. En producción falta implementar y auditar un proveedor independiente autenticado de evidencias GitHub; **sin proveedor la puerta falla cerrada**.
+- El simulador histórico `simular` sigue aceptando el booleano para investigación retrospectiva y pruebas de regresión. **No es seguro usarlo como validación confirmatoria**, ni como ejecutor de estrategias; la única ruta de evaluación estadística nueva es `evaluar_confirmatorio`. Exige endurecer futuras rutas públicas para impedir el bypass.
+- Los tests incluyen 29 y 30 operaciones, N_total inflado/reducido, commit anclado antes/después/igual a publicación, contenido de preregistro no coincidente y ausencia de ancla.
+- No incluye nuevas señales, estrategias, datos ni resultados financieros. No hubo acceso a holdout ni modificación de KT-002. **No se autoriza promoción ni fusionar sin auditoría independiente y permiso del propietario.**
+
+Autor: ChatGPT (OpenAI), 2026-10-24.
