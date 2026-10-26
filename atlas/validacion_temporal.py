@@ -73,11 +73,11 @@ def evaluar_confirmatorio(folds_operaciones: list[list[float]], n_total_real: in
     Los retornos por operación deben provenir de una fuente pre-registrada y auditada;
     este método no genera señales, variantes ni métricas de ningún experimento.
     """
-    from .sello_preregistro import verificar_sello
-    if not senales or len({s.id for s in senales}) != len(senales):
-        raise ValueError("se requieren señales únicas pre-registradas")
-    for senal in senales:
-        ref = referencias.get(senal.id)
-        if not ref or not verificar_sello(senal,repo,ref[0],ref[1],obtener_anclas,leer_git):
-            raise ValueError(f"sello remoto no verificable: {senal.id}")
-    return evaluar_folds_operaciones(folds_operaciones,n_total_real,n_total_declarado)
+    # FAIL-CLOSED: los retornos recibidos y N_total son parámetros arbitrarios.
+    # Un sello de señales NO demuestra procedencia de retornos ni censo exhaustivo.
+    # No se calculará DSR confirmatorio ni se autorizará promoción hasta que
+    # ambas entradas se deriven de artefactos inmutables auditables.
+    raise ValueError(
+        "confirmatorio bloqueado: falta vincular retornos a señales selladas "
+        "y derivar N_total de un censo independiente verificable"
+    )
