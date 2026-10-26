@@ -26,7 +26,12 @@ def verificar_sello(senal: Senal, repo: str, commit: str, ruta: str,
     try:
         contenido = leer_git(commit,ruta)
         doc = json.loads(contenido)
-        if doc.get("id") != senal.preregistro:
+        if not isinstance(doc, dict) or doc.get("id") != senal.preregistro:
+            return False
+        # El ID solo no vincula una predicción concreta a su preregistro.
+        if (doc.get("senal_id") != senal.id
+                or doc.get("posicion") != senal.posicion
+                or doc.get("publicada_utc") != senal.publicada_utc):
             return False
     except (OSError,ValueError,subprocess.SubprocessError):
         return False
@@ -37,6 +42,6 @@ def verificar_sello(senal: Senal, repo: str, commit: str, ruta: str,
     try:
         runs=obtener_anclas(repo,commit)
         pub=instante(senal.publicada_utc)
-        return any(isinstance(r,dict) and r.get("head_sha")==commit and isinstance(r.get("created_at"),str) and instante(r["created_at"])<pub for r in runs)
+        return any(isinstance(r,dict) and r.get("head_sha")==commit and isinstance(r.get("created_at"),str) and r.get("status")=="completed" and r.get("conclusion")=="success" and instante(r["created_at"])<pub for r in runs)
     except (OSError,KeyError,ValueError,TimeoutError,TypeError,AttributeError):
         return False
