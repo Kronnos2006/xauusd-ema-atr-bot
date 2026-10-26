@@ -10,8 +10,8 @@ SHA="a"*40
 PUB="2026-10-24T14:00:00Z"
 def sellar(s,when="2026-10-24T13:00:00Z"):
     return verificar_sello(s,"Kronnos2006/xauusd-ema-atr-bot",SHA,"research/preregistro.json",
-        lambda repo,sha:[{"head_sha":sha,"created_at":when}],
-        lambda sha,path:json.dumps({"id":s.preregistro}).encode())
+        lambda repo,sha:[{"head_sha":sha,"created_at":when,"status":"completed","conclusion":"success"}],
+        lambda sha,path:json.dumps({"id":s.preregistro,"senal_id":s.id,"posicion":s.posicion,"publicada_utc":s.publicada_utc}).encode())
 
 class TestBarreras(unittest.TestCase):
     def test_29_operaciones_invalida_fold(self):
@@ -36,6 +36,21 @@ class TestBarreras(unittest.TestCase):
         self.assertFalse(sellar(senal,PUB))
         self.assertFalse(sellar(senal,"2026-10-24T15:00:00Z"))
         self.assertTrue(sellar(senal))
+    def test_run_fallido_no_sella(self):
+        s=Senal("a",PUB,1,"PRE-1",True)
+        doc=json.dumps({"id":s.preregistro,"senal_id":s.id,"posicion":s.posicion,"publicada_utc":s.publicada_utc}).encode()
+        for conclusion in ("failure","cancelled",None):
+            self.assertFalse(verificar_sello(s,"Kronnos2006/xauusd-ema-atr-bot",SHA,"x.json",
+                lambda *a:[{"head_sha":SHA,"created_at":"2026-10-24T13:00:00Z","status":"completed","conclusion":conclusion}],
+                lambda *a:doc))
+    def test_senal_modificada_mismo_preregistro(self):
+        s=Senal("a",PUB,1,"PRE-1",True)
+        self.assertFalse(verificar_sello(s,"Kronnos2006/xauusd-ema-atr-bot",SHA,"x.json",
+            lambda *a:[{"head_sha":SHA,"created_at":"2026-10-24T13:00:00Z","status":"completed","conclusion":"success"}],
+            lambda *a:json.dumps({"id":"PRE-1","senal_id":"otra","posicion":1,"publicada_utc":PUB}).encode()))
+    def test_dsr_descriptivo_no_pasa_barrera(self):
+        r=evaluar_folds_operaciones([[.02,.01]*15]*3,1,1)
+        self.assertFalse(r["pasa_barreras_estadisticas"])
     def test_cadena_git_con_documento_distinto(self):
         s=Senal("a",PUB,1,"PRE-1",True)
         self.assertFalse(verificar_sello(s,"Kronnos2006/xauusd-ema-atr-bot",SHA,
