@@ -37,6 +37,6 @@ def verificar_sello(senal: Senal, repo: str, commit: str, ruta: str,
     try:
         runs=obtener_anclas(repo,commit)
         pub=instante(senal.publicada_utc)
-        return any(r.get("head_sha")==commit and instante(r["created_at"])<pub for r in runs)
-    except (OSError,KeyError,ValueError,TimeoutError):
+        return any(isinstance(r,dict) and r.get("head_sha")==commit and isinstance(r.get("created_at"),str) and instante(r["created_at"])<pub for r in runs)
+    except (OSError,KeyError,ValueError,TimeoutError,TypeError,AttributeError):
         return False
