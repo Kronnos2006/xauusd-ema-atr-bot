@@ -91,3 +91,29 @@ def verificar_censo(registro: str | Path, ancla: dict) -> dict:
     return {"n_total": len(eventos), "ultimo_hash": prev,
             "variantes": sorted({e["variante_id"] for e in eventos}),
             "estado": "CADENA_LOCAL_VERIFICADA_CUSTODIA_EXTERNA_PENDIENTE"}
+
+
+def conciliar_con_inventario_externo(registro: str | Path, ancla: dict,
+                                    ids_externos: list[str], *, autenticado: bool = False) -> dict:
+    """Comparación estricta contra inventario externo. No autentica al proveedor.
+
+    El argumento autenticado SOLO puede venir de una capa de confianza independiente;
+    esta función nunca emite certificado de custodia ni abre confirmatorio.
+    """
+    if autenticado is not True:
+        raise ValueError("inventario externo sin autenticacion independiente")
+    if not isinstance(ids_externos, list) or not ids_externos or any(
+            not isinstance(i, str) or not i for i in ids_externos):
+        raise ValueError("inventario externo invalido")
+    if len(set(ids_externos)) != len(ids_externos):
+        raise ValueError("identificadores repetidos en inventario externo")
+    reporte = verificar_censo(registro, ancla)
+    ids_locales = [json.loads(line)["intento_id"]
+                   for line in Path(registro).read_text(encoding="utf-8").splitlines()]
+    faltantes = sorted(set(ids_externos) - set(ids_locales))
+    sobrantes = sorted(set(ids_locales) - set(ids_externos))
+    if faltantes or sobrantes:
+        raise ValueError(f"censo incompleto: faltantes={len(faltantes)}, sobrantes={len(sobrantes)}")
+    return {**reporte, "n_total": len(ids_externos),
+            "estado": "CONCILIADO_SIN_CERTIFICACION_DE_CUSTODIA",
+            "promocion_permitida": False}
