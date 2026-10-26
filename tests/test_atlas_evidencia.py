@@ -31,6 +31,13 @@ class TestEvidencia(unittest.TestCase):
         self.ruta_barras, self.sha_barras = fijar(self.tmp.name, "barras.json", self.barras)
         self.s = Senal("s1", "2026-10-24T00:30:00Z", 1, "pre1", True)
 
+    def sellos(self):
+        return {"repo": "Kronnos2006/xauusd-ema-atr-bot",
+                "referencias": {"s1": ("a"*40, "prereg.json")},
+                "obtener_anclas": lambda repo, sha: [{"head_sha": sha,
+                    "created_at": "2026-10-24T00:01:00Z"}],
+                "leer_git": lambda sha, path: b'{"id":"pre1"}'}
+
     def test_censo_contado_no_parametro_manual(self):
         self.assertEqual(censar_variantes(self.ruta_censo, self.sha_censo)["n_total"], 2)
 
@@ -55,7 +62,7 @@ class TestEvidencia(unittest.TestCase):
     def test_retorno_calculado_no_inyectado(self):
         evidencia = preparar_evidencia(
             self.ruta_barras, self.sha_barras, self.ruta_censo, self.sha_censo,
-            [self.s], costo_lado=0)
+            [self.s], costo_lado=0, **self.sellos())
         self.assertEqual(len(evidencia["operaciones"]), 1)
         self.assertAlmostEqual(evidencia["operaciones"][0]["retorno_neto"], 1.01**3-1)
         self.assertEqual(evidencia["n_total"], 2)
@@ -66,11 +73,21 @@ class TestEvidencia(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "sello"):
             reconstruir_operaciones([Barra(**x) for x in self.barras], [s])
 
+    def test_sello_falso_no_es_prueba(self):
+        with self.assertRaisesRegex(ValueError, "sello externo"):
+            preparar_evidencia(
+                self.ruta_barras, self.sha_barras,
+                self.ruta_censo, self.sha_censo, [self.s],
+                repo="Kronnos2006/xauusd-ema-atr-bot",
+                referencias={"s1": ("a"*40, "prereg.json")},
+                obtener_anclas=lambda *x: [],
+                leer_git=lambda *x: b'{"id":"pre1"}')
+
     def test_barras_modificadas_rechazadas(self):
         self.ruta_barras.write_text("[]")
         with self.assertRaisesRegex(ValueError, "SHA256"):
             preparar_evidencia(self.ruta_barras, self.sha_barras,
-                              self.ruta_censo, self.sha_censo, [self.s])
+                              self.ruta_censo, self.sha_censo, [self.s], **self.sellos())
 
     def test_confirmatorio_sigue_cerrado(self):
         from atlas.validacion_temporal import evaluar_confirmatorio
