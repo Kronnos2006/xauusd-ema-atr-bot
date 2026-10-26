@@ -110,14 +110,29 @@ def reconstruir_operaciones(barras: list[Barra], senales: list[Senal],
 
 def preparar_evidencia(ruta_barras: str | Path, sha_barras: str,
                       ruta_censo: str | Path, sha_censo: str,
-                      senales: list[Senal], costo_lado: float = 0.0015) -> dict:
+                      senales: list[Senal], repo: str,
+                      referencias: dict[str, tuple[str, str]],
+                      obtener_anclas=None, leer_git=None,
+                      costo_lado: float = 0.0015) -> dict:
     """Cálculo reproducible descriptivo, sin posibilidad de aprobación."""
     crudo = _leer_json_fijado(ruta_barras, sha_barras)
     if not isinstance(crudo, list):
         raise ValueError("se esperaban barras JSON")
     barras = [Barra(**x) for x in crudo]
     censo = censar_variantes(ruta_censo, sha_censo)
-    ops = reconstruir_operaciones(barras, senales, costo_lado)
+    from .sello_preregistro import verificar_sello
+    if not senales or len({s.id for s in senales}) != len(senales):
+        raise ValueError("señales vacías o duplicadas")
+    verificadas = []
+    for s in senales:
+        ref = referencias.get(s.id)
+        if not ref or not verificar_sello(s, repo, ref[0], ref[1],
+                                          obtener_anclas, leer_git):
+            raise ValueError("sello externo no verificable")
+        # Nunca confiar en el booleano que suministra el invocador.
+        verificadas.append(Senal(s.id, s.publicada_utc, s.posicion,
+                                 s.preregistro, True))
+    ops = reconstruir_operaciones(barras, verificadas, costo_lado)
     return {"operaciones": ops, "n_total": censo["n_total"],
             "sha_barras": sha_barras, "sha_censo": sha_censo,
             "estado": "DESCRIPTIVO_NO_CONFIRMATORIO",
