@@ -1,0 +1,171 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "orion-atlas/tesis",
+ "title": "tesis",
+ "description": "Tesis ATLAS (thesis_registry + contradiction_review). atlas/piloto.py, atlas/tesis.py",
+ "type": "object",
+ "required": [
+  "id",
+  "version",
+  "corte_utc",
+  "activo",
+  "mercado",
+  "horizonte",
+  "pregunta",
+  "hipotesis",
+  "mecanismo",
+  "evidencia_favorable",
+  "evidencia_contraria",
+  "interpretaciones_alternativas",
+  "supuestos",
+  "condiciones_invalidez",
+  "datos_faltantes",
+  "incertidumbre",
+  "efectos_noticias",
+  "riesgos",
+  "criterios_prueba",
+  "estado",
+  "contradicciones",
+  "revisiones",
+  "explicacion_prediccion",
+  "evidencia",
+  "fuentes",
+  "version_software",
+  "huella_contenido"
+ ],
+ "properties": {
+  "id": {
+   "type": "string",
+   "pattern": "^TS-"
+  },
+  "version": {
+   "type": "integer",
+   "minimum": 1
+  },
+  "corte_utc": {
+   "type": "string",
+   "format": "date-time"
+  },
+  "activo": {
+   "type": "string"
+  },
+  "mercado": {
+   "type": "string"
+  },
+  "horizonte": {
+   "type": "string"
+  },
+  "pregunta": {
+   "type": "string",
+   "minLength": 10
+  },
+  "hipotesis": {
+   "type": "string",
+   "minLength": 10
+  },
+  "mecanismo": {
+   "type": "string"
+  },
+  "evidencia_favorable": {
+   "type": "array"
+  },
+  "evidencia_contraria": {
+   "type": "array"
+  },
+  "interpretaciones_alternativas": {
+   "type": "array",
+   "minItems": 1
+  },
+  "supuestos": {
+   "type": "array"
+  },
+  "condiciones_invalidez": {
+   "type": "array",
+   "minItems": 1
+  },
+  "datos_faltantes": {
+   "type": "array"
+  },
+  "incertidumbre": {
+   "type": "string"
+  },
+  "efectos_noticias": {
+   "type": "array"
+  },
+  "riesgos": {
+   "type": "array"
+  },
+  "criterios_prueba": {
+   "type": "array"
+  },
+  "estado": {
+   "enum": [
+    "BORRADOR",
+    "INVESTIGACION",
+    "CONTRADICCION",
+    "PREREGISTRADA",
+    "VALIDACION",
+    "ACEPTADA_PARA_SIMULACION",
+    "RECHAZADA",
+    "INCONCLUSA"
+   ]
+  },
+  "contradicciones": {
+   "type": "object",
+   "required": [
+    "conclusion",
+    "decision_investigacion",
+    "hallazgos"
+   ],
+   "properties": {
+    "conclusion": {
+     "enum": [
+      "FAVORABLE_CONTINUAR",
+      "CONTRADICTORIA",
+      "INCONCLUSA",
+      "INSUFICIENTE"
+     ]
+    },
+    "decision_investigacion": {
+     "enum": [
+      "CONTINUAR_INVESTIGANDO",
+      "ABSTENERSE"
+     ]
+    },
+    "hallazgos": {
+     "type": "array",
+     "minItems": 10
+    }
+   }
+  },
+  "revisiones": {
+   "type": "array"
+  },
+  "explicacion_prediccion": {
+   "type": "object",
+   "required": [
+    "hechos_comprobados",
+    "inferencias_fundamentadas",
+    "hipotesis_causales_no_demostradas",
+    "informacion_ausente",
+    "decision_de_investigacion"
+   ]
+  },
+  "evidencia": {
+   "type": "array",
+   "items": {
+    "$ref": "orion-atlas/evidencia"
+   }
+  },
+  "fuentes": {
+   "type": "array"
+  },
+  "version_software": {
+   "type": "string"
+  },
+  "huella_contenido": {
+   "type": "string",
+   "pattern": "^[0-9a-f]{64}$"
+  }
+ }
+}
