@@ -30,12 +30,12 @@
 
 ## Último estado remoto confirmado (2026-10-26)
 - Repositorio: `Kronnos2006/xauusd-ema-atr-bot`.
-- PR **#42**: **ABIERTO, DRAFT, NO FUSIONADO**. Rama `research/atlas-barreras-estadisticas-20261024`; último SHA verificado `5dca5983319dea108fa38e92e346a8d4633e8c6f`.
-- CI ATLAS: corrida **#52** (`40412422253`) **success** para `5dca598`; no equivale a certificación.
+- PR **#42**: **ABIERTO, DRAFT, NO FUSIONADO**. Rama `research/atlas-barreras-estadisticas-20261024`; último SHA verificado `66f5fc9b3f19c74836acf3e6fff2c7796618128f`.
+- CI ATLAS: corrida **#56** (`40421645734`) **success** para `66f5fc9`; no equivale a certificación.
 - H1: corregida en rama la falsa bandera `pasa_barreras_estadisticas` para datos descriptivos; diagnósticos no autorizan promoción.
 - H2: parcialmente reforzada en rama (identidad de señal y ejecución remota completed/success); **sin custodia remota integral autenticada**.
-- H3: **PENDIENTE**; no se ha certificado estimación robusta de varianza entre variantes.
-- H4: **PENDIENTE**; no existe custodia externa completa, verificable y obligatoria para todos los intentos.
+- H3: **PARCIAL**; se implementó diagnóstico separado de varianza observada entre Sharpe de ensayos, pero sigue sin certificarse estimador robusto, dependencia y DSR confirmatorio.
+- H4: **PARCIAL**; se añadió conciliación de IDs contra inventario externo con fallo cerrado y pruebas 100→5/95; no existe identidad de proveedor ni custodia externa completa, verificable y obligatoria.
 - `evaluar_confirmatorio` sigue bloqueado. Sin prueba de ventaja financiera. KT-002 no alterado por los cambios anteriores.
 - Fase documental 1 finalizada: PR #33 merge `17be07c5`, #36 merge `6ad4460b`, #38 merge `72ce284a`.
 - Plan técnico de #42: `docs/arquitectura/ATLAS_PLAN_CIERRE_PR42_2026-10-26.md` en rama PR.
@@ -55,3 +55,5 @@ Añadir debajo de este encabezado una entrada por intervención con fecha, respo
 
 ### Bitácora
 - **2026-10-26 — ChatGPT:** creación inicial del registro y orden de prioridades según instrucciones de Kronnos. No se declara haber resuelto H3/H4 ni auditado el #42.
+
+- **2026-10-26 — ChatGPT:** en PR #42 agregó conciliación contra inventario externo de intentos (sin afirmar que este proveedor esté autenticado), diagnóstico de varianza observada entre ensayos y pruebas adversariales. CI #56 success en `66f5fc9`. H3/H4 siguen parciales, PR sin fusionar, puerta confirmatoria cerrada.
