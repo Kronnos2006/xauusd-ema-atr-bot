@@ -36,8 +36,8 @@ class TestEvidencia(unittest.TestCase):
         return {"repo": "Kronnos2006/xauusd-ema-atr-bot",
                 "referencias": {"s1": ("a"*40, "prereg.json")},
                 "obtener_anclas": lambda repo, sha: [{"head_sha": sha,
-                    "created_at": "2026-10-24T00:01:00Z"}],
-                "leer_git": lambda sha, path: b'{"id":"pre1"}'}
+                    "created_at": "2026-10-24T00:01:00Z", "status":"completed", "conclusion":"success"}],
+                "leer_git": lambda sha, path: json.dumps({"id":"pre1","senal_id":"s1","posicion":1,"publicada_utc":"2026-10-24T00:30:00Z"}).encode()}
 
     def test_reconstruccion_deriva_n_de_cadena(self):
         from atlas.censo_variantes import CERO, construir_evento
