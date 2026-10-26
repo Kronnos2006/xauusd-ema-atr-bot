@@ -50,7 +50,10 @@ def evaluar_folds_operaciones(folds: list[list[float]], n_real: int, n_declarado
             dsr = None
     except (ValueError,ZeroDivisionError,OverflowError):
         dsr = None
-    # Esta API acepta retornos y N proporcionados por el invocador: NO prueba procedencia.\n    # El DSR descriptivo puede ser alto con datos ficticios, pero nunca se etiqueta\n    # como una barrera superada. La evaluación confirmatoria continúa cerrada.\n    aprobado = dsr is not None and dsr >= UMBRAL_DSR
+    # Esta API acepta retornos y N proporcionados por el invocador: NO prueba procedencia.
+    # El DSR descriptivo puede ser alto con datos ficticios, pero nunca se etiqueta
+    # como una barrera superada. La evaluación confirmatoria continúa cerrada.
+    aprobado = dsr is not None and dsr >= UMBRAL_DSR
     return {"folds":salida,"estado":"EVALUABLE" if dsr is not None else "INVALIDO",
             "dsr":dsr,"umbral_dsr":UMBRAL_DSR,"t_stat":_t_stat(con),
             "t_stat_sin_dominante":_t_stat(sin),"fold_dominante":dominante,
