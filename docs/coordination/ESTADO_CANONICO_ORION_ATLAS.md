@@ -30,8 +30,8 @@
 
 ## Último estado remoto confirmado (2026-10-26)
 - Repositorio: `Kronnos2006/xauusd-ema-atr-bot`.
-- PR **#42**: **ABIERTO, DRAFT, NO FUSIONADO**. Rama `research/atlas-barreras-estadisticas-20261024`; último SHA verificado `66f5fc9b3f19c74836acf3e6fff2c7796618128f`.
-- CI ATLAS: corrida **#56** (`40421645734`) **success** para `66f5fc9`; no equivale a certificación.
+- PR **#42**: **ABIERTO, DRAFT, NO FUSIONADO**. Rama `research/atlas-barreras-estadisticas-20261024`; último SHA verificado `3c943e96647b7bdc03abb06a913bb826bfdb9fe0`.
+- CI ATLAS: corrida **#60** (`40422666340`) **success** para `3c943e9`; no equivale a certificación.
 - H1: corregida en rama la falsa bandera `pasa_barreras_estadisticas` para datos descriptivos; diagnósticos no autorizan promoción.
 - H2: parcialmente reforzada en rama (identidad de señal y ejecución remota completed/success); **sin custodia remota integral autenticada**.
 - H3: **PARCIAL**; se implementó diagnóstico separado de varianza observada entre Sharpe de ensayos, pero sigue sin certificarse estimador robusto, dependencia y DSR confirmatorio.
@@ -57,3 +57,5 @@ Añadir debajo de este encabezado una entrada por intervención con fecha, respo
 - **2026-10-26 — ChatGPT:** creación inicial del registro y orden de prioridades según instrucciones de Kronnos. No se declara haber resuelto H3/H4 ni auditado el #42.
 
 - **2026-10-26 — ChatGPT:** en PR #42 agregó conciliación contra inventario externo de intentos (sin afirmar que este proveedor esté autenticado), diagnóstico de varianza observada entre ensayos y pruebas adversariales. CI #56 success en `66f5fc9`. H3/H4 siguen parciales, PR sin fusionar, puerta confirmatoria cerrada.
+
+- **2026-10-26 — ChatGPT:** en PR #42 añadió `atlas/preflight_custodia.py` con huella de definición completa y bloqueo explícito ante falta de custodia autenticada; pruebas de cambio ATR sin nuevo intento, recibo autoafirmado y ausencia de hash de datos. CI #60 (`40422666340`) SUCCESS en `3c943e9`. H4 sigue PARCIAL porque no hay proveedor externo autenticado o integración al motor; H3 sigue PARCIAL porque no existe matriz de variantes completa y validada ni calibración robusta del DSR. Ninguna promoción ni fusión.
