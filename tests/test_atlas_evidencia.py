@@ -5,7 +5,8 @@ import tempfile
 import unittest
 from pathlib import Path
 from atlas.evidencia_confirmatoria import (
-    censar_variantes, reconstruir_operaciones, preparar_evidencia)
+    censar_variantes, reconstruir_operaciones, preparar_evidencia,
+    preparar_evidencia_encadenada)
 from atlas.laboratorio import Barra, Senal
 
 
@@ -37,6 +38,24 @@ class TestEvidencia(unittest.TestCase):
                 "obtener_anclas": lambda repo, sha: [{"head_sha": sha,
                     "created_at": "2026-10-24T00:01:00Z"}],
                 "leer_git": lambda sha, path: b'{"id":"pre1"}'}
+
+    def test_reconstruccion_deriva_n_de_cadena(self):
+        from atlas.censo_variantes import CERO, construir_evento
+        a = construir_evento(CERO, "intento-1", "v1", "pre1",
+                             "2026-10-24T00:00:00Z")
+        b = construir_evento(a["hash"], "intento-2", "v2", "pre2",
+                             "2026-10-24T00:00:00Z")
+        raw = (json.dumps(a)+"\\n"+json.dumps(b)+"\\n").encode()
+        ledger = Path(self.tmp.name)/"intentos.jsonl"
+        ledger.write_bytes(raw)
+        ancla = {"sha256": hashlib.sha256(raw).hexdigest(), "lineas": 2,
+                 "ultimo_hash": b["hash"], "corte_utc": "2026-10-24T01:00:00Z"}
+        r = preparar_evidencia_encadenada(
+            self.ruta_barras, self.sha_barras, ledger, ancla,
+            [self.s], costo_lado=0, **self.sellos())
+        self.assertEqual(r["n_total"], 2)
+        self.assertEqual(len(r["operaciones"]), 1)
+        self.assertFalse(r["promocion_permitida"])
 
     def test_censo_contado_no_parametro_manual(self):
         self.assertEqual(censar_variantes(self.ruta_censo, self.sha_censo)["n_total"], 2)
