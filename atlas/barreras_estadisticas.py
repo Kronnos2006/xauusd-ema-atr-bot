@@ -60,3 +60,40 @@ def evaluar_folds_operaciones(folds: list[list[float]], n_real: int, n_declarado
             "n_total":n,"promocion_permitida":False,"pasa_barreras_estadisticas":False,
             "dsr_descriptivo_supera_umbral":aprobado,
             "advertencia":"retornos y N_total no verificados externamente: solo análisis descriptivo; ninguna promoción"}
+
+
+def diagnosticar_varianza_entre_ensayos(series_por_intento: list[list[float]],
+                                        n_censo: int) -> dict:
+    """H3: diagnostico observado, NO estimador confirmatorio aprobado.
+
+    Requiere matriz completa de resultados por ensayo, no solo el ganador.
+    HAC de una serie no sustituye esta dispersion entre Sharpe de variantes.
+    """
+    from deflated_sharpe import sharpe_ratio
+    validar_n_total(len(series_por_intento), n_censo)
+    ratios = []
+    for serie in series_por_intento:
+        if not isinstance(serie, (list, tuple)) or len(serie) < 30:
+            return {"estado": "INCONCLUSA", "causa": "ensayo sin 30 observaciones",
+                    "promocion_permitida": False}
+        if any(not isinstance(x, (int, float)) or isinstance(x, bool)
+               or not isfinite(x) or x <= -1 for x in serie):
+            return {"estado": "INCONCLUSA", "causa": "retornos invalidos",
+                    "promocion_permitida": False}
+        try:
+            s = sharpe_ratio(serie)
+        except (ValueError, ZeroDivisionError):
+            return {"estado": "INCONCLUSA", "causa": "Sharpe indefinido",
+                    "promocion_permitida": False}
+        if not isfinite(s):
+            return {"estado": "INCONCLUSA", "causa": "Sharpe no finito",
+                    "promocion_permitida": False}
+        ratios.append(s)
+    if len(ratios) < 2:
+        return {"estado": "INCONCLUSA", "causa": "menos de dos ensayos",
+                "promocion_permitida": False}
+    return {"estado": "DIAGNOSTICO_NO_CONFIRMATORIO",
+            "n_nominal": n_censo, "desviacion_sharpe_observada": stdev(ratios),
+            "varianza_sharpe_observada": stdev(ratios)**2,
+            "promocion_permitida": False,
+            "advertencia": "No corrige dependencia entre ensayos ni acredita censo externo"}
