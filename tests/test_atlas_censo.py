@@ -3,7 +3,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
-from atlas.censo_variantes import CERO, construir_evento, verificar_censo
+from atlas.censo_variantes import CERO, construir_evento, verificar_censo, conciliar_con_inventario_externo
 
 
 class TestCensoIntentos(unittest.TestCase):
@@ -26,6 +26,28 @@ class TestCensoIntentos(unittest.TestCase):
                       "lineas": len(self.eventos),
                       "ultimo_hash": self.eventos[-1]["hash"],
                       "corte_utc": "2026-10-24T13:00:00Z"}
+
+    def test_faltan_95_de_100_rechazo(self):
+        with self.assertRaisesRegex(ValueError, "censo incompleto"):
+            conciliar_con_inventario_externo(self.ruta,self.ancla,
+                ["prueba-1","prueba-2"]+[f"oculto-{i}" for i in range(95)],
+                autenticado=True)
+
+    def test_cinco_entregados_de_cien_rechazo(self):
+        with self.assertRaisesRegex(ValueError, "censo incompleto"):
+            conciliar_con_inventario_externo(self.ruta,self.ancla,
+                ["prueba-1","prueba-2"]+[f"oculto-{i}" for i in range(98)],
+                autenticado=True)
+
+    def test_inventario_no_autenticado_falla_cerrado(self):
+        with self.assertRaisesRegex(ValueError, "sin autenticacion"):
+            conciliar_con_inventario_externo(self.ruta,self.ancla,["prueba-1","prueba-2"])
+
+    def test_conciliacion_es_diagnostica_no_promueve(self):
+        r=conciliar_con_inventario_externo(self.ruta,self.ancla,
+            ["prueba-1","prueba-2"],autenticado=True)
+        self.assertEqual(r["n_total"],2)
+        self.assertFalse(r["promocion_permitida"])
 
     def test_cuenta_intentos_sin_reduccion(self):
         self.assertEqual(verificar_censo(self.ruta, self.ancla)["n_total"], 2)
