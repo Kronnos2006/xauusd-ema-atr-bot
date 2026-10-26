@@ -9,3 +9,11 @@
 - No incluye nuevas señales, estrategias, datos ni resultados financieros. No hubo acceso a holdout ni modificación de KT-002. **No se autoriza promoción ni fusionar sin auditoría independiente y permiso del propietario.**
 
 Autor: ChatGPT (OpenAI), 2026-10-24.
+
+## Corrección de auditoría — 2026-10-26 (fail-closed)
+
+La auditoría independiente detectó dos vulnerabilidades: retornos arbitrarios desvinculados de señales selladas y `N_total` elegido por el invocador. **`evaluar_confirmatorio` ahora lanza `ValueError` incondicionalmente** hasta que se implemente y audite una cadena verificable de procedencia de retornos y un censo de variantes independiente, completo y anclado. Ninguna estadística recibida por argumento autoriza una promoción.
+
+`evaluar_folds_operaciones` es **descriptiva**, conserva `promocion_permitida=False` por compatibilidad de API y expone `pasa_barreras_estadisticas` como diagnóstico calculado sobre datos NO certificados; tampoco demuestra ventaja. El comparador `validar_n_total` sigue existiendo solo como validación de consistencia entre dos argumentos, **no es un control de censo real**. No se debe tratar esa comparación como barrera de procedencia.
+
+Pruebas de regresión agregadas: retornos fabricados con sello válido deben ser rechazados, evaluación descriptiva jamás promueve y ancla `created_at=None` falla cerrada sin excepción. Estas son barreras provisionales de seguridad, **no la implementación completa del censo inmutable ni la trazabilidad operación→señal→datos→SHA**. Esos desarrollos siguen pendientes. PR en borrador; no fusionar sin nueva auditoría independiente y aprobación expresa del propietario.
