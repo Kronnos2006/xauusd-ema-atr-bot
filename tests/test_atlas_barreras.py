@@ -1,7 +1,7 @@
 import json
 import unittest
 from datetime import datetime,timedelta,timezone
-from atlas.barreras_estadisticas import evaluar_folds_operaciones
+from atlas.barreras_estadisticas import evaluar_folds_operaciones, diagnosticar_varianza_entre_ensayos
 from atlas.sello_preregistro import verificar_sello
 from atlas.laboratorio import Senal
 from atlas.validacion_temporal import evaluar_confirmatorio
@@ -14,6 +14,19 @@ def sellar(s,when="2026-10-24T13:00:00Z"):
         lambda sha,path:json.dumps({"id":s.preregistro,"senal_id":s.id,"posicion":s.posicion,"publicada_utc":s.publicada_utc}).encode())
 
 class TestBarreras(unittest.TestCase):
+    def test_h3_varianza_entre_ensayos_sin_promocion(self):
+        a=[.02,-.01]*15
+        b=[.03,-.01]*15
+        r=diagnosticar_varianza_entre_ensayos([a,b],2)
+        self.assertEqual(r["estado"],"DIAGNOSTICO_NO_CONFIRMATORIO")
+        self.assertGreater(r["varianza_sharpe_observada"],0)
+        self.assertFalse(r["promocion_permitida"])
+    def test_h3_un_ensayo_inconcluso(self):
+        r=diagnosticar_varianza_entre_ensayos([[.02,-.01]*15],1)
+        self.assertEqual(r["estado"],"INCONCLUSA")
+    def test_h3_no_acepta_n_reducido(self):
+        with self.assertRaises(ValueError):
+            diagnosticar_varianza_entre_ensayos([[.02,-.01]*15]*3,1)
     def test_29_operaciones_invalida_fold(self):
         r=evaluar_folds_operaciones([[.01,-.01]*14+[.01]],4,4)
         self.assertEqual(r["folds"][0]["estado"],"INVALIDO")
