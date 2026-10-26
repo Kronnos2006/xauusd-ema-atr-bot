@@ -45,7 +45,7 @@ class TestEvidencia(unittest.TestCase):
                              "2026-10-24T00:00:00Z")
         b = construir_evento(a["hash"], "intento-2", "v2", "pre2",
                              "2026-10-24T00:00:00Z")
-        raw = (json.dumps(a)+"\\n"+json.dumps(b)+"\\n").encode()
+        raw = (json.dumps(a)+"\n"+json.dumps(b)+"\n").encode()
         ledger = Path(self.tmp.name)/"intentos.jsonl"
         ledger.write_bytes(raw)
         ancla = {"sha256": hashlib.sha256(raw).hexdigest(), "lineas": 2,
