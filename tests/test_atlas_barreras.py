@@ -45,6 +45,21 @@ class TestBarreras(unittest.TestCase):
         s=Senal("a",PUB,1,"PRE-1",True)
         self.assertFalse(verificar_sello(s,"Kronnos2006/xauusd-ema-atr-bot",SHA,
                           "x.json",lambda *a:[],lambda *a:b'{"id":"PRE-1"}'))
+    def test_gate_rechaza_retornos_inventados_aunque_sello_valido(self):
+        s=Senal("a",PUB,1,"PRE-1",True)
+        with self.assertRaisesRegex(ValueError,"confirmatorio bloqueado"):
+            evaluar_confirmatorio([[.01]*30]*3,1,1,[s],
+                "Kronnos2006/xauusd-ema-atr-bot",{"a":(SHA,"x.json")},
+                lambda *a:[{"head_sha":SHA,"created_at":"2026-10-24T13:00:00Z"}],
+                lambda *a:b'{"id":"PRE-1"}')
+    def test_resultados_descriptivos_jamas_promueven(self):
+        r=evaluar_folds_operaciones([[.01]*30]*3,1,1)
+        self.assertFalse(r["promocion_permitida"])
+    def test_created_at_none_falla_cerrado(self):
+        s=Senal("a",PUB,1,"PRE-1",True)
+        self.assertFalse(verificar_sello(s,"Kronnos2006/xauusd-ema-atr-bot",SHA,
+             "x.json",lambda *a:[{"head_sha":SHA,"created_at":None}],
+             lambda *a:b'{"id":"PRE-1"}'))
     def test_gate_no_permite_resultado_sin_sello(self):
         s=Senal("a",PUB,1,"PRE-1",True)
         with self.assertRaises(ValueError):
