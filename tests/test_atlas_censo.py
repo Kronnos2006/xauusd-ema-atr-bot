@@ -84,5 +84,7 @@ class TestCensoIntentos(unittest.TestCase):
             verificar_censo(self.ruta, self.ancla)
 
 
+from tests.test_atlas_preflight_custodia import TestPreflightCustodia
+
 if __name__ == "__main__":
     unittest.main()
