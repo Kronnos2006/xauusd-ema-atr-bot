@@ -137,3 +137,40 @@ def preparar_evidencia(ruta_barras: str | Path, sha_barras: str,
             "sha_barras": sha_barras, "sha_censo": sha_censo,
             "estado": "DESCRIPTIVO_NO_CONFIRMATORIO",
             "promocion_permitida": False}
+
+
+def preparar_evidencia_encadenada(ruta_barras: str | Path, sha_barras: str,
+                                  ruta_intentos: str | Path, ancla_intentos: dict,
+                                  senales: list[Senal], repo: str,
+                                  referencias: dict[str, tuple[str, str]],
+                                  obtener_anclas=None, leer_git=None,
+                                  costo_lado: float = 0.0015) -> dict:
+    """Calcula retornos de señales selladas, N de eventos encadenados.
+
+    El invocador NO proporciona N ni retornos. El ancla de intentos ha de
+    proceder de una custodia externa autenticada antes de llamarse aquí.
+    Hasta contar con esa infraestructura y un backtest prospectivo, ningún
+    resultado de esta función es confirmatorio.
+    """
+    from .censo_variantes import verificar_censo
+    from .sello_preregistro import verificar_sello
+    registro = verificar_censo(ruta_intentos, ancla_intentos)
+    crudo = _leer_json_fijado(ruta_barras, sha_barras)
+    if not isinstance(crudo, list):
+        raise ValueError("dataset de barras inválido")
+    barras = [Barra(**x) for x in crudo]
+    if not senales or len({s.id for s in senales}) != len(senales):
+        raise ValueError("señales vacías o duplicadas")
+    selladas = []
+    for s in senales:
+        ref = referencias.get(s.id)
+        if not ref or not verificar_sello(s, repo, ref[0], ref[1],
+                                          obtener_anclas, leer_git):
+            raise ValueError("sello remoto no verificable")
+        selladas.append(Senal(s.id, s.publicada_utc, s.posicion,
+                              s.preregistro, True))
+    ops = reconstruir_operaciones(barras, selladas, costo_lado)
+    return {"n_total": registro["n_total"], "operaciones": ops,
+            "sha_barras": sha_barras, "ultimo_hash_censo": registro["ultimo_hash"],
+            "estado": "DESCRIPTIVO_PROCEDENCIA_PARCIAL",
+            "promocion_permitida": False}
