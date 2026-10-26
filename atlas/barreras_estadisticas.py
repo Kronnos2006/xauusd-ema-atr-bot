@@ -39,7 +39,7 @@ def evaluar_folds_operaciones(folds: list[list[float]], n_real: int, n_declarado
     if not validos:
         return {"folds":salida,"estado":"INVALIDO","dsr":None,"t_stat":None,
                 "t_stat_sin_dominante":None,"fold_dominante":None,"n_total":n,
-                "promocion_permitida":False}
+                "promocion_permitida":False,"pasa_barreras_estadisticas":False}
     # Dominante: fold que aporta mayor estadístico |suma neta|, convención explícita.
     dominante = max(validos,key=lambda z:abs(sum(z[1])))[0]
     con = [r for _,v in validos for r in v]
@@ -54,5 +54,5 @@ def evaluar_folds_operaciones(folds: list[list[float]], n_real: int, n_declarado
     return {"folds":salida,"estado":"EVALUABLE" if dsr is not None else "INVALIDO",
             "dsr":dsr,"umbral_dsr":UMBRAL_DSR,"t_stat":_t_stat(con),
             "t_stat_sin_dominante":_t_stat(sin),"fold_dominante":dominante,
-            "n_total":n,"promocion_permitida":aprobado and len(salida)==len(validos),
-            "advertencia":"resultados por operación; no constituye validación con holdout sellado"}
+            "n_total":n,"promocion_permitida":False,"pasa_barreras_estadisticas":aprobado and len(salida)==len(validos),
+            "advertencia":"retornos y N_total no verificados externamente: solo análisis descriptivo; ninguna promoción"}
