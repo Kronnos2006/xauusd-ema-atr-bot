@@ -54,5 +54,6 @@ def evaluar_folds_operaciones(folds: list[list[float]], n_real: int, n_declarado
     return {"folds":salida,"estado":"EVALUABLE" if dsr is not None else "INVALIDO",
             "dsr":dsr,"umbral_dsr":UMBRAL_DSR,"t_stat":_t_stat(con),
             "t_stat_sin_dominante":_t_stat(sin),"fold_dominante":dominante,
-            "n_total":n,"promocion_permitida":False,"pasa_barreras_estadisticas":False,\n            "dsr_descriptivo_supera_umbral":aprobado,
+            "n_total":n,"promocion_permitida":False,"pasa_barreras_estadisticas":False,
+            "dsr_descriptivo_supera_umbral":aprobado,
             "advertencia":"retornos y N_total no verificados externamente: solo análisis descriptivo; ninguna promoción"}
