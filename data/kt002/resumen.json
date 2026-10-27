@@ -1,27 +1,27 @@
 {
   "variant": "KT-002",
-  "updated_utc": "2026-10-27T17:07:01.332846+00:00",
-  "pronosticos": 162,
-  "vencidos": 158,
+  "updated_utc": "2026-10-27T18:07:01.308188+00:00",
+  "pronosticos": 163,
+  "vencidos": 159,
   "profitability_evaluated": false,
   "todos_solapados": {
-    "n_vencidos": 158,
+    "n_vencidos": 159,
     "siempre_sube": {
-      "n": 158,
-      "aciertos": 70,
-      "tasa": 0.443,
+      "n": 159,
+      "aciertos": 71,
+      "tasa": 0.4465,
       "ic95": [
-        0.3678,
-        0.5209
+        0.3714,
+        0.5242
       ]
     },
     "kronos": {
-      "n": 158,
-      "aciertos": 84,
-      "tasa": 0.5316,
+      "n": 159,
+      "aciertos": 85,
+      "tasa": 0.5346,
       "ic95": [
-        0.454,
-        0.6078
+        0.4572,
+        0.6104
       ],
       "mcnemar_vs_sube": {
         "solo_modelo": 53,
@@ -30,12 +30,12 @@
       }
     },
     "timesfm": {
-      "n": 158,
-      "aciertos": 73,
-      "tasa": 0.462,
+      "n": 159,
+      "aciertos": 74,
+      "tasa": 0.4654,
       "ic95": [
-        0.3861,
-        0.5397
+        0.3896,
+        0.5428
       ],
       "mcnemar_vs_sube": {
         "solo_modelo": 16,
@@ -44,12 +44,12 @@
       }
     },
     "kt001": {
-      "n": 158,
-      "aciertos": 73,
-      "tasa": 0.462,
+      "n": 159,
+      "aciertos": 74,
+      "tasa": 0.4654,
       "ic95": [
-        0.3861,
-        0.5397
+        0.3896,
+        0.5428
       ],
       "mcnemar_vs_sube": {
         "solo_modelo": 35,
