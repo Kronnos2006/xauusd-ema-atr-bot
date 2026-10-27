@@ -1,0 +1,298 @@
+[
+ {
+  "intento_id": "script:Backtest ema v4.py",
+  "commit_alta": "fbc3ed27c3f547959504854f8dadc6b87b48eab6"
+ },
+ {
+  "intento_id": "script:backtest_ema.py",
+  "commit_alta": "fbc3ed27c3f547959504854f8dadc6b87b48eab6"
+ },
+ {
+  "intento_id": "script:backtest_ema_v2.py",
+  "commit_alta": "fbc3ed27c3f547959504854f8dadc6b87b48eab6"
+ },
+ {
+  "intento_id": "script:backtest_ema_v3.py",
+  "commit_alta": "fbc3ed27c3f547959504854f8dadc6b87b48eab6"
+ },
+ {
+  "intento_id": "script:diagnostico_frecuencia_dfii10.py",
+  "commit_alta": "f2ffecbe5d5db7dd50a18b30af488e99ccf87265"
+ },
+ {
+  "intento_id": "script:hipotesis_macro_2s10s.py",
+  "commit_alta": "e00ca237ad4b8760effe97d325e8284a817da564"
+ },
+ {
+  "intento_id": "script:hipotesis_macro_dfii10.py",
+  "commit_alta": "f2ffecbe5d5db7dd50a18b30af488e99ccf87265"
+ },
+ {
+  "intento_id": "nota:XAUUSD EMA/ATR/EMA baseline (M15).md",
+  "commit_alta": "0b6c621d8424cc69f63f4acf64ac5840ce7e4b71"
+ },
+ {
+  "intento_id": "nota:XAUUSD EMA/ATR/Estructura de swings (HH-HL).md",
+  "commit_alta": "0b6c621d8424cc69f63f4acf64ac5840ce7e4b71"
+ },
+ {
+  "intento_id": "nota:XAUUSD EMA/ATR/H1 retuneado.md",
+  "commit_alta": "0b6c621d8424cc69f63f4acf64ac5840ce7e4b71"
+ },
+ {
+  "intento_id": "nota:XAUUSD EMA/ATR/MTF - filtro H1.md",
+  "commit_alta": "0b6c621d8424cc69f63f4acf64ac5840ce7e4b71"
+ },
+ {
+  "intento_id": "nota:XAUUSD EMA/ATR/Macro 2s10s - fase 1.md",
+  "commit_alta": "0b6c621d8424cc69f63f4acf64ac5840ce7e4b71"
+ },
+ {
+  "intento_id": "nota:XAUUSD EMA/ATR/Macro DFII10 - fase 1.md",
+  "commit_alta": "0b6c621d8424cc69f63f4acf64ac5840ce7e4b71"
+ },
+ {
+  "intento_id": "nota:XAUUSD EMA/ATR/Ruptura y retest.md",
+  "commit_alta": "0b6c621d8424cc69f63f4acf64ac5840ce7e4b71"
+ },
+ {
+  "intento_id": "nota:XAUUSD EMA/ATR/Macro DXY - fase 1.md",
+  "commit_alta": "c39de733053442f4959a580f7e6dedc4bb673c9f"
+ },
+ {
+  "intento_id": "nota:XAUUSD EMA/ATR/Ratio oro-plata - fase 1.md",
+  "commit_alta": "c39de733053442f4959a580f7e6dedc4bb673c9f"
+ },
+ {
+  "intento_id": "script:diagnostico_frecuencia_ratio_oro_plata.py",
+  "commit_alta": "c39de733053442f4959a580f7e6dedc4bb673c9f"
+ },
+ {
+  "intento_id": "script:hipotesis_macro_ratio_oro_plata.py",
+  "commit_alta": "c39de733053442f4959a580f7e6dedc4bb673c9f"
+ },
+ {
+  "intento_id": "script:diagnostico_frecuencia_dxy.py",
+  "commit_alta": "20476837d4c98fbe33e392656b258142bf9684b9"
+ },
+ {
+  "intento_id": "script:hipotesis_macro_dxy.py",
+  "commit_alta": "20476837d4c98fbe33e392656b258142bf9684b9"
+ },
+ {
+  "intento_id": "script:metricas_dfii10.py",
+  "commit_alta": "42406612a1e54f77b6d206da621bb85af64a6435"
+ },
+ {
+  "intento_id": "script:analizar_independencia_factores.py",
+  "commit_alta": "653c742844643e9800d02652224124836d496834"
+ },
+ {
+  "intento_id": "script:triage_frecuencia.py",
+  "commit_alta": "653c742844643e9800d02652224124836d496834"
+ },
+ {
+  "intento_id": "nota:XAUUSD EMA/ATR/Macro Momentum DXY - fase 1.md",
+  "commit_alta": "a15ae52eba0e10e40b196bfe476e874559eafe7e"
+ },
+ {
+  "intento_id": "script:diagnostico_frecuencia_momentum_dxy.py",
+  "commit_alta": "a15ae52eba0e10e40b196bfe476e874559eafe7e"
+ },
+ {
+  "intento_id": "script:hipotesis_macro_momentum_dxy.py",
+  "commit_alta": "a15ae52eba0e10e40b196bfe476e874559eafe7e"
+ },
+ {
+  "intento_id": "nota:XAUUSD EMA/ATR/Macro Momentum DXY H4 - fase 1.md",
+  "commit_alta": "8df4430d4f782062884bedc92c556c6eada895ee"
+ },
+ {
+  "intento_id": "nota:XAUUSD EMA/ATR/Risk-off US500 H4 - fase 1.md",
+  "commit_alta": "8df4430d4f782062884bedc92c556c6eada895ee"
+ },
+ {
+  "intento_id": "nota:XAUUSD EMA/ATR/Risk-off US500 H4 EURUSD - fase 1.md",
+  "commit_alta": "8df4430d4f782062884bedc92c556c6eada895ee"
+ },
+ {
+  "intento_id": "script:calibracion_efecto_tf_basket_h1.py",
+  "commit_alta": "30df13a54521b7849f88fc64bf1b26bcab51825a"
+ },
+ {
+  "intento_id": "script:correlacion_basket_tf_h1.py",
+  "commit_alta": "30df13a54521b7849f88fc64bf1b26bcab51825a"
+ },
+ {
+  "intento_id": "script:diagnostico_frecuencia_tf_basket_h1.py",
+  "commit_alta": "30df13a54521b7849f88fc64bf1b26bcab51825a"
+ },
+ {
+  "intento_id": "script:mde_trend_following_tf_basket_h1.py",
+  "commit_alta": "30df13a54521b7849f88fc64bf1b26bcab51825a"
+ },
+ {
+  "intento_id": "script:backtest_implementacion_donchian20_salida2.py",
+  "commit_alta": "177bc7478d7ff4daa87519da3cf1f07cafff6f4b"
+ },
+ {
+  "intento_id": "ea:MQL5/Experts/Donchian20_Visual.mq5",
+  "commit_alta": "4e415a4a144b8366a078eb26199aea13d323197e"
+ },
+ {
+  "intento_id": "ea:estrategias/0031_v310.mq5",
+  "commit_alta": "5ab14f8c90963b97667b21758b92300cf9625f10"
+ },
+ {
+  "intento_id": "ea:estrategias/0031_v320.mq5",
+  "commit_alta": "5ab14f8c90963b97667b21758b92300cf9625f10"
+ },
+ {
+  "intento_id": "run0031:Bernd",
+  "commit_alta": "5ab14f8c90963b97667b21758b92300cf9625f10"
+ },
+ {
+  "intento_id": "run0031:CRT (sizing $ fijo)",
+  "commit_alta": "5ab14f8c90963b97667b21758b92300cf9625f10"
+ },
+ {
+  "intento_id": "run0031:CRT (sizing % equity, re-test)",
+  "commit_alta": "5ab14f8c90963b97667b21758b92300cf9625f10"
+ },
+ {
+  "intento_id": "run0031:Judas",
+  "commit_alta": "5ab14f8c90963b97667b21758b92300cf9625f10"
+ },
+ {
+  "intento_id": "run0031:LonClose",
+  "commit_alta": "5ab14f8c90963b97667b21758b92300cf9625f10"
+ },
+ {
+  "intento_id": "run0031:SilverBullet",
+  "commit_alta": "5ab14f8c90963b97667b21758b92300cf9625f10"
+ },
+ {
+  "intento_id": "run0031:Venom",
+  "commit_alta": "5ab14f8c90963b97667b21758b92300cf9625f10"
+ },
+ {
+  "intento_id": "script:investigacion/fase3/h3_momentum_cs.py",
+  "commit_alta": "64af0aa8ff8558a2390a51d06f32b53b74cc1e84"
+ },
+ {
+  "intento_id": "script:investigacion/fase4/triage_frecuencia_h4.py",
+  "commit_alta": "954aec43102608e0dafe25ade0201d780492a5e3"
+ },
+ {
+  "intento_id": "script:auditoria_carry_eurusd.py",
+  "commit_alta": "828192cd11aab26c4626aa5694c50205852f8397"
+ },
+ {
+  "intento_id": "script:auditoria_carry_eurusd_v2.py",
+  "commit_alta": "828192cd11aab26c4626aa5694c50205852f8397"
+ },
+ {
+  "intento_id": "script:depth_check_basket_10.py",
+  "commit_alta": "828192cd11aab26c4626aa5694c50205852f8397"
+ },
+ {
+  "intento_id": "script:diagnostico_cointegracion_pares.py",
+  "commit_alta": "828192cd11aab26c4626aa5694c50205852f8397"
+ },
+ {
+  "intento_id": "script:diagnostico_frecuencia_credito_ghyg_lqd_h4.py",
+  "commit_alta": "828192cd11aab26c4626aa5694c50205852f8397"
+ },
+ {
+  "intento_id": "script:diagnostico_frecuencia_indices_d1.py",
+  "commit_alta": "828192cd11aab26c4626aa5694c50205852f8397"
+ },
+ {
+  "intento_id": "script:diagnostico_frecuencia_momentum_dxy_h4.py",
+  "commit_alta": "828192cd11aab26c4626aa5694c50205852f8397"
+ },
+ {
+  "intento_id": "script:diagnostico_frecuencia_momentum_eurusd_d1.py",
+  "commit_alta": "828192cd11aab26c4626aa5694c50205852f8397"
+ },
+ {
+  "intento_id": "script:diagnostico_frecuencia_momentum_xauusd_h1.py",
+  "commit_alta": "828192cd11aab26c4626aa5694c50205852f8397"
+ },
+ {
+  "intento_id": "script:diagnostico_frecuencia_riskoff_us500_h4.py",
+  "commit_alta": "828192cd11aab26c4626aa5694c50205852f8397"
+ },
+ {
+  "intento_id": "script:diagnostico_frecuencia_vix_sorpresa_eurusd.py",
+  "commit_alta": "828192cd11aab26c4626aa5694c50205852f8397"
+ },
+ {
+  "intento_id": "script:diagnostico_frecuencia_wti_eurusd_h4.py",
+  "commit_alta": "828192cd11aab26c4626aa5694c50205852f8397"
+ },
+ {
+  "intento_id": "script:event_study_eurusd.py",
+  "commit_alta": "828192cd11aab26c4626aa5694c50205852f8397"
+ },
+ {
+  "intento_id": "script:hipotesis_carry_eurusd.py",
+  "commit_alta": "828192cd11aab26c4626aa5694c50205852f8397"
+ },
+ {
+  "intento_id": "script:hipotesis_indices_d1.py",
+  "commit_alta": "828192cd11aab26c4626aa5694c50205852f8397"
+ },
+ {
+  "intento_id": "script:hipotesis_macro_momentum_dxy_h4.py",
+  "commit_alta": "828192cd11aab26c4626aa5694c50205852f8397"
+ },
+ {
+  "intento_id": "script:hipotesis_riskoff_us500_h4.py",
+  "commit_alta": "828192cd11aab26c4626aa5694c50205852f8397"
+ },
+ {
+  "intento_id": "script:hipotesis_riskoff_us500_h4_eurusd.py",
+  "commit_alta": "828192cd11aab26c4626aa5694c50205852f8397"
+ },
+ {
+  "intento_id": "script:investigacion/fase2/analisis_h1_n120_validation.py",
+  "commit_alta": "828192cd11aab26c4626aa5694c50205852f8397"
+ },
+ {
+  "intento_id": "script:investigacion/fase2/h1_momentum.py",
+  "commit_alta": "828192cd11aab26c4626aa5694c50205852f8397"
+ },
+ {
+  "intento_id": "script:investigacion/fase2/h2_donchian.py",
+  "commit_alta": "828192cd11aab26c4626aa5694c50205852f8397"
+ },
+ {
+  "intento_id": "tesis:TS-BTC-20261021T0000Z#1351e14b0f06",
+  "commit_alta": "0182172cfa76f4c8c54f8f3d000400f9b070c69b"
+ },
+ {
+  "intento_id": "tesis:TS-BTC-20261021T0000Z#5dafa9ef734e",
+  "commit_alta": "0182172cfa76f4c8c54f8f3d000400f9b070c69b"
+ },
+ {
+  "intento_id": "tesis:TS-BTC-20261021T0000Z#991fdd44407d",
+  "commit_alta": "0182172cfa76f4c8c54f8f3d000400f9b070c69b"
+ },
+ {
+  "intento_id": "tesis:TS-BTC-20261022T0000Z#42f7642a8017",
+  "commit_alta": "0182172cfa76f4c8c54f8f3d000400f9b070c69b"
+ },
+ {
+  "intento_id": "tesis:TS-BTC-20261022T0000Z#4e01b66bd4ad",
+  "commit_alta": "0182172cfa76f4c8c54f8f3d000400f9b070c69b"
+ },
+ {
+  "intento_id": "tesis:TS-BTC-20261022T0000Z#4e91c8d59aa3",
+  "commit_alta": "0182172cfa76f4c8c54f8f3d000400f9b070c69b"
+ },
+ {
+  "intento_id": "tesis:TS-BTC-20261024T0523Z#0ab1cc115e55",
+  "commit_alta": "0182172cfa76f4c8c54f8f3d000400f9b070c69b"
+ }
+]

@@ -1,0 +1,66 @@
+name: ATLAS - sello externo del censo (Bloqueo A, solo lectura)
+
+# Reconstruye el censo desde el historial Git, comprueba que coincide byte a byte
+# con el versionado y pide sellos de tiempo RFC 3161 a DOS autoridades externas
+# independientes (FreeTSA y DigiCert). Sin secretos ni escritura en el repo:
+# los .tsr quedan como artefacto y en el log de esta corrida (fecha fijada por GitHub).
+on:
+  workflow_dispatch:
+  push:
+    branches: ['research/atlas-bloqueo-a-*']
+    paths:
+      - 'research/atlas/censo/**'
+      - 'tools/atlas_censo_desde_git.py'
+      - '.github/workflows/atlas-custodia.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  sellar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Reconstrucción independiente y comparación
+        run: |
+          set -euo pipefail
+          D=research/atlas/censo
+          cp "$D/censo_intentos.jsonl" "$RUNNER_TEMP/versionado.jsonl"
+          python tools/atlas_censo_desde_git.py --salida "$D"
+          cmp "$RUNNER_TEMP/versionado.jsonl" "$D/censo_intentos.jsonl" || { echo "::error::el censo versionado no coincide con el reconstruido"; exit 1; }
+          python -c "import json; from atlas.censo_variantes import verificar_censo as v; a=json.load(open('$D/ANCLA_CENSO.json')); r=v('$D/censo_intentos.jsonl', a); print(r['n_total'], r['estado'])"
+          sha256sum "$D/censo_intentos.jsonl" "$D/ANCLA_CENSO.json" "$D/fuentes_git.json" | tee MANIFIESTO.sha256
+      - name: Sellos RFC 3161 de dos autoridades
+        run: |
+          set -euo pipefail
+          openssl ts -query -data MANIFIESTO.sha256 -sha256 -cert -out manifiesto.tsq
+          curl -sSf -H 'Content-Type: application/timestamp-query' --data-binary @manifiesto.tsq https://freetsa.org/tsr -o freetsa.tsr
+          curl -sSf -H 'Content-Type: application/timestamp-query' --data-binary @manifiesto.tsq http://timestamp.digicert.com -o digicert.tsr
+          curl -sSf https://freetsa.org/files/cacert.pem -o freetsa_cacert.pem
+          curl -sSf https://freetsa.org/files/tsa.crt -o freetsa_tsa.crt
+          openssl ts -verify -data MANIFIESTO.sha256 -in freetsa.tsr -CAfile freetsa_cacert.pem -untrusted freetsa_tsa.crt
+          for t in freetsa digicert; do echo "== $t"; openssl ts -reply -in $t.tsr -text | grep -E 'Status:|Time stamp:|Message data|TSA:' ; done
+          {
+            echo "### ATLAS Bloqueo A: censo sellado"
+            echo '```'; cat MANIFIESTO.sha256; echo '```'
+            for t in freetsa digicert; do echo "- $t: $(openssl ts -reply -in $t.tsr -text | grep 'Time stamp:')"; done
+            echo "- commit: $GITHUB_SHA · run: $GITHUB_RUN_ID"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sello-censo-${{ github.sha }}
+          retention-days: 90
+          path: |
+            MANIFIESTO.sha256
+            manifiesto.tsq
+            freetsa.tsr
+            digicert.tsr
+            freetsa_cacert.pem
+            freetsa_tsa.crt

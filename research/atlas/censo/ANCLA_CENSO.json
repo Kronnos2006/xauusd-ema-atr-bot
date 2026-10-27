@@ -1,0 +1,8 @@
+{
+ "sha256": "82a94500cd50d9c18e97e7f02322e4c4b3dd23c8dd1c50f226cc25022920ff75",
+ "lineas": 74,
+ "ultimo_hash": "1f9ca4020db56c940ae96e75cc238d727d8b1e6a7352b580b882438723817b81",
+ "corte_utc": "2026-10-24T17:28:11Z",
+ "alcance": "cota inferior, solo artefactos versionados en este repo",
+ "custodia": "PENDIENTE: sello RFC 3161 por workflow atlas-custodia"
+}
