@@ -25,7 +25,7 @@ jobs:
           cache-dependency-path: '.github/workflows/nautilus-install-isolado.yml'
       - name: Instalar NautilusTrader estable 1.x sin credenciales
         run: |
-          python -m pip install --disable-pip-version-check 'nautilus_trader<2'
+          python -m pip install --disable-pip-version-check 'nautilus_trader==1.221.0'
           python -m pip freeze > nautilus-dependencies.txt
       - name: Verificar libreria real y version
         run: python tools/inspeccion_nautilus.py
