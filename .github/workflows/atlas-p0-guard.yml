@@ -1,0 +1,28 @@
+name: Kronnos - ATLAS P0 auditor sin IA
+on:
+  pull_request:
+    paths:
+      - 'tools/atlas_p0_guard.py'
+      - 'tests/test_atlas_p0_guard.py'
+      - '.github/workflows/atlas-p0-guard.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Probar rechazo de evidencias incompletas o falsas
+        run: python3 -m unittest discover -s tests -p 'test_atlas_p0_guard.py' -v
+      - name: Generar reporte determinista y huella
+        run: python3 tools/atlas_p0_guard.py
+      - name: Guardar diagnostico
+        uses: actions/upload-artifact@v4
+        with:
+          name: atlas-p0-diagnostico-${{ github.run_id }}
+          path: artifacts/atlas-p0-report.json
+          retention-days: 30
