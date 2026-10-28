@@ -1,0 +1,39 @@
+name: Kronnos - informe gerencial sin IA
+on:
+  schedule:
+    - cron: '30 12 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: kronnos-informe-sin-ia
+  cancel-in-progress: false
+jobs:
+  informe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Reporte y validación fail closed
+        run: python3 tools/informe_gerencia_sin_ia.py
+      - name: Auditoría de código
+        if: always()
+        run: python3 tools/auditoria_scripts.py > artifacts/auditoria-scripts.json
+      - name: Integridad de artefactos
+        if: always()
+        run: |
+          test -f artifacts/informe-gerencia.json && sha256sum artifacts/informe-gerencia.json > artifacts/sha256sum.txt || true
+          test -f artifacts/auditoria-scripts.json && sha256sum artifacts/auditoria-scripts.json >> artifacts/sha256sum.txt || true
+      - name: Subir evidencia incluso en error
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kronnos-informe-${{ github.run_id }}
+          path: |
+            artifacts/informe-gerencia.json
+            artifacts/auditoria-scripts.json
+            artifacts/sha256sum.txt
+          if-no-files-found: warn
+          retention-days: 30
