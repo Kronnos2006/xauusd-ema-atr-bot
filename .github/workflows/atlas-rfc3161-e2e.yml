@@ -1,0 +1,20 @@
+name: Kronnos - RFC3161 E2E sintetico
+on:
+  pull_request:
+    paths:
+      - 'tools/atlas_rfc3161_e2e.py'
+      - '.github/workflows/atlas-rfc3161-e2e.yml'
+      - 'tools/atlas_verificador_evidencias.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: RFC3161 test issuer locally - no external trust
+        run: python3 tools/atlas_rfc3161_e2e.py
