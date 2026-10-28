@@ -1,0 +1,22 @@
+name: Kronnos - RFC3161 verificador defensivo
+on:
+  pull_request:
+    paths:
+      - 'tools/atlas_verificador_evidencias.py'
+      - 'tests/test_atlas_verificador_evidencias.py'
+      - '.github/workflows/atlas-rfc3161-verify.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: OpenSSL disponible
+        run: openssl version
+      - name: Tests negativos
+        run: python3 -m unittest discover -s tests -p 'test_atlas_verificador_evidencias.py' -v
