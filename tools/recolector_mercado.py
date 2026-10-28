@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Kronnos: snapshot de JSON local o HTTPS explícitamente autorizada. Sin cron."""
+"""Kronnos: ingesta HTTPS aislada DESHABILITADA por defecto, sin trading."""
 import argparse
 import hashlib
 import ipaddress
@@ -10,7 +10,7 @@ import socket
 import time
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
-from urllib.request import build_opener, HTTPRedirectHandler, Request
+from urllib.request import build_opener, HTTPRedirectHandler, ProxyHandler, Request
 
 class NoRedirect(HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
@@ -18,18 +18,20 @@ class NoRedirect(HTTPRedirectHandler):
 
 def validated_host(url, allowed):
     p = urlsplit(url)
-    if (p.scheme != "https" or p.hostname not in allowed or p.username
-            or p.password or p.port not in (None, 443)):
+    if p.scheme != "https" or not p.hostname or p.hostname not in allowed or p.username or p.password or p.port not in (None, 443):
         raise ValueError("HTTPS host no autorizado")
-    ips = socket.getaddrinfo(p.hostname, 443, type=socket.SOCK_STREAM)
-    if not ips or any(not ipaddress.ip_address(a[4][0]).is_global for a in ips):
-        raise ValueError("Destino privado/no global bloqueado")
+    addresses = socket.getaddrinfo(p.hostname, 443, type=socket.SOCK_STREAM)
+    if not addresses or any(not ipaddress.ip_address(x[4][0]).is_global for x in addresses):
+        raise ValueError("IP no global bloqueada")
     return url
 
-def collect(url, output, allowed_hosts=(), max_bytes=2_000_000, retries=2):
-    """Solo destinos públicos en allowlist; revalidar seguridad de transporte antes de producción."""
+def collect(url, output, allowed_hosts=(), max_bytes=2_000_000, retries=2, isolated=False):
+    # DNS puede cambiar entre comprobación y conexión (rebinding).
+    # La comprobación local no sustituye el bloqueo de egreso de red del runner.
+    if not isolated:
+        raise PermissionError("INGESTA_DESHABILITADA: requiere runner con egreso restringido")
     validated_host(url, set(allowed_hosts))
-    opener = build_opener(NoRedirect)
+    opener = build_opener(ProxyHandler({}), NoRedirect)
     body = None
     for attempt in range(retries + 1):
         try:
@@ -49,7 +51,6 @@ def collect(url, output, allowed_hosts=(), max_bytes=2_000_000, retries=2):
     json.loads(body)
     out = Path(output)
     out.parent.mkdir(parents=True, exist_ok=True)
-    # Creación exclusiva: nunca sobrescribir snapshots ni archivos preexistentes.
     with out.open("xb") as handle:
         handle.write(body)
         handle.flush()
@@ -60,8 +61,6 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser()
     p.add_argument("--url", required=True)
     p.add_argument("--output", required=True)
-    p.add_argument("--allow-host", action="append", default=[], help="Hostname HTTPS público explícitamente aprobado")
+    p.add_argument("--allow-host", action="append", default=[])
     a = p.parse_args()
-    if not a.allow_host:
-        p.error("Sin --allow-host no se habilita acceso de red")
-    print(json.dumps(collect(a.url, a.output, a.allow_host), ensure_ascii=False))
+    p.error("La ingesta externa permanece deshabilitada hasta disponer de sandbox de red con egreso restringido")
