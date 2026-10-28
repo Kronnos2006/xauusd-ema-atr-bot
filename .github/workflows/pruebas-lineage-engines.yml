@@ -1,0 +1,21 @@
+name: Kronnos - contratos de motores y procedencia
+on:
+  pull_request:
+    paths:
+      - 'tools/lineage_kronnos.py'
+      - 'tools/comparador_motores.py'
+      - 'tests/test_lineage_engines.py'
+      - '.github/workflows/pruebas-lineage-engines.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Test sin IA ni red
+        run: python3 -m unittest discover -s tests -p 'test_lineage_engines.py' -v
