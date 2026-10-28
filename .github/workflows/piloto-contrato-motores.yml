@@ -1,0 +1,28 @@
+name: Kronnos - piloto contrato motores aislado
+on:
+  pull_request:
+    paths:
+      - 'tools/piloto_motores_aislado.py'
+      - 'tests/test_piloto_motores_aislado.py'
+      - '.github/workflows/piloto-contrato-motores.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contrato:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Prueba del contrato
+        run: python3 -m unittest discover -s tests -p 'test_piloto_motores_aislado.py' -v
+      - name: Ejecutar fixture sintético, sin red
+        run: python3 tools/piloto_motores_aislado.py
+      - name: Artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: kronnos-piloto-sintetico-${{ github.run_id }}
+          path: artifacts/piloto-contrato-motores.json
+          retention-days: 14
