@@ -1,0 +1,43 @@
+name: Kronnos - auditoria determinista de scripts
+on:
+  pull_request:
+    paths:
+      - 'tools/**'
+      - 'tests/**'
+      - '.github/workflows/auditoria-scripts-kronnos.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: kronnos-script-audit-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Sintaxis de scripts
+        run: python3 -m compileall -q tools
+      - name: Suite de pruebas de automatizacion
+        run: python3 -m unittest discover -s tests -p 'test_*scripts*.py' -v
+      - name: Tests de procedencia y motores
+        run: python3 -m unittest discover -s tests -p 'test_lineage_engines.py' -v
+      - name: Auditoria estatica de scripts
+        run: python3 tools/auditoria_scripts.py > audit.json
+      - name: Resumen
+        if: always()
+        run: |
+          echo '### Kronnos - auditoria de scripts' >> "$GITHUB_STEP_SUMMARY"
+          echo "SHA: \`$GITHUB_SHA\`" >> "$GITHUB_STEP_SUMMARY"
+          test -f audit.json && cat audit.json >> "$GITHUB_STEP_SUMMARY" || true
+      - name: Evidencia
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: auditoria-scripts-${{ github.run_id }}
+          path: audit.json
+          if-no-files-found: ignore
+          retention-days: 30

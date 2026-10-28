@@ -1,0 +1,27 @@
+name: Kronnos scripts - pruebas aisladas
+on:
+  pull_request:
+    paths:
+      - 'tools/recolector_mercado.py'
+      - 'tools/validador_datos.py'
+      - 'tools/evaluador_modelos.py'
+      - 'tools/auditor_gerencia.py'
+      - 'tests/test_scripts_deterministas.py'
+      - '.github/workflows/pruebas-scripts-deterministas.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Compilar sintaxis
+        run: python3 -m compileall -q tools/recolector_mercado.py tools/validador_datos.py tools/evaluador_modelos.py tools/auditor_gerencia.py
+      - name: Pruebas unitarias sin red ni IA
+        run: python3 -m unittest discover -s tests -p 'test_scripts_deterministas.py' -v
