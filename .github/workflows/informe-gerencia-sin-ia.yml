@@ -1,0 +1,30 @@
+name: Kronnos - informe gerencial sin IA
+
+on:
+  schedule:
+    - cron: '30 12 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kronnos-informe-sin-ia
+  cancel-in-progress: false
+
+jobs:
+  informe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Informe determinista sin IA
+        run: python3 tools/informe_gerencia_sin_ia.py
+      - name: Publicar informe como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: kronnos-informe-gerencia
+          path: artifacts/informe-gerencia.json
+          retention-days: 14
