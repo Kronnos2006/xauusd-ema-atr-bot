@@ -1,0 +1,24 @@
+name: Kronnos - motores gratuitos preflight
+on:
+  pull_request:
+    paths:
+      - 'tools/motores_gratis.py'
+      - 'tests/test_motores_gratis.py'
+      - '.github/workflows/motores-gratis-preflight.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Tests sin claves ni brokers
+        run: python3 -m unittest discover -s tests -p 'test_motores_gratis.py' -v
+      - name: Diagnóstico LEAN fuente local
+        run: python3 tools/motores_gratis.py --engine lean
+      - name: Diagnóstico Nautilus local
+        run: python3 tools/motores_gratis.py --engine nautilus
