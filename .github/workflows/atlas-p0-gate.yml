@@ -1,0 +1,30 @@
+name: Kronnos - ATLAS P0 gate integrado sin IA
+on:
+  pull_request:
+    paths:
+      - 'tools/atlas_p0_gate.py'
+      - 'tests/test_atlas_p0_gate.py'
+      - '.github/workflows/atlas-p0-gate.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Tests de bloqueo
+        run: python3 -m unittest discover -s tests -p 'test_atlas_p0_gate.py' -v
+      - name: Informe de estado reproducible
+        run: |
+          python3 tools/atlas_p0_gate.py
+          python3 -m json.tool artifacts/atlas-p0-gate.json > /dev/null
+          sha256sum artifacts/atlas-p0-gate.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kronnos-atlas-p0-gate-${{ github.run_id }}
+          path: artifacts/atlas-p0-gate.json
+          retention-days: 30
