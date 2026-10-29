@@ -1,0 +1,26 @@
+name: Kronnos FreqAI isolated smoke
+on:
+  pull_request:
+    paths:
+      - tools/kronnos_freqai_bridge.py
+      - tests/test_kronnos_freqai_bridge.py
+      - .github/workflows/kronnos-freqai-sandbox.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  data-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 -m unittest discover -s tests -p 'test_kronnos_freqai_bridge.py' -v
+  freqai-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Verify official FreqAI runtime without any orders
+        run: |
+          docker run --rm --network none --entrypoint python freqtradeorg/freqtrade:stable_freqai -c "import freqtrade; import freqtrade.freqai; print('KRONNOS_FREQAI_IMPORT_OK')"
