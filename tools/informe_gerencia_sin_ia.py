@@ -23,6 +23,32 @@ def inspect_market(path):
     result["sha256"]=hashlib.sha256(path.read_bytes()).hexdigest()
     return result
 
+def file_state(root, path):
+    file = root / path
+    return {"path": path, "present": file.is_file(),
+            "sha256": hashlib.sha256(file.read_bytes()).hexdigest() if file.is_file() else None}
+
+def inspect_modules(root):
+    from diagnostico_modelos_kronnos import inspect
+    models = inspect(root, {})
+    return {
+        "kronnos": {"kt002_operativo": "NO_VERIFICADO",
+                    "modelos": models["models"],
+                    "proximos": ["Verificar ultima corrida KT-002", "Comprobar inferencias reales Kronos y TimesFM"]},
+        "orion": {"estado": "PARCIAL",
+                  "reporte_script": file_state(root, "tools/informe_gerencia_sin_ia.py"),
+                  "lineage": file_state(root, "tools/lineage_kronnos.py"),
+                  "auditor": file_state(root, "tools/auditor_gerencia.py"),
+                  "servicio_operativo": "NO_VERIFICADO"},
+        "atlas": {"estado": "BLOQUEADO",
+                  "p0_guard": file_state(root, "tools/atlas_p0_guard.py"),
+                  "rfc3161_verifier": file_state(root, "tools/atlas_verificador_evidencias.py"),
+                  "confirmatorio": file_state(root, "atlas/evidencia_confirmatoria.py"),
+                  "pr42": "PENDIENTE_REVISION_REMOTA",
+                  "custodia_independiente": "NO_VERIFICADO",
+                  "promocion_permitida": False},
+    }
+
 def generate(root):
     market=inspect_market(root/"data/mercado/spread_btcusdt.csv")
     return {"proyecto":"Kronnos","generated_utc":datetime.now(timezone.utc).isoformat(),
@@ -32,7 +58,7 @@ def generate(root):
             "h3_h4":"NO_VERIFICADO",
             "atlas":"NO_VERIFICADO",
             "trading_real":"NO_AUTORIZADO",
-            "llm_calls_by_this_script":0}
+            "llm_calls_by_this_script":0,\n            "modulos": inspect_modules(root)}
 
 def main():
     ap=argparse.ArgumentParser()
