@@ -18,7 +18,14 @@ jobs:
           persist-credentials: false
       - run: python3 -m unittest discover -s tests -p test_kronnos_binance_bars.py -v
       - name: Descargar barras publicas de Binance y guardar linaje
-        run: python3 tools/kronnos_binance_bars.py --symbol BTCUSDT --interval 1h --limit 24
+        run: |
+          if python3 tools/kronnos_binance_bars.py --symbol BTCUSDT --interval 1h --limit 24; then
+            echo 'Binance: descarga completada' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'Binance: DESCARGA_NO_DISPONIBLE. No se certifican datos.' >> "$GITHUB_STEP_SUMMARY"
+            mkdir -p artifacts
+            echo '{"status":"NO_DISPONIBLE_EN_RUNNER","data_verified":false,"promotion_permitted":false}' > artifacts/binance-btcusdt-1h.manifest.json
+          fi
       - uses: actions/upload-artifact@v4
         with:
           name: kronnos-btc-spot-research
