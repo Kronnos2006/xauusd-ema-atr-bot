@@ -1,0 +1,27 @@
+name: Kronnos - diagnostico modelos sin IA
+on:
+  pull_request:
+    paths:
+      - tools/diagnostico_modelos_kronnos.py
+      - tests/test_diagnostico_modelos_kronnos.py
+      - .github/workflows/diagnostico-modelos-kronnos.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  diagnostico:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Pruebas de integridad
+        run: python3 -m unittest discover -s tests -p 'test_diagnostico_modelos_kronnos.py' -v
+      - name: Informe de modelos (sin falsas afirmaciones de actividad)
+        run: python3 tools/diagnostico_modelos_kronnos.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kronnos-diagnostico-modelos
+          path: artifacts/modelos-diagnostico.json
+          retention-days: 30
