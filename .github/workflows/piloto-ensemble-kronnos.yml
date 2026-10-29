@@ -1,0 +1,23 @@
+name: Kronnos - piloto de contratos modelos sin IA
+on:
+  pull_request:
+    paths:
+      - tools/piloto_ensemble_kronnos.py
+      - tests/test_piloto_ensemble_kronnos.py
+      - .github/workflows/piloto-ensemble-kronnos.yml
+      - docs/REFERENCIAS_KRONNOS_MODELOS_2026-10-29.md
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  prueba:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Pruebas sin IA ni brokers
+        run: python3 -m unittest discover -s tests -p 'test_piloto_ensemble_kronnos.py' -v
+      - name: Compilación
+        run: python3 -m py_compile tools/piloto_ensemble_kronnos.py
