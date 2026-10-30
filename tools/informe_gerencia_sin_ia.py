@@ -58,7 +58,8 @@ def generate(root):
             "h3_h4":"NO_VERIFICADO",
             "atlas":"NO_VERIFICADO",
             "trading_real":"NO_AUTORIZADO",
-            "llm_calls_by_this_script":0,\n            "modulos": inspect_modules(root)}
+            "llm_calls_by_this_script":0,
+            "modulos": inspect_modules(root)}
 
 def main():
     ap=argparse.ArgumentParser()
