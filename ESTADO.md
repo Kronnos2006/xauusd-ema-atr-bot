@@ -15,7 +15,7 @@ Dueño: Kronnos (Kronnos2006). Hora local: Costa Rica (UTC−6).
 7. Decide solo el dueño: dinero, holdouts, borrar datos, cambiar reglas o un experimento en curso.
 
 ## Qué estamos haciendo (manual, 1 línea por cambio, lo más nuevo arriba)
-- **2026-10-30 · Claude:** creado este archivo + `tools/generar_estado.py` + `estado.yml` (se actualiza solo cada día). Tareas programadas de Claude (gerente diario y vigía cada 4 h) **apagadas**: su parte mecánica ya la hacen la guardia, `informe-gerencia-sin-ia.yml` y este script.
+- **2026-10-30 · Claude:** creado este archivo + `tools/generar_estado.py` + `estado.yml` (se actualiza solo cada día). Tareas programadas de Claude (gerente diario 06:30 y vigía cada 4 h) **siguen activas, pendiente de que el dueño confirme apagarlas**: su parte mecánica ya la hacen la guardia, `informe-gerencia-sin-ia.yml` y este script.
 - **2026-10-29 · ChatGPT:** PR #61–#72 fusionados: Qlib (instalado), FreqAI (entrenamiento LightGBM con velas reales de Binance Vision), combinador de predicciones a pesos iguales (#67), informe gerencial sin IA con Kronnos + ORION + ATLAS (#65, #66).
 - **2026-10-27 · Dueño:** política «retiro operativo de Claude» (`docs/coordination/POLITICA_OPERATIVA_SIN_CLAUDE_2026-10-27.md`). El 30-oct el dueño volvió a pedir a Claude que trabaje: **las dos IA pueden trabajar**, coordinando por este archivo y PR.
 
