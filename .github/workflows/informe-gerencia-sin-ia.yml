@@ -1,5 +1,10 @@
 name: Kronnos - informe gerencial sin IA
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/informe-gerencia-sin-ia.yml'
+      - 'tools/informe_gerencia_sin_ia.py'
+      - 'tools/diagnostico_modelos_kronnos.py'
   schedule:
     - cron: '30 12 * * *'
   workflow_dispatch:
