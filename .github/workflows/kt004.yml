@@ -1,0 +1,170 @@
+name: KT-004 multiactivo (ETH, SOL, BNB, XRP)
+
+# Registro previo: docs/KT-004_registro_multiactivo.md (Enmienda A).
+# Diagnostico: sin ordenes, MT5, costos ni capital.
+# Modo segun data/kt004/lanzar.txt: "prueba" (datos, conteo e historial de checkpoints; SIN pronosticos)
+# o "completo" (una sola corrida, con los datos sellados por la prueba).
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - data/kt004/lanzar.txt
+  pull_request:
+    paths:
+      - tools/kt004_multiactivo.py
+      - tests/test_kt004.py
+      - .github/workflows/kt004.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kt004
+  cancel-in-progress: false
+
+env:
+  HF_HOME: ${{ github.workspace }}/.hf-cache
+  KRONOS_SRC: ${{ github.workspace }}/tools/kronos-upstream
+  SHARDS: 40
+
+jobs:
+  pruebas:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: pip install pandas==3.0.6 numpy==2.5.4 requests==2.34.2
+      - run: python -m unittest tests.test_kt004 -v
+
+  modo:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    outputs:
+      modo: ${{ steps.modo.outputs.modo }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: modo
+        run: echo "modo=$(head -1 data/kt004/lanzar.txt | tr -d '[:space:]')" >> "$GITHUB_OUTPUT"
+
+  prueba:
+    needs: modo
+    if: needs.modo.outputs.modo == 'prueba'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: pip install pandas==3.0.6 numpy==2.5.4 requests==2.34.2
+      - name: Datos (hasta 2026-08-01 00:00; el holdout no se descarga) y conteo de bases
+        run: |
+          python tools/kt004_multiactivo.py datos data/kt004
+          python tools/kt004_multiactivo.py prueba data/kt004 data/kt004/prueba.json "$SHARDS"
+      - name: Historial de los checkpoints en Hugging Face (para la regla de reentrenamiento)
+        run: |
+          for m in NeoQuasar/Kronos-small NeoQuasar/Kronos-Tokenizer-base google/timesfm-2.5-200m-pytorch; do
+            curl -s "https://huggingface.co/api/models/$m/commits/main" | python -c "import json,sys;print(json.dumps({'modelo':'$m','commits':[{k:c.get(k) for k in ('id','date','title')} for c in json.load(sys.stdin)]}))"
+          done > data/kt004/checkpoints_commits.jsonl
+          echo "modo=prueba run_id=${GITHUB_RUN_ID} sha=${GITHUB_SHA}" > data/kt004/ejecucion.txt
+      - name: Guardar
+        run: |
+          git config user.name "kt004-bot"
+          git config user.email "kt004-bot@users.noreply.github.com"
+          git add data/kt004
+          git commit -q -m "KT-004: corrida de prueba, datos sellados (run ${GITHUB_RUN_ID})"
+          for i in 1 2 3; do git pull -q --rebase origin master && git push -q origin HEAD:master && exit 0; sleep 10; done
+          exit 1
+
+  shards:
+    needs: modo
+    if: needs.modo.outputs.modo == 'completo'
+    runs-on: ubuntu-latest
+    outputs:
+      lista: ${{ steps.l.outputs.lista }}
+    steps:
+      - id: l
+        run: echo "lista=$(python3 -c "import json;print(json.dumps(list(range(${SHARDS}))))")" >> "$GITHUB_OUTPUT"
+
+  pronosticar:
+    needs: shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ${{ fromJson(needs.shards.outputs.lista) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: docs/evidencia/KT-001/requirements-resolved.txt
+      - name: Codigo Kronos fijado
+        run: |
+          mkdir -p "$KRONOS_SRC" && cd "$KRONOS_SRC"
+          git init -q
+          git remote add origin https://github.com/shiyu-coder/Kronos
+          git fetch -q --depth 1 origin 67b630e67f6a18c9e9be918d9b4337c960db1e9a
+          git checkout -q FETCH_HEAD
+      - name: Dependencias (versiones de KT-001)
+        run: |
+          pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/cpu
+          pip install -r docs/evidencia/KT-001/requirements-resolved.txt
+      - uses: actions/cache@v4
+        with:
+          path: .hf-cache
+          key: hf-kt002-901c26c1-0e011738-1d952420
+      - name: Pronosticar shard (verifica hashes sellados; hasta 3 intentos)
+        run: |
+          for t in 1 2 3; do
+            python tools/kt004_multiactivo.py shard data/kt004 ${{ matrix.shard }} "$SHARDS" shard-${{ matrix.shard }}.csv && exit 0
+            echo "Intento $t fallo; reintento en $((60*t)) s"; sleep $((60*t))
+          done
+          exit 1
+      - if: matrix.shard == 0
+        run: pip freeze > pip_freeze.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shard-${{ matrix.shard }}
+          path: |
+            shard-${{ matrix.shard }}.csv
+            reproducibilidad.json
+            pip_freeze.txt
+          if-no-files-found: ignore
+
+  unir:
+    needs: [modo, pronosticar]
+    if: needs.modo.outputs.modo == 'completo' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: pip install pandas==3.0.6 numpy==2.5.4 requests==2.34.2
+      - uses: actions/download-artifact@v4
+        with:
+          path: art
+      - name: Unir y analizar
+        run: |
+          test -f art/shard-0/reproducibilidad.json || { echo "Falta reproducibilidad.json"; exit 1; }
+          python tools/kt004_multiactivo.py unir data/kt004 art/shard-*/shard-*.csv
+          cp art/shard-0/reproducibilidad.json art/shard-0/pip_freeze.txt data/kt004/
+          echo "modo=completo run_id=${GITHUB_RUN_ID} sha=${GITHUB_SHA}" > data/kt004/ejecucion.txt
+      - name: Guardar resultados
+        run: |
+          git config user.name "kt004-bot"
+          git config user.email "kt004-bot@users.noreply.github.com"
+          git add data/kt004
+          git commit -q -m "KT-004: resultados (run ${GITHUB_RUN_ID})"
+          for i in 1 2 3; do git pull -q --rebase origin master && git push -q origin HEAD:master && exit 0; sleep 10; done
+          exit 1
