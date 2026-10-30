@@ -18,6 +18,7 @@ Al escribir este plan ya se vieron n = 57 bases sin solape (Kronos 49,1 %, «sie
 | 3 | 600 | 2,34 | Kronos − «siempre sube» ≤ 1 punto |
 | 4 (final) | 780 | 2,02 | — |
 
+- Los límites de la tabla son los de 4 miradas equiespaciadas. Como las fracciones reales son 0,26/0,51/0,77/1, el script los recalcula **una vez, antes de la mirada 1**, con gasto de α Lan-DeMets tipo O'Brien-Fleming para esas fracciones, y los deja fijos en `data/kt002/secuencial.json`.
 - **Eficacia** (z positivo y supera el límite): Kronos pasa a un confirmatorio prospectivo **con costos**, registrado aparte. No autoriza operar.
 - **Futilidad:** se declara "Kronos sin ventaja a 4 h en BTC" y KT-002 puede seguir corriendo solo como registro, sin más miradas inferenciales.
 - **Final sin cruzar:** sin ventaja demostrada.
