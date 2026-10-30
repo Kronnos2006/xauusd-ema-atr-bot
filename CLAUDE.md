@@ -1,3 +1,5 @@
+> **Primero leé `ESTADO.md`** (estado actual, reglas y pendientes en un solo archivo). Este documento es referencia histórica: abrilo solo si la tarea lo pide. Al terminar, anotá una línea en «Qué estamos haciendo» de `ESTADO.md`.
+
 # Instrucciones de proyecto
 
 Proyecto de investigación estadística cuantitativa vía MT5. Sin ejecución de órdenes, sin capital real.
