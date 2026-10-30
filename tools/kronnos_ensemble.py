@@ -4,7 +4,7 @@ import argparse,hashlib,json,math
 from collections import defaultdict
 from datetime import datetime,timezone
 from pathlib import Path
-MODELS=("Kronos","TimesFM","KT-001","Siempre sube")
+MODELS=("Kronos","TimesFM","KT-001","Siempre sube","FreqAI")
 def utc(value):
     d=datetime.fromisoformat(value.replace("Z","+00:00"))
     if d.tzinfo is None:raise ValueError("UTC requerido")
@@ -12,7 +12,7 @@ def utc(value):
 def combine(payload,min_models=2):
     if not isinstance(payload,dict) or not isinstance(payload.get("predictions"),list):
         raise ValueError("predictions es lista requerida")
-    if type(min_models)!=int or min_models<2 or min_models>4:raise ValueError("min_models fuera de rango")
+    if type(min_models)!=int or min_models<2 or min_models>len(MODELS):raise ValueError("min_models fuera de rango")
     groups=defaultdict(dict);seen=set()
     for row in payload["predictions"]:
         if not isinstance(row,dict) or row.get("model") not in MODELS:raise ValueError("modelo no permitido")

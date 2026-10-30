@@ -10,6 +10,11 @@ class Tests(unittest.TestCase):
         r=combine({"predictions":[row("Kronos",1,"1"),row("TimesFM",-0.5,"2")]})
         self.assertEqual(r["ensemble"][0]["score"],.25)
         self.assertFalse(r["promotion_permitted"])
+    def test_freqai_included(self):
+        r=combine({"predictions":[row("Kronos",1,"1"),row("FreqAI",-.2,"2")]})
+        self.assertEqual(r["ensemble"][0]["n_models"],2)
+        self.assertIn("FreqAI",r["ensemble"][0]["models"])
+        self.assertFalse(r["models_executed_here"])
     def test_insufficient(self):
         self.assertEqual(combine({"predictions":[row("Kronos",1,"1")]})["n_groups"],0)
     def test_duplicate(self):
