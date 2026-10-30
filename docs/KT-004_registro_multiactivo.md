@@ -80,3 +80,22 @@ Pedida por la revisión del propietario (texto revisado el 2026-10-30). **Reempl
 **Cero fuga.** Modelos sin entrenar (zero-shot). Contexto de 400 velas que terminan en la base. La normalización es la interna de cada modelo sobre su ventana, nunca sobre la muestra completa. El objetivo es la vela 4 h posterior. No se ajusta nada con estos datos.
 
 **Una sola corrida completa.** Los datos quedan sellados por SHA-256 en la prueba y el código aborta si cambian. Código: `tools/kt004_multiactivo.py`. Workflow: `.github/workflows/kt004.yml`. Pruebas con datos sintéticos: `tests/test_kt004.py`.
+
+## Enmienda B (2026-10-30, tras la corrida de prueba y antes de cualquier pronóstico)
+
+Corrida de prueba: run 41115784090 (sin pronósticos).
+
+**Datos sellados (SHA-256 del CSV comprimido):**
+- ETH `603eeb4a…f074`
+- SOL `4802b199…1c27`
+- BNB `2cf34de2…3f52`
+- XRP `d41b95ef…535d3e`
+
+Cada activo tiene 18.265 velas (2024-07-01 → 2026-08-01 00:00), sin huecos, duplicados, velas inválidas ni velas desalineadas. Bases: **4.380 por activo, 17.520 en total, 0 saltadas.** El holdout (desde 2026-08-01) no se descargó.
+
+**Regla de reentrenamiento — resultado** (`data/kt004/checkpoints_commits.jsonl`):
+- **Kronos-small y su tokenizer:** los pesos se subieron una sola vez ("add model", 2025-06-30). Todos los commits posteriores son "Update README.md" o mejoras de la ficha del modelo. No hay **cambio** de pesos después de la publicación, así que el inicio queda en **2024-08-01**.
+- Ambigüedad declarada: la subida inicial de 2025-06-30 es posterior a 2024-08-01, pero es la primera versión publicada (la del paper, con datos hasta junio de 2024), no un cambio. La regla de la Enmienda A se refiere a cambios. Esta lectura se fija **antes** de ver cualquier pronóstico. Si un revisor la rechaza, la alternativa es el inicio en 2025-07-01, y se informaría como corte descriptivo sin cambiar el primario.
+- **TimesFM 2.5:** "Refreshed model with speed optimizations" el 2025-10-01, es decir, pesos cambiados en el período. Ya era secundario con advertencia de contaminación; no cambia nada.
+
+**Tiempo estimado:** 40 shards × ~160 min, con unos 20 en paralelo, ≈ 5–6 h en GitHub Actions. Una sola corrida completa.
