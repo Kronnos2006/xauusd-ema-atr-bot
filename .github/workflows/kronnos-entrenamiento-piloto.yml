@@ -1,0 +1,30 @@
+name: Kronnos - entrenamiento verdadero en runtime FreqAI (datos sinteticos)
+on:
+  pull_request:
+    paths:
+      - tools/kronnos_entrenamiento_piloto.py
+      - tests/generate_synthetic_bars_kronnos.py
+      - .github/workflows/kronnos-entrenamiento-piloto.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  model-fit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Fixture sintético explícitamente marcado
+        run: python3 tests/generate_synthetic_bars_kronnos.py artifacts/synthetic-bars.csv
+      - name: Fit real de Ridge usando imagen FreqAI, sin red ni trading
+        run: |
+          docker run --rm --network none --volume "$PWD:/work:rw" --workdir /work --entrypoint python freqtradeorg/freqtrade:stable_freqai tools/kronnos_entrenamiento_piloto.py --input artifacts/synthetic-bars.csv --out artifacts/model-fit-report.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: kronnos-fit-synthetic
+          path: artifacts/model-fit-report.json
+          if-no-files-found: warn
+          retention-days: 14
