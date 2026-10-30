@@ -1,0 +1,4 @@
+# Kronnos: entrenamiento comprobable y límites
+El workflow ejecuta un **fit real** de Ridge (sklearn) en la imagen de runtime FreqAI (Freqtrade) con barras **SINTÉTICAS**, creadas determinísticamente. La ejecución prueba motor matemático/entorno y partición temporal; **NO ejecuta el pipeline nativo de FreqAI** ni constituye predicción prospectiva BTCUSDT. Hasta contar con datos reales verificados, no utilizar las métricas para decisión financiera. Para FreqAI nativo: estrategia + DataKitchen + labels y preparación de su pipeline oficial, con datos cerrados y particiones temporales.
+Salida JSON identifica la fuente como no autenticada; el usuario debe exigir un piloto con datos del mercado reales y holdout sellado antes de evaluar desempeño.
+Sin operaciones con dinero real. ATLAS sigue bloqueado.
