@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Kronnos: entrenamiento real de regresión sklearn dentro de entorno FreqAI.
+"""Kronnos: entrenamiento de regresión Ridge en Python aislado; NO es FreqAI nativo.
 Solo datos CSV aportados; sin órdenes. No equivale a pipeline FreqAI nativo.
 """
 import argparse,csv,hashlib,json,math
@@ -32,14 +32,14 @@ def train(input_path):
     truths=y[split:]
     hits=sum((p>0)==(t>0) for p,t in zip(predicted,truths))
     baseline=sum(t>0 for t in truths)
-    return {"project":"Kronnos","engine":"sklearn_Ridge_on_FreqAI_runtime",
+    return {"project":"Kronnos","engine":"sklearn_Ridge_isolated_python",
         "sklearn_version":sklearn.__version__,"n_train":split,
         "n_test":len(truths),"directional_hits":hits,"always_up_hits":baseline,
         "directional_accuracy":hits/len(truths),"always_up_accuracy":baseline/len(truths),
         "source_sha256":hashlib.sha256(input_path.read_bytes()).hexdigest(),
         "data_source_provenance":"INPUT_NOT_AUTHENTICATED",
         "freqai_native_pipeline_executed":False,"real_model_fit_executed":True,
-        "training_data_synthetic":None,"external_holdout_verified":False,
+        "training_data_synthetic":True,"external_holdout_verified":False,
         "statistical_edge_demonstrated":False,"promotion_permitted":False,"trading_real":False}
 def main():
     a=argparse.ArgumentParser();a.add_argument("--input",type=Path,required=True)
