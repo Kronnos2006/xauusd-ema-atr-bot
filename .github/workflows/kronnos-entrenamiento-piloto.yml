@@ -1,4 +1,4 @@
-name: Kronnos - entrenamiento verdadero en runtime FreqAI (datos sinteticos)
+name: Kronnos - entrenamiento piloto Ridge (datos sinteticos)
 on:
   pull_request:
     paths:
@@ -18,9 +18,13 @@ jobs:
           persist-credentials: false
       - name: Fixture sintético explícitamente marcado
         run: python3 tests/generate_synthetic_bars_kronnos.py artifacts/synthetic-bars.csv
-      - name: Fit real de Ridge usando imagen FreqAI, sin red ni trading
-        run: |
-          docker run --rm --network none --user "$(id -u):$(id -g)" --volume "$PWD:/work:rw" --workdir /work --entrypoint python freqtradeorg/freqtrade:stable_freqai tools/kronnos_entrenamiento_piloto.py --input artifacts/synthetic-bars.csv --out artifacts/model-fit-report.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Instalar scikit-learn aislado
+        run: python -m pip install scikit-learn==1.7.2
+      - name: Fit real de Ridge, sin broker ni trading
+        run: python tools/kronnos_entrenamiento_piloto.py --input artifacts/synthetic-bars.csv --out artifacts/model-fit-report.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
