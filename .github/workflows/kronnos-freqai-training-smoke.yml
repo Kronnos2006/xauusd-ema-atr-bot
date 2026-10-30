@@ -1,0 +1,22 @@
+name: Kronnos FreqAI real LightGBM training sandbox
+on:
+  pull_request:
+    paths:
+      - tools/kronnos_freqai_training_smoke.py
+      - .github/workflows/kronnos-freqai-training-smoke.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  training:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Train real LightGBM inside official FreqAI image (synthetic fixture only)
+        run: |
+          docker run --rm --network none --read-only --tmpfs /tmp:rw,noexec,nosuid,size=64m \
+            -v "$PWD/tools/kronnos_freqai_training_smoke.py:/work/smoke.py:ro" \
+            --entrypoint python freqtradeorg/freqtrade:stable_freqai /work/smoke.py
