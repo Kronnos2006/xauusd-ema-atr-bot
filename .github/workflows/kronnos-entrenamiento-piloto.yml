@@ -20,7 +20,7 @@ jobs:
         run: python3 tests/generate_synthetic_bars_kronnos.py artifacts/synthetic-bars.csv
       - name: Fit real de Ridge usando imagen FreqAI, sin red ni trading
         run: |
-          docker run --rm --network none --volume "$PWD:/work:rw" --workdir /work --entrypoint python freqtradeorg/freqtrade:stable_freqai tools/kronnos_entrenamiento_piloto.py --input artifacts/synthetic-bars.csv --out artifacts/model-fit-report.json
+          docker run --rm --network none --user "$(id -u):$(id -g)" --volume "$PWD:/work:rw" --workdir /work --entrypoint python freqtradeorg/freqtrade:stable_freqai tools/kronnos_entrenamiento_piloto.py --input artifacts/synthetic-bars.csv --out artifacts/model-fit-report.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
