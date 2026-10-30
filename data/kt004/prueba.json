@@ -1,0 +1,38 @@
+{
+  "bases_total": 17520,
+  "por_activo": {
+    "ETHUSDT": {
+      "bases": 4380,
+      "saltadas": 0,
+      "velas_desalineadas": 0,
+      "primera": "2024-08-01T00:00:00+00:00",
+      "ultima": "2026-07-31T20:00:00+00:00"
+    },
+    "SOLUSDT": {
+      "bases": 4380,
+      "saltadas": 0,
+      "velas_desalineadas": 0,
+      "primera": "2024-08-01T00:00:00+00:00",
+      "ultima": "2026-07-31T20:00:00+00:00"
+    },
+    "BNBUSDT": {
+      "bases": 4380,
+      "saltadas": 0,
+      "velas_desalineadas": 0,
+      "primera": "2024-08-01T00:00:00+00:00",
+      "ultima": "2026-07-31T20:00:00+00:00"
+    },
+    "XRPUSDT": {
+      "bases": 4380,
+      "saltadas": 0,
+      "velas_desalineadas": 0,
+      "primera": "2024-08-01T00:00:00+00:00",
+      "ultima": "2026-07-31T20:00:00+00:00"
+    }
+  },
+  "shards": 40,
+  "shards_cubren_todo": true,
+  "lotes_por_shard_max": 56,
+  "minutos_estimados_por_shard": 159.6,
+  "nota": "Sin pronosticos. Tiempo estimado con 171 s/lote medido en KT-003."
+}

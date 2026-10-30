@@ -1,0 +1,586 @@
+{
+  "fuente": "data.binance.vision (ZIP mensuales con CHECKSUM) + API publica para el mes en curso",
+  "descargado_utc": "2026-10-30T19:30:45.487161+00:00",
+  "activos": {
+    "ETHUSDT": {
+      "filas": 18265,
+      "primera": "2024-07-01T00:00:00+00:00",
+      "ultima": "2026-08-01T00:00:00+00:00",
+      "duplicados_eliminados": 0,
+      "huecos": 0,
+      "horas_faltantes": 0,
+      "velas_ohlc_invalidas": 0,
+      "velas_desalineadas": 0,
+      "velas_volumen_cero": 0,
+      "sha256_csv_gz": "603eeb4a36671e9a9edb84bdd3ab092a033f862a28ac295355c9ef59217bf074",
+      "sha256_csv_contenido": "3d4174f7bca2cb55bc2589639ece7c3de4db1413cfddea6cd7ca7e7b2dba650c",
+      "archivos": [
+        {
+          "archivo": "ETHUSDT-1h-2024-07.zip",
+          "sha256": "83181cfcc1f1e32a542e2c220cbd58acd1c550cc64ad1e2c414e47088266aa7c",
+          "filas": 744
+        },
+        {
+          "archivo": "ETHUSDT-1h-2024-08.zip",
+          "sha256": "d908255a48978f6acb769c4b856a3307c58a8c19dbf2b3b7f10067245d5e8b89",
+          "filas": 744
+        },
+        {
+          "archivo": "ETHUSDT-1h-2024-09.zip",
+          "sha256": "bfbdda97d03abac469199120ec3c2f1305e2d5947e9155ff84dbeafe33cd4a67",
+          "filas": 720
+        },
+        {
+          "archivo": "ETHUSDT-1h-2024-10.zip",
+          "sha256": "cbb13664485b6c9a6365da7ae23299b722ab5926a6aed516add486ef501883bc",
+          "filas": 744
+        },
+        {
+          "archivo": "ETHUSDT-1h-2024-11.zip",
+          "sha256": "29cd30419b86d5dff5467a7a81d43e492aaaeb3669db216ab8badaad5fe610ec",
+          "filas": 720
+        },
+        {
+          "archivo": "ETHUSDT-1h-2024-12.zip",
+          "sha256": "84312b7dc2b5c903853c78d94f587ef1d24b7960d7bd95f5bfe3afc3db006203",
+          "filas": 744
+        },
+        {
+          "archivo": "ETHUSDT-1h-2025-01.zip",
+          "sha256": "f7350a6f3b51de466a0db52ba890cf296d4faeb6e84811b9606f87ad39ccf3ec",
+          "filas": 744
+        },
+        {
+          "archivo": "ETHUSDT-1h-2025-02.zip",
+          "sha256": "40c2f73850422d47ca7d044959cecc39ff3416f6e3c88f30636da4a01a0b6e31",
+          "filas": 672
+        },
+        {
+          "archivo": "ETHUSDT-1h-2025-03.zip",
+          "sha256": "dc32ecad498d19f8663633196ec84cbd480595c89aa1ae6062c0fa0b8d9bd11d",
+          "filas": 744
+        },
+        {
+          "archivo": "ETHUSDT-1h-2025-04.zip",
+          "sha256": "73f39799fae1ba4ef291c6785b934a6c817426ef8ef60e1bdf42078efd27893d",
+          "filas": 720
+        },
+        {
+          "archivo": "ETHUSDT-1h-2025-05.zip",
+          "sha256": "720a319face496acff79d8e6279b9b03f31495097d555c74daa076cd66421bee",
+          "filas": 744
+        },
+        {
+          "archivo": "ETHUSDT-1h-2025-06.zip",
+          "sha256": "780788805b48a094886590d939ef45372db2ee053aa5d464f8e135121df2b8eb",
+          "filas": 720
+        },
+        {
+          "archivo": "ETHUSDT-1h-2025-07.zip",
+          "sha256": "d5c4c2482004a49b479ff5bfbdb885b25035ace24e5f95edd8057507718df366",
+          "filas": 744
+        },
+        {
+          "archivo": "ETHUSDT-1h-2025-08.zip",
+          "sha256": "1ebdd24f8e1df5369518b721fdb0bfaaca9892ae71499b82783194573f804cad",
+          "filas": 744
+        },
+        {
+          "archivo": "ETHUSDT-1h-2025-09.zip",
+          "sha256": "f83ffff284b408574a4571e83fabc5c641e20edc71818912541cc38ec7e1be43",
+          "filas": 720
+        },
+        {
+          "archivo": "ETHUSDT-1h-2025-10.zip",
+          "sha256": "f3668059619d772ae8f7167d82666dcc6e2f88f17e6fd66a4a8098c9cd8ba042",
+          "filas": 744
+        },
+        {
+          "archivo": "ETHUSDT-1h-2025-11.zip",
+          "sha256": "3c0171cdd5eef1ece36c818ace3a07cc48e331cb9d991488a8db917bc496b78d",
+          "filas": 720
+        },
+        {
+          "archivo": "ETHUSDT-1h-2025-12.zip",
+          "sha256": "7a7a35ce7b9be9bafa0a00c47370acc57a48329a3289c21cb19f1185f6430fdb",
+          "filas": 744
+        },
+        {
+          "archivo": "ETHUSDT-1h-2026-01.zip",
+          "sha256": "eb060da7fb1adc65c7999f7d1f4f3b004edf2335311bb32d05a86f9577c21106",
+          "filas": 744
+        },
+        {
+          "archivo": "ETHUSDT-1h-2026-02.zip",
+          "sha256": "8c8c6e664688497711832add90349b8617caf7e8892f085e97fe4290989fe78b",
+          "filas": 672
+        },
+        {
+          "archivo": "ETHUSDT-1h-2026-03.zip",
+          "sha256": "0bf4dc37f2b201a8891f63dd76164742ed7d4fa24c24065a2e7709f34488ff74",
+          "filas": 744
+        },
+        {
+          "archivo": "ETHUSDT-1h-2026-04.zip",
+          "sha256": "46d62ed100717d8195bce4c07a41dc7606f41abc491ca71f9bfe653d2b92bfc0",
+          "filas": 720
+        },
+        {
+          "archivo": "ETHUSDT-1h-2026-05.zip",
+          "sha256": "8c4cef22ad7046183621f1a41155e91301780a3c9f377d7770763027b08e2462",
+          "filas": 744
+        },
+        {
+          "archivo": "ETHUSDT-1h-2026-06.zip",
+          "sha256": "e24954ab4ada9dc5f6bbf9ac30275d459a5729fb522f045f627296b4ad7ee985",
+          "filas": 720
+        },
+        {
+          "archivo": "ETHUSDT-1h-2026-07.zip",
+          "sha256": "5e8c974c008689943b473ccc5890707d0c2cd0b7e71bdb28c0ad65a87abde338",
+          "filas": 744
+        },
+        {
+          "archivo": "API: solo la vela 2026-08-01 00:00",
+          "filas": 1,
+          "sha256": "03aa1fbd178011cd0151845e164e3dcb60ca1c46b234ef2d4e6a3d7c77d6f9ea"
+        }
+      ]
+    },
+    "SOLUSDT": {
+      "filas": 18265,
+      "primera": "2024-07-01T00:00:00+00:00",
+      "ultima": "2026-08-01T00:00:00+00:00",
+      "duplicados_eliminados": 0,
+      "huecos": 0,
+      "horas_faltantes": 0,
+      "velas_ohlc_invalidas": 0,
+      "velas_desalineadas": 0,
+      "velas_volumen_cero": 0,
+      "sha256_csv_gz": "4802b19956280882bc63461bad92eceb6fefe3d0333c2fc26bbe64f2cd6b1c27",
+      "sha256_csv_contenido": "418fcfc539e7055d64f7c4fc5c18237e871dd722310836a6317272c2cb66a630",
+      "archivos": [
+        {
+          "archivo": "SOLUSDT-1h-2024-07.zip",
+          "sha256": "828f2a8814662d3bcff915eec19fd1771ec996a4a024317fda3f2d2ba61fb310",
+          "filas": 744
+        },
+        {
+          "archivo": "SOLUSDT-1h-2024-08.zip",
+          "sha256": "4f9d4d80f237b67b7038f6d2fc4e131daf8ca65f679359a92ba33574014b1c2a",
+          "filas": 744
+        },
+        {
+          "archivo": "SOLUSDT-1h-2024-09.zip",
+          "sha256": "70641e992419a4003519e06094c68b2e13971341e92559e307a38d7215d94b63",
+          "filas": 720
+        },
+        {
+          "archivo": "SOLUSDT-1h-2024-10.zip",
+          "sha256": "3b5d4eb1f9049f8030a01886d2d9ca346da66163fd1fa81ba145fca5fa085edd",
+          "filas": 744
+        },
+        {
+          "archivo": "SOLUSDT-1h-2024-11.zip",
+          "sha256": "62fd1843a47ec177849a68faf0a5c33ae11bc33b462f664657a6a68246743080",
+          "filas": 720
+        },
+        {
+          "archivo": "SOLUSDT-1h-2024-12.zip",
+          "sha256": "af4ab37dbb738e3ee0c168fe9b55366111e4ad112a905f4740a6efbd810e752d",
+          "filas": 744
+        },
+        {
+          "archivo": "SOLUSDT-1h-2025-01.zip",
+          "sha256": "8a40f8d5eb6e28b0c57c830ccb76e49046c1bdc631ec840e32576808f62ad466",
+          "filas": 744
+        },
+        {
+          "archivo": "SOLUSDT-1h-2025-02.zip",
+          "sha256": "8b7af1c42f8d8ac9bff2b2c8bc8a098150364947d93b363df0ab51e280aea544",
+          "filas": 672
+        },
+        {
+          "archivo": "SOLUSDT-1h-2025-03.zip",
+          "sha256": "7ddd11cb34dca5c6815cce34107d1bfc4a492c65b5f1def1d80419b04cb4b838",
+          "filas": 744
+        },
+        {
+          "archivo": "SOLUSDT-1h-2025-04.zip",
+          "sha256": "6f5a34a5482fa8abddfa2205df55605993b4c458315f613567eadfbd2062a0c3",
+          "filas": 720
+        },
+        {
+          "archivo": "SOLUSDT-1h-2025-05.zip",
+          "sha256": "cb07bdbbed3f21db679ea6944805a4282f121440abf0415905fe4fdc05f480f2",
+          "filas": 744
+        },
+        {
+          "archivo": "SOLUSDT-1h-2025-06.zip",
+          "sha256": "082af5c4634055a860eb765f2b0549344ae6dfd9274eaa09b06859eb7125ad0f",
+          "filas": 720
+        },
+        {
+          "archivo": "SOLUSDT-1h-2025-07.zip",
+          "sha256": "c2e17bfe68c0ae9ac8c12162c7a64534d91f56a9f9ec0560f300fa6414fc8f19",
+          "filas": 744
+        },
+        {
+          "archivo": "SOLUSDT-1h-2025-08.zip",
+          "sha256": "7ea49f6b1196a1c26473433850dfe139b775380cc4cdf03bf853fb553ee6c4e0",
+          "filas": 744
+        },
+        {
+          "archivo": "SOLUSDT-1h-2025-09.zip",
+          "sha256": "87ad6a05fe9d7fa90d4abd08cc3e6806759e9f3dcab69869fa3566d43bc876da",
+          "filas": 720
+        },
+        {
+          "archivo": "SOLUSDT-1h-2025-10.zip",
+          "sha256": "3cbcc4ed883fe75c9b095cb5981c810b39196b015940bff7cdd7fb6d68cb0865",
+          "filas": 744
+        },
+        {
+          "archivo": "SOLUSDT-1h-2025-11.zip",
+          "sha256": "311effa24632be0dfc523980554d876d5516e6acd6c08c7aa7daa3000ba393b9",
+          "filas": 720
+        },
+        {
+          "archivo": "SOLUSDT-1h-2025-12.zip",
+          "sha256": "d8259dd2f6758b7cd4166564bf8aa7219d6aa140ecf68a3667749da41d4c2560",
+          "filas": 744
+        },
+        {
+          "archivo": "SOLUSDT-1h-2026-01.zip",
+          "sha256": "949d8838cf48d6bd348762534e6307601574f82d58126dc26f0d91740622c27c",
+          "filas": 744
+        },
+        {
+          "archivo": "SOLUSDT-1h-2026-02.zip",
+          "sha256": "5e219b1a7d7384327e40b27b8accb7f1ae797f3c6ee628441de3035bc1fa3964",
+          "filas": 672
+        },
+        {
+          "archivo": "SOLUSDT-1h-2026-03.zip",
+          "sha256": "5bfab930f6e73e8a486ad1281de8df114d2c6a71cc08f7a449e6c6697af369b6",
+          "filas": 744
+        },
+        {
+          "archivo": "SOLUSDT-1h-2026-04.zip",
+          "sha256": "7266fae3d30b6b693bb731e7d392cdf132066b2e71a86b1695b0ab0c8a6b8507",
+          "filas": 720
+        },
+        {
+          "archivo": "SOLUSDT-1h-2026-05.zip",
+          "sha256": "bc33dc72343c662cb0614d4afe2ce7030ec7a4648d7c9a2dd1e99477e0001101",
+          "filas": 744
+        },
+        {
+          "archivo": "SOLUSDT-1h-2026-06.zip",
+          "sha256": "feb36f4d0a5bb0c13596b57d9477f60e7331cec8762b23102cb5ea188eddcdaf",
+          "filas": 720
+        },
+        {
+          "archivo": "SOLUSDT-1h-2026-07.zip",
+          "sha256": "62abffc3fdbf438465dc44432d16a1806e6c140ab3e1824ffceb908d831f67e2",
+          "filas": 744
+        },
+        {
+          "archivo": "API: solo la vela 2026-08-01 00:00",
+          "filas": 1,
+          "sha256": "630b5214191d4dbc7a8464cebb9543065709121596d026f623af2d2c9e4e23b5"
+        }
+      ]
+    },
+    "BNBUSDT": {
+      "filas": 18265,
+      "primera": "2024-07-01T00:00:00+00:00",
+      "ultima": "2026-08-01T00:00:00+00:00",
+      "duplicados_eliminados": 0,
+      "huecos": 0,
+      "horas_faltantes": 0,
+      "velas_ohlc_invalidas": 0,
+      "velas_desalineadas": 0,
+      "velas_volumen_cero": 0,
+      "sha256_csv_gz": "2cf34de2890f511911edcd17c6963fcd80cd68054d4aeb0bf385bff400993f52",
+      "sha256_csv_contenido": "b69919f35bd1047ac773bcb2862d7bbea518963341a7220e7e8780b2a1ae7b42",
+      "archivos": [
+        {
+          "archivo": "BNBUSDT-1h-2024-07.zip",
+          "sha256": "6fd039df81b4a12d699b9f810cb39dfbb389edb1d508571d49432247c630fb4a",
+          "filas": 744
+        },
+        {
+          "archivo": "BNBUSDT-1h-2024-08.zip",
+          "sha256": "4334244cd1cd0e2ed4d9a1e42d92e67418b83b9565d8eb9618f826005f1655f2",
+          "filas": 744
+        },
+        {
+          "archivo": "BNBUSDT-1h-2024-09.zip",
+          "sha256": "2697bc4cfc775ad17de0adfabd4b94ac4d575414dd374e72a9b77339f7dd2930",
+          "filas": 720
+        },
+        {
+          "archivo": "BNBUSDT-1h-2024-10.zip",
+          "sha256": "36768457c4e40c9b80088d0e2559876822e18269ecb782b5f570f0b205ef9d8f",
+          "filas": 744
+        },
+        {
+          "archivo": "BNBUSDT-1h-2024-11.zip",
+          "sha256": "133bb27dc562eafce74b7a7deaaf7742a5e7790efbd23130876b2ce41a18c77b",
+          "filas": 720
+        },
+        {
+          "archivo": "BNBUSDT-1h-2024-12.zip",
+          "sha256": "9ffb3beebc21b20ac140d985050a49fa1e11b475aa9dff3f9b75e55a9b832165",
+          "filas": 744
+        },
+        {
+          "archivo": "BNBUSDT-1h-2025-01.zip",
+          "sha256": "c2df916221d659c4ea89daff3b7c2f14aa44e48e8163191580b8579664621ab0",
+          "filas": 744
+        },
+        {
+          "archivo": "BNBUSDT-1h-2025-02.zip",
+          "sha256": "75effe494d7a7d29b020f73c5acb23c0a2f8731df29d95837c489c359de62db1",
+          "filas": 672
+        },
+        {
+          "archivo": "BNBUSDT-1h-2025-03.zip",
+          "sha256": "74161c8cd3e6869d3d42a321af8590002f7666e0507220eff513a3c84751dc6d",
+          "filas": 744
+        },
+        {
+          "archivo": "BNBUSDT-1h-2025-04.zip",
+          "sha256": "e93a57bbaddfe264cc0b697aa52486ebdf8901195d7363eefa2f0208ad7b7e45",
+          "filas": 720
+        },
+        {
+          "archivo": "BNBUSDT-1h-2025-05.zip",
+          "sha256": "0f77041a1e43581b7b67210e35432c997d33b2b450ff5586ee2aaaf1a7e1cceb",
+          "filas": 744
+        },
+        {
+          "archivo": "BNBUSDT-1h-2025-06.zip",
+          "sha256": "4738dcff9c08bdd71a98d81cb5caab2e31edde3e6e152a0d89689e41f2d3c110",
+          "filas": 720
+        },
+        {
+          "archivo": "BNBUSDT-1h-2025-07.zip",
+          "sha256": "8541283a264382b0d8d3cec5c563e457dae00cf97c8c0b4d3cee1781825d0246",
+          "filas": 744
+        },
+        {
+          "archivo": "BNBUSDT-1h-2025-08.zip",
+          "sha256": "74939c2d6afa29f927ceb4a0adacc873ba975e0f37ecd2b05c5a3f4c45673a6b",
+          "filas": 744
+        },
+        {
+          "archivo": "BNBUSDT-1h-2025-09.zip",
+          "sha256": "edb2ba0c725e932b6adb162a38470b29a0f3888a216a4663851de202b2c7937b",
+          "filas": 720
+        },
+        {
+          "archivo": "BNBUSDT-1h-2025-10.zip",
+          "sha256": "22b2595e7df28f89e12523fac0aaf14e742fbf7ab4ff8feb081201fe3f714edc",
+          "filas": 744
+        },
+        {
+          "archivo": "BNBUSDT-1h-2025-11.zip",
+          "sha256": "34eebef4cf7743a1d44567b9857eddc020c3a96b4c9aac65702a4537df72ae76",
+          "filas": 720
+        },
+        {
+          "archivo": "BNBUSDT-1h-2025-12.zip",
+          "sha256": "3d0d7dd68c548d3439ba773e1556a89911fff14af7aac9ed34d16090b85cad5e",
+          "filas": 744
+        },
+        {
+          "archivo": "BNBUSDT-1h-2026-01.zip",
+          "sha256": "c2524b2a5a48fa55cd6c8321118b7ad0de7ef83794344ccfd86d161e11b7c6a5",
+          "filas": 744
+        },
+        {
+          "archivo": "BNBUSDT-1h-2026-02.zip",
+          "sha256": "819761ffd58e265f471c4edbe5ffd2e7abbeb747a85a6b2c0cb389f921850f29",
+          "filas": 672
+        },
+        {
+          "archivo": "BNBUSDT-1h-2026-03.zip",
+          "sha256": "b80b2124644a48ce2fbf90cd2cedadfdf79aa2de72ac14d0dcd7c487fe75196c",
+          "filas": 744
+        },
+        {
+          "archivo": "BNBUSDT-1h-2026-04.zip",
+          "sha256": "4283e0a097dc65dbf0658744352086a46e0862023825f60d815da5ccd8f7f835",
+          "filas": 720
+        },
+        {
+          "archivo": "BNBUSDT-1h-2026-05.zip",
+          "sha256": "74aac29cedf0fc0b94a1bb7bb1b8ba3aebfef827da0c21be181884789dcef9ae",
+          "filas": 744
+        },
+        {
+          "archivo": "BNBUSDT-1h-2026-06.zip",
+          "sha256": "0c3b052bd921899ca8216f86cbd2830a8f20bc5725bcf49611486267fb704997",
+          "filas": 720
+        },
+        {
+          "archivo": "BNBUSDT-1h-2026-07.zip",
+          "sha256": "7257a39b939fce6c29ba7f44ae42fbec4517d18dacc2b3d27c9c536881af7d10",
+          "filas": 744
+        },
+        {
+          "archivo": "API: solo la vela 2026-08-01 00:00",
+          "filas": 1,
+          "sha256": "b83c7a8f395525fcc0715f2390b68c5f9f983975accc3118f724ab5a8f5f5da9"
+        }
+      ]
+    },
+    "XRPUSDT": {
+      "filas": 18265,
+      "primera": "2024-07-01T00:00:00+00:00",
+      "ultima": "2026-08-01T00:00:00+00:00",
+      "duplicados_eliminados": 0,
+      "huecos": 0,
+      "horas_faltantes": 0,
+      "velas_ohlc_invalidas": 0,
+      "velas_desalineadas": 0,
+      "velas_volumen_cero": 0,
+      "sha256_csv_gz": "d41b95ef0b14f5804952eae2974041e2396468f3cfe712a0b0ed5ae57e535d3e",
+      "sha256_csv_contenido": "8c3e746ced206423322f657caa958f0b3b8db11f94371ba2eb659120dbaf2bf2",
+      "archivos": [
+        {
+          "archivo": "XRPUSDT-1h-2024-07.zip",
+          "sha256": "35b918d07cd7dc678cee9f7d65f468b556b9310490110151cea866e5b1a8eccb",
+          "filas": 744
+        },
+        {
+          "archivo": "XRPUSDT-1h-2024-08.zip",
+          "sha256": "00648458df95d1c616e1a44f19a6e8b25269071c685cba625897f732c1c205c6",
+          "filas": 744
+        },
+        {
+          "archivo": "XRPUSDT-1h-2024-09.zip",
+          "sha256": "c8f04c971faf07da02d29d68e27c1b83e1e42709a50c06dfe8be43f00fdb14c0",
+          "filas": 720
+        },
+        {
+          "archivo": "XRPUSDT-1h-2024-10.zip",
+          "sha256": "76afc2abe3a70a2c79f5706d6a66e5154a58927613f033d2c76e4ac5d5eedca7",
+          "filas": 744
+        },
+        {
+          "archivo": "XRPUSDT-1h-2024-11.zip",
+          "sha256": "010994259de1aa0378e21fd2a4755153b69f1f6f4779d91b0098a4d4c4d5545c",
+          "filas": 720
+        },
+        {
+          "archivo": "XRPUSDT-1h-2024-12.zip",
+          "sha256": "31f6d94510b7db48db22109cdcfed960112bda90a8ff5c670ae528cbf3b05db4",
+          "filas": 744
+        },
+        {
+          "archivo": "XRPUSDT-1h-2025-01.zip",
+          "sha256": "217109fad8b3a8681b6f860a0c5c461810c735b07a1153044310e86606be12ec",
+          "filas": 744
+        },
+        {
+          "archivo": "XRPUSDT-1h-2025-02.zip",
+          "sha256": "1a8f692561213eac27013427cf7df056822217467329fcf5bcd428525da86ee5",
+          "filas": 672
+        },
+        {
+          "archivo": "XRPUSDT-1h-2025-03.zip",
+          "sha256": "c70843debb833b68b05f8a73ca174d0e329e2d8ab34fc1b5e77c86d18e872202",
+          "filas": 744
+        },
+        {
+          "archivo": "XRPUSDT-1h-2025-04.zip",
+          "sha256": "72fecc94a24cebd0b7d04d03e72e10a64d441f9b0f729ee7fcb7a40bed866362",
+          "filas": 720
+        },
+        {
+          "archivo": "XRPUSDT-1h-2025-05.zip",
+          "sha256": "6d03555be628369abcc80946a41dfd485710364466871befc3084b05d4f2c1f5",
+          "filas": 744
+        },
+        {
+          "archivo": "XRPUSDT-1h-2025-06.zip",
+          "sha256": "45067e46f6dbd885b03d59fb797407391c41910cc570ad23b90aa719d12742f8",
+          "filas": 720
+        },
+        {
+          "archivo": "XRPUSDT-1h-2025-07.zip",
+          "sha256": "9445599dbaad1ff2b1a102b18ec7a6a436b906f22f0ce2b32c2f7a8d1f3dd5ca",
+          "filas": 744
+        },
+        {
+          "archivo": "XRPUSDT-1h-2025-08.zip",
+          "sha256": "b2f06ce11bb56fcbe97de82ee0f21be58f41811589612fc7e42d82bd7f695197",
+          "filas": 744
+        },
+        {
+          "archivo": "XRPUSDT-1h-2025-09.zip",
+          "sha256": "6e7cc11c407faa368c2215b8f5adad29afe6bb70c33c74aa5b23bf50dcfb9d20",
+          "filas": 720
+        },
+        {
+          "archivo": "XRPUSDT-1h-2025-10.zip",
+          "sha256": "4645b87ae8b4a3ab7c936b4ead2748e3ce9e3961208d4e40fbba897f63e39560",
+          "filas": 744
+        },
+        {
+          "archivo": "XRPUSDT-1h-2025-11.zip",
+          "sha256": "a411aedae1fb7140ab043885223a890a35b3887ffdba85f34437cf26b83937b3",
+          "filas": 720
+        },
+        {
+          "archivo": "XRPUSDT-1h-2025-12.zip",
+          "sha256": "c1f7afa290b1e8c4ef3bc84a3d992d779e636ad69ac700dd24a0847d2f704a49",
+          "filas": 744
+        },
+        {
+          "archivo": "XRPUSDT-1h-2026-01.zip",
+          "sha256": "31af99c0ea11a3b6d7e062e7755ba3240ea1369d2fc1c0b30fcfe0ca7d68b1b8",
+          "filas": 744
+        },
+        {
+          "archivo": "XRPUSDT-1h-2026-02.zip",
+          "sha256": "7fd13cd45c932ae481142213d4035df0ccce048a6dfb2e306c146746540ee2fd",
+          "filas": 672
+        },
+        {
+          "archivo": "XRPUSDT-1h-2026-03.zip",
+          "sha256": "fb697b2abd451ed92c624c457b021fdd38f589e84428ab25dca337d41617aa72",
+          "filas": 744
+        },
+        {
+          "archivo": "XRPUSDT-1h-2026-04.zip",
+          "sha256": "a6e372008a5940aba04f5a8aa86b75163657180b276aca365f87c993c0930e32",
+          "filas": 720
+        },
+        {
+          "archivo": "XRPUSDT-1h-2026-05.zip",
+          "sha256": "03a0520e027df25a9aaba468d585799c30458fbfba7b0588f6f7b3cf7013312c",
+          "filas": 744
+        },
+        {
+          "archivo": "XRPUSDT-1h-2026-06.zip",
+          "sha256": "1a923423f6574df3a2cf51c2ef44847d7df6b5d1a5ca8857d5eef75692143a77",
+          "filas": 720
+        },
+        {
+          "archivo": "XRPUSDT-1h-2026-07.zip",
+          "sha256": "7517ae48bfaa5db2f61682a24124b3e4e74f8c39803355a226ec4959086dd2fd",
+          "filas": 744
+        },
+        {
+          "archivo": "API: solo la vela 2026-08-01 00:00",
+          "filas": 1,
+          "sha256": "ba4ee0e83003b6139acf2a280f8d072b10f7de21591f3b3ae67b124092ce61df"
+        }
+      ]
+    }
+  }
+}
