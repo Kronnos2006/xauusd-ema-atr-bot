@@ -16,6 +16,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - name: Tests ORION ATLAS Kronnos
+        run: python3 -m unittest discover -s tests -p 'test_informe_gerencia_modulos.py' -v
       - name: Reporte y validación fail closed
         run: python3 tools/informe_gerencia_sin_ia.py
       - name: Auditoría de código
