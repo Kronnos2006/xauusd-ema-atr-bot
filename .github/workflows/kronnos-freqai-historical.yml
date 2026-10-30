@@ -1,0 +1,32 @@
+name: Kronnos - FreqAI historical Binance verified
+on:
+  pull_request:
+    paths:
+      - tools/kronnos_binance_vision_archive.py
+      - tools/kronnos_freqai_native_fit.py
+      - .github/workflows/kronnos-freqai-historical.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  historical-fit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Download Binance archive with official CHECKSUM
+        run: python3 tools/kronnos_binance_vision_archive.py --month 2025-09 --output artifacts/binance-historical.csv
+      - name: Execute native FreqAI LightGBM fit/predict with real historical bars
+        run: |
+          docker run --rm --network none -v "$PWD:/work:ro" --entrypoint python freqtradeorg/freqtrade:stable_freqai /work/tools/kronnos_freqai_native_fit.py --historical-csv /work/artifacts/binance-historical.csv | tee artifacts/freqai-historical-report.json
+          python3 -c 'import json; r=json.load(open("artifacts/freqai-historical-report.json")); assert r["freqai_model_fit_executed"] and r["freqai_model_predict_executed"] and r["dataset"]=="BINANCE_SPOT_HISTORICAL" and not r["promotion_permitted"]'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: kronnos-freqai-historical
+          path: |
+            artifacts/binance-historical.manifest.json
+            artifacts/freqai-historical-report.json
+          retention-days: 14
