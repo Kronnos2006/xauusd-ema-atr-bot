@@ -1,0 +1,18 @@
+name: Kronnos FreqAI native model evaluation
+on:
+  pull_request:
+    paths:
+      - tools/kronnos_freqai_native_fit.py
+      - .github/workflows/kronnos-freqai-native-fit.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  run-model:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Train FreqAI model on synthetic fixture
+        run: |
+          docker run --rm -v "$PWD:/work:ro" --entrypoint python freqtradeorg/freqtrade:stable_freqai /work/tools/kronnos_freqai_native_fit.py
