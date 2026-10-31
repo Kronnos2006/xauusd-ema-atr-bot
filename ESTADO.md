@@ -40,33 +40,33 @@ Dueño: Kronnos (Kronnos2006). Hora local: Costa Rica (UTC−6).
 
 ## Estado automático
 <!-- AUTO:INICIO (lo escribe tools/generar_estado.py; no editar a mano) -->
-_Generado 2026-10-30 18:45 UTC · 0 llamadas a IA_
+_Generado 2026-10-31 17:17 UTC · 0 llamadas a IA_
 
 ### KT-002 (BTC, dirección a 4 h, prospectivo)
-- Pronósticos: 234 · vencidos: 230 · horas omitidas: 11 · actualizado: 2026-10-30T18:07 UTC
-- Último registro: 2026-10-30T18:07 UTC (hace 0.6 h)
-- **Sin solape (lo que cuenta), n = 57:**
-  - Siempre sube (referencia): 26/57 = 45.6 %
-  - Kronos: 28/57 = 49.1 % (IC95 36.6 %–61.7 %; p vs sube = 0.8601)
-  - TimesFM: 26/57 = 45.6 % (IC95 33.4 %–58.4 %; p vs sube = 1.0)
-  - KT-001 50/50: 25/57 = 43.9 % (IC95 31.8 %–56.7 %; p vs sube = 1.0)
+- Pronósticos: 256 · vencidos: 252 · horas omitidas: 12 · actualizado: 2026-10-31T17:07 UTC
+- Último registro: 2026-10-31T17:07 UTC (hace 0.2 h)
+- **Sin solape (lo que cuenta), n = 62:**
+  - Siempre sube (referencia): 29/62 = 46.8 %
+  - Kronos: 31/62 = 50.0 % (IC95 37.9 %–62.1 %; p vs sube = 0.8642)
+  - TimesFM: 28/62 = 45.2 % (IC95 33.4 %–57.5 %; p vs sube = 1.0)
+  - KT-001 50/50: 27/62 = 43.5 % (IC95 31.9 %–55.9 %; p vs sube = 0.8388)
 - Veredicto automático: ningún modelo supera a «siempre sube». Sin ventaja demostrada.
 
 ### GitHub Actions y PR
-- kt002.yml: 7/9 verdes en las últimas 10 · última cancelled 2026-10-30T13:07
-- guardia.yml: 9/10 verdes en las últimas 10 · última success 2026-10-30T18:07
-- informe-gerencia-sin-ia.yml: 3/3 verdes en las últimas 10 · última success 2026-10-30T18:08
+- kt002.yml: 7/9 verdes en las últimas 10 · última cancelled 2026-10-31T11:07
+- guardia.yml: 10/10 verdes en las últimas 10 · última success 2026-10-31T17:07
+- informe-gerencia-sin-ia.yml: 4/4 verdes en las últimas 10 · última success 2026-10-30T19:00
 - kronnos-ensemble.yml: 2/2 verdes en las últimas 10 · última success 2026-10-30T00:39
 - PR abiertos: #42 (borrador) ATLAS: barreras estadísticas DSR, ≥30 operaciones y sello re
 - Avisos «guardia» abiertos: 0
 
 ### Últimos cambios no rutinarios
-- 2026-10-30 · Claude · Gerente 2026-10-30: informe del analista, seguimiento ORION y decisiones
-- 2026-10-29 · Kronnos2006 · Merge pull request #72 from Kronnos2006/feature/kronnos-freqai-real-binance-vision-2026102
-- 2026-10-29 · Kronnos2006 · ci(Kronnos): train native FreqAI on checksum verified Binance historical data
-- 2026-10-29 · Kronnos2006 · feat(Kronnos): native FreqAI model evaluate on historical Binance CSV
-- 2026-10-29 · Kronnos2006 · feat(Kronnos): fetch Binance Vision public historical BTC 1h checksum verified
-- 2026-10-29 · Kronnos2006 · Merge pull request #71 from Kronnos2006/feature/kronnos-freqai-native-fit-20261029
-- 2026-10-29 · Kronnos2006 · fix(Kronnos): serialize numpy hit count to int
-- 2026-10-29 · Kronnos2006 · ci: execute native FreqAI fit smoke test
+- 2026-10-31 · Claude · Gerente: informe del analista 2026-10-31 y seguimiento ORION (día 7)
+- 2026-10-30 · Claude · ESTADO.md: resultado KT-004 (NO PASA)
+- 2026-10-31 · kt004-bot · KT-004: resultados (run 41116143211)
+- 2026-10-30 · Claude · KT-004: lanzar corrida completa (una sola vez, datos sellados)
+- 2026-10-30 · Claude · KT-004 Enmienda B: datos sellados, 17.520 bases, Kronos sin cambio de pesos (inicio 2024-0
+- 2026-10-30 · kt004-bot · KT-004: corrida de prueba, datos sellados (run 41115784090)
+- 2026-10-30 · Claude · KT-004: lanzar corrida de prueba (datos y conteo, sin pronósticos)
+- 2026-10-30 · Kronnos2006 · Merge PR #74 (OK del propietario 2026-10-30 «vamos»; revisión ChatGPT posterior)
 <!-- AUTO:FIN -->
