@@ -15,6 +15,7 @@ Dueño: Kronnos (Kronnos2006). Hora local: Costa Rica (UTC−6).
 7. Decide solo el dueño: dinero, holdouts, borrar datos, cambiar reglas o un experimento en curso.
 
 ## Qué estamos haciendo (manual, 1 línea por cambio, lo más nuevo arriba)
+- **2026-10-31 · Claude:** **KT-004 NO PASA** (run 41116143211, recalculado desde el CSV). Kronos/ETH 52,06 % vs «siempre sube» 50,3 %: +1,71 pts, McNemar 1 cola p = 0,067 (regla: p < 0,05 y ≥ 2 pts). Secundarios Holm: ninguno < 0,05. Sin señal de memoria (52,1 % antes vs 52,0 % después de 2025-10). Para cubrir 0,20 % de costos haría falta ≈ 60 %. El holdout 2026-08→10 queda cerrado. Kronos a 4 h descartado como predictor de dirección en cripto, salvo una enmienda nueva.
 - **2026-10-30 · Claude:** PR #76 (informe sin IA verifica KT-002 desde `predicciones.csv`; quita el falso P0) y PR #77 (KT-004 Enmienda A + código; no corre hasta aprobar). #75 (pre-registro KT-004 y plan secuencial KT-002) ya en master.
 - **Mandato propuesto (lo confirma el dueño al integrar este PR):** Claude = investigación y metodología (KT-004, plan secuencial, scripts de análisis). ChatGPT = coordinación e infraestructura (workflows, ORION, ATLAS). Sin solapes; cada uno revisa al otro. Revoca en forma acotada la política del 27-oct.
 - **2026-10-30 · Claude:** creado este archivo + `tools/generar_estado.py` + `estado.yml` (se actualiza solo cada día). Tareas programadas de Claude (gerente diario 06:30 y vigía cada 4 h) **siguen activas, pendiente de que el dueño confirme apagarlas**: su parte mecánica ya la hacen la guardia, `informe-gerencia-sin-ia.yml` y este script.
@@ -25,8 +26,8 @@ Dueño: Kronnos (Kronnos2006). Hora local: Costa Rica (UTC−6).
 | # | Frente | Estado | Siguiente paso |
 |---|---|---|---|
 | 1 | **KT-002** (Kronos, TimesFM, KT-001 vs «siempre sube», BTC 4 h) | Corriendo cada hora desde 2026-10-20 | Solo dejar acumular. Hacen falta ~100 sin solape para una idea y ~780 para distinguir 55 % de 50 % |
-| 2 | Informe sin IA ↔ KT-002 | Arreglo listo en PR #76 | Revisar e integrar |
-| 2b | **KT-004** (ETH/SOL/BNB/XRP, 2024-08→2026-07, primario Kronos/ETH) | Pre-registro en master; Enmienda A + código en PR #77 | Integrar → corrida de prueba (sin pronósticos) → Enmienda B → corrida completa |
+| 2 | Informe sin IA ↔ KT-002 | Integrado (#76) | — |
+| 2b | **KT-004** (ETH/SOL/BNB/XRP, 2024-08→2026-07, primario Kronos/ETH) | **Terminado: NO PASA** (+1,71 pts, p = 0,067) | Cerrado. Holdout sin abrir |
 | 2c | Plan secuencial KT-002 (200/400/600/780, O'Brien-Fleming) | En master | Script de cortes después |
 | 3 | Combinador (#67) y FreqAI | Código integrado, sin predicciones reales medidas | Alimentar con predicciones reales y medir **contra «siempre sube»**; registrar el protocolo antes de ver resultados |
 | 4 | ATLAS PR #42 (H3 DSR, H4 custodia) | Borrador, bloqueado | No fusionar hasta cerrar H3/H4 (`docs/coordination/ESTADO_CANONICO_ORION_ATLAS.md`) |
