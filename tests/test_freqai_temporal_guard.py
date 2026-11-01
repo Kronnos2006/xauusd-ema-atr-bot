@@ -16,6 +16,11 @@ class TemporalGuardTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "LEAKAGE"):
             verify_candles(candles())
 
+    def test_purged_split_is_temporally_safe(self):
+        outcome = verify_candles(candles(), purge=1)
+        self.assertTrue(outcome["split_safe"])
+        self.assertGreater(outcome["train_samples"], 0)
+
     def test_rejects_duplicate_candles(self):
         data = candles()
         data[5] = data[4].copy()
