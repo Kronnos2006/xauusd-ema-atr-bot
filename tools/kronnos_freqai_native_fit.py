@@ -33,8 +33,12 @@ def main():
     X=pd.DataFrame(x,columns=["%-sin","%-cos","%-return"])
     Y=pd.DataFrame({"&-next_ret":y})
     split=int(len(x)*0.7)
-    dd={"train_features":X.iloc[:split],"train_labels":Y.iloc[:split],
-        "train_weights":np.ones(split),
+    # Purge the last training label: target at i+1 must be strictly before
+    # the first test feature timestamp. Without this, test data leaks into fit.
+    train_end=split-1
+    if train_end <= 0: raise ValueError("Insufficient non-overlapping train samples")
+    dd={"train_features":X.iloc[:train_end],"train_labels":Y.iloc[:train_end],
+        "train_weights":np.ones(train_end),
         "test_features":X.iloc[split:],"test_labels":Y.iloc[split:],
         "test_weights":np.ones(len(X)-split)}
     obj=object.__new__(LightGBMRegressor)
