@@ -1,0 +1,19 @@
+name: EWMA - tests de investigación aislada
+on:
+  pull_request:
+    paths:
+      - 'tools/ewma_volatilidad.py'
+      - 'tests/test_ewma_volatilidad.py'
+      - '.github/workflows/ewma-tests.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verificar sintaxis
+        run: python3 -m py_compile tools/ewma_volatilidad.py
+      - name: Pruebas EWMA anti-lookahead
+        run: python3 -m unittest discover -s tests -p 'test_ewma_volatilidad.py' -v
