@@ -7,7 +7,7 @@ import csv
 import math
 
 
-def verify_candles(rows, train_fraction=0.7, lookahead=1):
+def verify_candles(rows, train_fraction=0.7, lookahead=1, purge=0):
     if not 0 < train_fraction < 1:
         raise ValueError("Invalid train fraction")
     if lookahead < 1:
@@ -29,9 +29,9 @@ def verify_candles(rows, train_fraction=0.7, lookahead=1):
     # FreqAI current experiment constructs samples i=5..len(rows)-2.
     indices = list(range(5, len(parsed) - lookahead))
     cut = int(len(indices) * train_fraction)
-    if cut <= 0 or cut >= len(indices):
+    if cut <= 0 or cut >= len(indices) or not 0 <= purge < cut:
         raise ValueError("Invalid train/test partition")
-    train = indices[:cut]
+    train = indices[:cut - purge]
     test = indices[cut:]
     # A training label targets i + lookahead, so the last training
     # label must not use a candle belonging to the test period.
