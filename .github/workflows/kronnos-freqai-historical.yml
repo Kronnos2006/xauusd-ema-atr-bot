@@ -6,6 +6,8 @@ on:
       - tools/kronnos_freqai_native_fit.py
       - .github/workflows/kronnos-freqai-historical.yml
   workflow_dispatch:
+  schedule:
+    - cron: '23 9 * * 1'  # cada lunes, evaluación histórica aislada
 permissions:
   contents: read
 jobs:
@@ -16,8 +18,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - name: Elegir último mes completo UTC
+        id: periodo
+        run: echo "month=$(date -u -d "$(date -u +%Y-%m-01) -1 day" +%Y-%m)" >> "$GITHUB_OUTPUT"
       - name: Download Binance archive with official CHECKSUM
-        run: python3 tools/kronnos_binance_vision_archive.py --month 2025-09 --output artifacts/binance-historical.csv
+        run: python3 tools/kronnos_binance_vision_archive.py --month "${{ steps.periodo.outputs.month }}" --output artifacts/binance-historical.csv
       - name: Execute native FreqAI LightGBM fit/predict with real historical bars
         run: |
           docker run --rm --network none -v "$PWD:/work:ro" --entrypoint python freqtradeorg/freqtrade:stable_freqai /work/tools/kronnos_freqai_native_fit.py --historical-csv /work/artifacts/binance-historical.csv | tee artifacts/freqai-historical-report.json
