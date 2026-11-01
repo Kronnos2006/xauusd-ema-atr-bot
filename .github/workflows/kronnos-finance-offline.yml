@@ -1,0 +1,18 @@
+name: KRONNOS - financial analytics offline
+on:
+  pull_request:
+    paths:
+      - 'tools/kronnos_finance_offline.py'
+      - 'tests/test_kronnos_finance_offline.py'
+      - '.github/workflows/kronnos-finance-offline.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test financial metrics and limits
+        run: python3 -m unittest discover -s tests -p 'test_kronnos_finance_offline.py' -v
