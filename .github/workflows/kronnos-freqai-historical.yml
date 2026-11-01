@@ -20,7 +20,10 @@ jobs:
           persist-credentials: false
       - name: Elegir último mes completo UTC
         id: periodo
-        run: echo "month=$(date -u -d "$(date -u +%Y-%m-01) -1 day" +%Y-%m)" >> "$GITHUB_OUTPUT"
+        run: |
+          first=$(date -u +%Y-%m-01)
+          month=$(date -u -d "$first -1 day" +%Y-%m)
+          echo "month=$month" >> "$GITHUB_OUTPUT"
       - name: Download Binance archive with official CHECKSUM
         run: python3 tools/kronnos_binance_vision_archive.py --month "${{ steps.periodo.outputs.month }}" --output artifacts/binance-historical.csv
       - name: Execute native FreqAI LightGBM fit/predict with real historical bars
