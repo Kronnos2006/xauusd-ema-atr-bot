@@ -4,8 +4,8 @@ from tools.generar_progreso import parse_progress, render
 
 class ProgressTests(unittest.TestCase):
     def setUp(self):
-        self.body = "\\n".join(
-            f"### Fase {i} — prueba\\n" + "\\n".join(
+        self.body = "\n".join(
+            f"### Fase {i} — prueba\n" + "\n".join(
                 "- [x] hecho" if j == 0 else "- [ ] pendiente" for j in range(4)
             ) for i in range(1, 9)
         )
