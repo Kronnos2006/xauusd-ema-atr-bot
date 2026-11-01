@@ -1,0 +1,17 @@
+name: FreqAI bridge - validación aislada
+on:
+  pull_request:
+    paths:
+      - 'tools/freqai_to_kronnos.py'
+      - 'tests/test_freqai_to_kronnos.py'
+      - '.github/workflows/freqai-bridge-tests.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m py_compile tools/freqai_to_kronnos.py
+      - run: python3 -m unittest discover -s tests -p 'test_freqai_to_kronnos.py' -v
