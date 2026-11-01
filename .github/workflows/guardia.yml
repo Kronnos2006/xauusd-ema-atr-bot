@@ -165,6 +165,7 @@ jobs:
           tmp=$(mktemp -d)
           mkdir -p "$tmp/mercado"
           cp -a data/mercado/. "$tmp/mercado/"
+          cp tools/publicar_mercado_seguro.py "$tmp/publicar_mercado_seguro.py"
           if [ "$PUB" != "master" ]; then
             # En rama de prueba no se modifica master ni se crean avisos de producción.
             git add data/mercado
@@ -179,7 +180,7 @@ jobs:
             # Nunca rebase de un snapshot viejo: preserva los nuevos registros de otros escritores.
             git fetch -q origin master
             git reset --hard -q origin/master
-            python3 tools/publicar_mercado_seguro.py data/mercado "$tmp/mercado"
+            python3 "$tmp/publicar_mercado_seguro.py" data/mercado "$tmp/mercado"
             git add data/mercado
             if git diff --cached --quiet; then echo "sin datos nuevos que publicar"; exit 0; fi
             git commit -q -m "Mercado: datos conciliados (guardia)"
