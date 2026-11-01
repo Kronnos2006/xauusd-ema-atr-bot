@@ -1,0 +1,23 @@
+name: KRONNOS - QuantStats offline validation
+on:
+  pull_request:
+    paths:
+      - 'tools/kronnos_quantstats_report.py'
+      - 'tests/test_kronnos_quantstats_report.py'
+      - '.github/workflows/kronnos-quantstats.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  quantstats:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install fixed dependency
+        run: python -m pip install 'quantstats==0.0.77' 'ipython==8.30.0'
+      - name: Run actual QuantStats tests
+        run: python -m unittest discover -s tests -p 'test_kronnos_quantstats_report.py' -v
