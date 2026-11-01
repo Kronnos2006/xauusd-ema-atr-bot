@@ -1,0 +1,17 @@
+name: KRONNOS - FreqAI temporal leakage guard
+on:
+  pull_request:
+    paths:
+      - 'tools/kronnos_freqai_temporal_guard.py'
+      - 'tests/test_freqai_temporal_guard.py'
+      - '.github/workflows/freqai-temporal-guard.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  temporal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m unittest discover -s tests -p 'test_freqai_temporal_guard.py' -v
