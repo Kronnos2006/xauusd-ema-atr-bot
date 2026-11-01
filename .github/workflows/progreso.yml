@@ -1,0 +1,38 @@
+name: KRONNOS - progreso de 32 hitos sin IA
+on:
+  schedule:
+    - cron: '40 12 * * *'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'tools/generar_progreso.py'
+      - 'tests/test_generar_progreso.py'
+      - '.github/workflows/progreso.yml'
+permissions:
+  contents: write
+  issues: read
+concurrency:
+  group: kronnos-progreso
+  cancel-in-progress: false
+jobs:
+  progreso:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pruebas del cálculo
+        run: python3 -m unittest discover -s tests -p 'test_generar_progreso.py' -v
+      - name: Generar tablero desde Issue 88
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 tools/generar_progreso.py
+      - name: Publicar reporte (solo en master)
+        if: github.event_name != 'pull_request'
+        run: |
+          git config user.name "progreso-bot"
+          git config user.email "progreso-bot@users.noreply.github.com"
+          git add docs/gerencia/PROGRESO.md
+          git diff --cached --quiet && exit 0
+          git commit -m "KRONNOS: actualizar avance verificable"
+          git pull --rebase origin master
+          git push origin HEAD:master
