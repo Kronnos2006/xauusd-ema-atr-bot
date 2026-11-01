@@ -1,0 +1,20 @@
+name: Guardia - pruebas de publicacion segura
+on:
+  pull_request:
+    paths:
+      - 'tools/publicar_mercado_seguro.py'
+      - 'tests/test_publicar_mercado_seguro.py'
+      - '.github/workflows/guardia.yml'
+      - '.github/workflows/guardia-publicacion-tests.yml'
+permissions:
+  contents: read
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verificar sintaxis
+        run: python3 -m py_compile tools/publicar_mercado_seguro.py tests/test_publicar_mercado_seguro.py
+      - name: Pruebas adversariales de publicación
+        run: python3 -m unittest discover -s tests -p 'test_publicar_mercado_seguro.py' -v
