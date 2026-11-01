@@ -9,8 +9,8 @@ from pathlib import Path
 
 REPO = "Kronnos2006/xauusd-ema-atr-bot"
 ISSUE = 88
-CHECKBOX = re.compile(r"^\\s*- \\[([ xX])\\] ", re.MULTILINE)
-PHASE = re.compile(r"^### (Fase \\d+[^\\n]*)", re.MULTILINE)
+CHECKBOX = re.compile(r"^\s*- \[([ xX])\] ", re.MULTILINE)
+PHASE = re.compile(r"^### (Fase \d+[^\n]*)", re.MULTILINE)
 
 
 def parse_progress(body):
@@ -51,7 +51,7 @@ def render(phases, issue_url):
               "Fuente: casillas de GitHub Issue #88; no hay estimaciones ni IA en el cálculo.",
               "Si la fuente no está disponible o cambia la estructura, la actualización falla sin alterar el reporte.",
               ""]
-    return "\\n".join(lines)
+    return "\n".join(lines)
 
 
 def main():
