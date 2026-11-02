@@ -16,6 +16,7 @@ on:
       - tests/test_orion_comandos.py
       - .github/workflows/orion-comandos.yml
       - .github/workflows/orion-ci.yml
+      - .github/workflows/orion-pages.yml
       - docs/gerencia/ORION_CENTRO_CONTROL.md
   workflow_dispatch:
 
