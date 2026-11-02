@@ -1,5 +1,40 @@
 # ORION — Centro de Control del Dueño (v1)
 
+## Panel unificado y alertas (2026-11-01)
+
+El resumen reúne ORION, ATLAS, FreqAI y KT-002. Cada módulo muestra la
+limitación conocida, enlace a su documento y SHA-256 de la copia local.
+Es una consulta de archivos versionados: no verifica servicios activos ni
+certifica custodia, predicciones nuevas o rentabilidad. Fuente ausente se
+etiqueta **NO VERIFICADO**. Los enlaces apuntan a master; para reproducir
+un snapshot conservar su commit y contrastar el hash local.
+
+Las alertas leen una muestra de las últimas 12 corridas públicas. Fallas,
+timeout, cancelación y acción requerida son fallas observadas. Resultados
+neutrales, omitidos, desconocidos, fechas inválidas, futuras o mayores a
+24 horas son **NO VERIFICADO**. Una cola se muestra EN CURSO. Incluso una
+muestra exitosa no certifica salud global. Error de API nunca significa sano.
+
+En teléfono, usar la versión publicada por el propietario tras integrar
+el PR y generar Pages. El servidor local escucha solo en la PC; no abrir
+su puerto ni esperar acceso desde el teléfono. En pantalla estrecha las
+tarjetas se apilan; tocar «Actividad verificada» para consultar corridas.
+Ante NO VERIFICADO, abrir la fuente en GitHub y revisar su fecha; no
+relanzar ni cancelar tareas desde esta interfaz.
+
+Pruebas reproducibles (Python y Node, sin paquetes adicionales):
+
+```bash
+python -m unittest discover -s tests -p test_centro_control.py -v
+node tests/test_dashboard_health.js
+python -m unittest discover -s tests -p test_orion_release.py -v
+python tools/centro_control.py build --public
+```
+
+La implementación propone acreditar Fase 6, hitos 2 y 3 de Issue #88
+después de CI y revisión. No modifica casillas ni se autoaprueba. La
+validación visual en móvil y la revisión independiente siguen pendientes.
+
 **Alcance:** aplicación local de solo lectura; gráficas, métricas y organigrama obtenidos de datos reales del repositorio.
 
 ## Instalación y ejecución

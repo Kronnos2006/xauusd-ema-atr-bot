@@ -12,6 +12,21 @@ spec.loader.exec_module(mod)
 
 
 class CentroControlTests(unittest.TestCase):
+    def test_module_sources_missing_are_never_healthy(self):
+        with tempfile.TemporaryDirectory() as d:
+            result = mod.module_evidence(Path(d))
+            self.assertEqual({x['name'] for x in result}, {'ORION', 'ATLAS', 'FreqAI', 'KT-002'})
+            self.assertTrue(all(x['status'].startswith('NO VERIFICADO') for x in result))
+            self.assertTrue(all(x['sha256'] is None for x in result))
+
+    def test_module_hash_tracks_evidence_without_certifying_service(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d); self.fixture(root)
+            first = mod.module_evidence(root)
+            self.assertIn('NO VERIFICADA', first[0]['status'])
+            (root/'docs/gerencia/equipo.json').write_text('{}')
+            self.assertNotEqual(first[0]['sha256'], mod.module_evidence(root)[0]['sha256'])
+
     def fixture(self, root, duplicate=False):
         for rel in ("dashboard", "docs/gerencia", "data/kt002"):
             (root / rel).mkdir(parents=True, exist_ok=True)
