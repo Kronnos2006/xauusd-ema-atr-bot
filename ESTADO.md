@@ -43,26 +43,33 @@ Dueño: Kronnos (Kronnos2006). Hora local: Costa Rica (UTC−6).
 
 ## Estado automático
 <!-- AUTO:INICIO (lo escribe tools/generar_estado.py; no editar a mano) -->
-_Generado 2026-11-01 17:57 UTC · 0 llamadas a IA_
+_Generado 2026-11-02 21:45 UTC · 0 llamadas a IA_
 
 ### KT-002 (BTC, dirección a 4 h, prospectivo)
-- Pronósticos: 280 · vencidos: 276 · horas omitidas: 12 · actualizado: 2026-11-01T17:07 UTC
-- Último registro: 2026-11-01T17:07 UTC (hace 0.8 h)
-- **Sin solape (lo que cuenta), n = 68:**
-  - Siempre sube (referencia): 33/68 = 48.5 %
-  - Kronos: 35/68 = 51.5 % (IC95 39.8 %–62.9 %; p vs sube = 0.8679)
-  - TimesFM: 34/68 = 50.0 % (IC95 38.4 %–61.6 %; p vs sube = 1.0)
-  - KT-001 50/50: 31/68 = 45.6 % (IC95 34.3 %–57.3 %; p vs sube = 0.845)
+- Pronósticos: 308 · vencidos: 304 · horas omitidas: 12 · actualizado: 2026-11-02T21:07 UTC
+- Último registro: 2026-11-02T21:07 UTC (hace 0.6 h)
+- **Sin solape (lo que cuenta), n = 75:**
+  - Siempre sube (referencia): 35/75 = 46.7 %
+  - Kronos: 37/75 = 49.3 % (IC95 38.3 %–60.4 %; p vs sube = 0.8679)
+  - TimesFM: 35/75 = 46.7 % (IC95 35.8 %–57.8 %; p vs sube = 1.0)
+  - KT-001 50/50: 33/75 = 44.0 % (IC95 33.3 %–55.2 %; p vs sube = 0.845)
 - Veredicto automático: ningún modelo supera a «siempre sube». Sin ventaja demostrada.
 
 ### GitHub Actions y PR
-- kt002.yml: 7/8 verdes en las últimas 10 · última success 2026-11-01T09:08
-- guardia.yml: 10/10 verdes en las últimas 10 · última success 2026-11-01T17:07
-- informe-gerencia-sin-ia.yml: 5/5 verdes en las últimas 10 · última success 2026-10-31T17:19
+- kt002.yml: 8/9 verdes en las últimas 10 · última cancelled 2026-11-02T16:07
+- guardia.yml: 10/10 verdes en las últimas 10 · última success 2026-11-02T21:07
+- informe-gerencia-sin-ia.yml: 6/6 verdes en las últimas 10 · última success 2026-11-01T18:02
 - kronnos-ensemble.yml: 2/2 verdes en las últimas 10 · última success 2026-10-30T00:39
-- PR abiertos: #42 (borrador) ATLAS: barreras estadísticas DSR, ≥30 operaciones y sello re
+- PR abiertos: #104 Documentación integral del trabajo y avance oficial: 31,25 %, #103 Reduce permisos de prueba PR en Estado, Progreso y KT004, #102 Instalación y recuperación: guía y smoke sintético sin opera, #101 ATLAS: recupera sello externo original y preserva evidencia , #100 Riskfolio: evaluación offline real y controles de riesgo con, #99 ORION móvil: corrige desbordamiento y valida 15 vistas con f, #98 Propuesta FreqAI BTC: Fase 0 descriptiva, protocolo y costos, #97 Guardia: rechaza fechas futuras, pasos omitidos y entradas n, #42 (borrador) ATLAS: barreras estadísticas DSR, ≥30 operaciones y sello re
 - Avisos «guardia» abiertos: 0
 
 ### Últimos cambios no rutinarios
-- 2026-10-31 · estado-bot · Estado: ESTADO.md automático 2026-10-31T17:17Z
+- 2026-11-02 · guardia-bot · Mercado: datos conciliados (guardia)
+- 2026-11-02 · guardia-bot · Mercado: datos conciliados (guardia)
+- 2026-11-02 · guardia-bot · Mercado: datos conciliados (guardia)
+- 2026-11-02 · guardia-bot · Mercado: datos conciliados (guardia)
+- 2026-11-02 · guardia-bot · Mercado: datos conciliados (guardia)
+- 2026-11-02 · guardia-bot · Mercado: datos conciliados (guardia)
+- 2026-11-02 · guardia-bot · Mercado: datos conciliados (guardia)
+- 2026-11-02 · guardia-bot · Mercado: datos conciliados (guardia)
 <!-- AUTO:FIN -->
