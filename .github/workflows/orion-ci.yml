@@ -8,6 +8,7 @@ on:
       - tools/orion_release_check.py
       - tests/test_orion_release.py
       - tests/test_centro_control.py
+      - tests/test_dashboard_health.js
       - tools/orion_comandos.py
       - tools/orion_arbitro.py
       - tests/test_orion_arbitro.py
@@ -15,6 +16,7 @@ on:
       - tests/test_orion_comandos.py
       - .github/workflows/orion-comandos.yml
       - .github/workflows/orion-ci.yml
+      - .github/workflows/orion-pages.yml
       - docs/gerencia/ORION_CENTRO_CONTROL.md
   workflow_dispatch:
 
@@ -32,6 +34,8 @@ jobs:
           python-version: '3.11'
       - name: Pruebas sintéticas
         run: python -m unittest discover -s tests -p 'test_centro_control.py' -v
+      - name: Alertas negativas sin red ni credenciales
+        run: node tests/test_dashboard_health.js
       - name: Pruebas de comandos operativos seguros
         run: python -m unittest discover -s tests -p 'test_orion_comandos.py' -v
       - name: Comprobar árbitro de coordinación

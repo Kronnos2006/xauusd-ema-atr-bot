@@ -15,6 +15,8 @@ Dueño: Kronnos (Kronnos2006). Hora local: Costa Rica (UTC−6).
 7. Decide solo el dueño: dinero, holdouts, borrar datos, cambiar reglas o un experimento en curso.
 
 ## Qué estamos haciendo (manual, 1 línea por cambio, lo más nuevo arriba)
+- **2026-11-01 · Codex:** objetivo >=30 %; Issue #88 remoto registra 8/32 (25 %). Rama codex/panel-unificado-avance-30 prepara F6.2/F6.3: fuentes y hashes de cuatro módulos, alertas fail-closed y pruebas offline. Sin acreditar hitos; CI, revisión independiente e integración del dueño pendientes.
+- **2026-11-01 · Codex:** consulta local de avance: PROGRESO.md registra 5/32 hitos (15,6 %), corte inicial del 1-nov; sin recalcular ni verificar Issue #88 en vivo. Sin cambios de código ni experimentos.
 - **2026-10-31 · Claude:** **KT-004 NO PASA** (run 41116143211, recalculado desde el CSV). Kronos/ETH 52,06 % vs «siempre sube» 50,3 %: +1,71 pts, McNemar 1 cola p = 0,067 (regla: p < 0,05 y ≥ 2 pts). Secundarios Holm: ninguno < 0,05. Sin señal de memoria (52,1 % antes vs 52,0 % después de 2025-10). Para cubrir 0,20 % de costos haría falta ≈ 60 %. El holdout 2026-08→10 queda cerrado. Kronos a 4 h descartado como predictor de dirección en cripto, salvo una enmienda nueva.
 - **2026-10-30 · Claude:** PR #76 (informe sin IA verifica KT-002 desde `predicciones.csv`; quita el falso P0) y PR #77 (KT-004 Enmienda A + código; no corre hasta aprobar). #75 (pre-registro KT-004 y plan secuencial KT-002) ya en master.
 - **Mandato propuesto (lo confirma el dueño al integrar este PR):** Claude = investigación y metodología (KT-004, plan secuencial, scripts de análisis). ChatGPT = coordinación e infraestructura (workflows, ORION, ATLAS). Sin solapes; cada uno revisa al otro. Revoca en forma acotada la política del 27-oct.

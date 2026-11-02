@@ -1,6 +1,9 @@
 """Comprobaciones del Centro de Control sin red ni credenciales."""
 import importlib.util
 import json
+import re
+import shlex
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
@@ -12,6 +15,46 @@ spec.loader.exec_module(mod)
 
 
 class CentroControlTests(unittest.TestCase):
+    def test_pages_both_routes_have_all_relative_scripts(self):
+        # Replay actual publication copies against a real generated artifact.
+        repo = MODULE.parents[1]
+        with tempfile.TemporaryDirectory() as d:
+            out = Path(d)/'orion-pages'
+            mod.build(out, repo, public=True)
+            for route in ('orion', 'visor'):
+                (out/route).mkdir()
+            workflow = (repo/'.github/workflows/orion-pages.yml').read_text(encoding='utf-8')
+            for line in workflow.splitlines():
+                if not line.strip().startswith('cp '):
+                    continue
+                _, source, target = shlex.split(line.strip())
+                source = source.replace('$RUNNER_TEMP/orion-pages', str(out))
+                target = target.replace('$RUNNER_TEMP/orion-pages', str(out))
+                source_path = Path(source) if Path(source).is_absolute() else repo/source
+                shutil.copyfile(source_path, target)
+            for route in (out, out/'orion'):
+                html = (route/'index.html').read_text(encoding='utf-8')
+                scripts = re.findall(r'<script src="\./([^"]+)"', html)
+                self.assertIn('health.js', scripts)
+                for asset in scripts:
+                    self.assertTrue((route/asset).is_file(), str(route/asset))
+                    self.assertEqual((route/asset).read_bytes(), (repo/'dashboard'/asset).read_bytes())
+
+    def test_module_sources_missing_are_never_healthy(self):
+        with tempfile.TemporaryDirectory() as d:
+            result = mod.module_evidence(Path(d))
+            self.assertEqual({x['name'] for x in result}, {'ORION', 'ATLAS', 'FreqAI', 'KT-002'})
+            self.assertTrue(all(x['status'].startswith('NO VERIFICADO') for x in result))
+            self.assertTrue(all(x['sha256'] is None for x in result))
+
+    def test_module_hash_tracks_evidence_without_certifying_service(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d); self.fixture(root)
+            first = mod.module_evidence(root)
+            self.assertIn('NO VERIFICADA', first[0]['status'])
+            (root/'docs/gerencia/equipo.json').write_text('{}')
+            self.assertNotEqual(first[0]['sha256'], mod.module_evidence(root)[0]['sha256'])
+
     def fixture(self, root, duplicate=False):
         for rel in ("dashboard", "docs/gerencia", "data/kt002"):
             (root / rel).mkdir(parents=True, exist_ok=True)

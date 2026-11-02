@@ -6,6 +6,7 @@ siendo la fuente de las métricas publicadas. No expone servicios en red públic
 """
 import argparse
 import csv
+import hashlib
 import json
 import shutil
 from datetime import datetime, timezone
@@ -16,6 +17,27 @@ ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "dashboard"
 DEFAULT_OUT = ROOT / ".local" / "centro-control"
 MODELS = ("siempre_sube", "kronos", "timesfm", "kt001")
+
+
+def module_evidence(root):
+    """Fixed public sources only. File presence never certifies an operational service."""
+    definitions = (
+        ("ORION", "CONFIGURADO; ACTIVIDAD NO VERIFICADA", "docs/gerencia/equipo.json"),
+        ("ATLAS", "BLOQUEADO; H3/H4 SIN CERTIFICAR", "docs/coordination/ESTADO_CANONICO_ORION_ATLAS.md"),
+        ("FreqAI", "INFERENCIA PROSPECTIVA NO VERIFICADA", "docs/auditorias/AUDITORIA_FREQAI_TRADING_2026-11-01.md"),
+        ("KT-002", "SNAPSHOT DESCRIPTIVO; NO CERTIFICA VENTAJA", "data/kt002/resumen.json"),
+    )
+    result = []
+    for name, limitation, source in definitions:
+        try:
+            raw = (root / source).read_bytes()
+            digest = hashlib.sha256(raw).hexdigest()
+        except OSError:
+            digest = None
+        result.append({"name": name, "status": limitation if digest else "NO VERIFICADO: FUENTE AUSENTE",
+                       "source": source, "sha256": digest,
+                       "url": "https://github.com/Kronnos2006/xauusd-ema-atr-bot/blob/master/" + source})
+    return result
 
 
 def history_series(path):
@@ -81,6 +103,7 @@ def assemble(root=ROOT):
             "key": model, "aciertos": m["aciertos"], "n": m["n"],
             "tasa": m["tasa"], "ic95": m.get("ic95", [])})
     return {
+        "modules": module_evidence(root),
         "meta": {
             "source_updated_utc": summary.get("updated_utc"),
             "generated_utc": datetime.now(timezone.utc).isoformat(),
@@ -131,6 +154,9 @@ def assemble(root=ROOT):
 def build(out=DEFAULT_OUT, root=ROOT, public=False):
     out.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(root / "dashboard/index.html", out / "index.html")
+    health = root / "dashboard/health.js"
+    if health.is_file():
+        shutil.copyfile(health, out / "health.js")
     snapshot = assemble(root)
     if public:
         # GitHub Pages es público. Nunca enlazar ni copiar recursos de la Oficina privada.

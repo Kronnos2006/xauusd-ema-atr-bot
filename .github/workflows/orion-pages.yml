@@ -5,6 +5,7 @@ on:
     branches: [master]
     paths:
       - dashboard/index.html
+      - dashboard/health.js
       - docs/visor/index.html
       - .github/ISSUE_TEMPLATE/orion-solicitud.yml
       - tools/centro_control.py
@@ -49,6 +50,7 @@ jobs:
           cp docs/visor/index.html "$RUNNER_TEMP/orion-pages/visor/index.html"
           cp "$RUNNER_TEMP/orion-pages/index.html" "$RUNNER_TEMP/orion-pages/orion/index.html"
           cp "$RUNNER_TEMP/orion-pages/data.json" "$RUNNER_TEMP/orion-pages/orion/data.json"
+          cp "$RUNNER_TEMP/orion-pages/health.js" "$RUNNER_TEMP/orion-pages/orion/health.js"
           cmp docs/visor/index.html "$RUNNER_TEMP/orion-pages/visor/index.html"
           python -c 'from pathlib import Path; import json,sys; p=Path(sys.argv[1]); d=json.loads((p/"data.json").read_text()); assert (p/"visor/index.html").is_file(); assert (p/"orion/index.html").is_file(); assert d["governance"]["links"]["visor"].endswith("/visor/"); assert "office" not in d["governance"]["links"]; print("Dos visores conservados, sin enlaces privados")' "$RUNNER_TEMP/orion-pages"
           touch "$RUNNER_TEMP/orion-pages/.nojekyll"
