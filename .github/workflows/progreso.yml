@@ -15,7 +15,25 @@ concurrency:
   group: kronnos-progreso
   cancel-in-progress: false
 jobs:
+  validar_pr:
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      issues: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Pruebas del cálculo
+        run: python3 -m unittest discover -s tests -p 'test_generar_progreso.py' -v
+      - name: Generar sin permiso de publicar
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 tools/generar_progreso.py
   progreso:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
