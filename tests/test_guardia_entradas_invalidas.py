@@ -19,7 +19,7 @@ class InvalidInputs(unittest.TestCase):
     def test_untrusted_run_data_never_relaunches(self):
         cases = [None, {}, [None], [{'status': 'misterio'}],
                  [{'status': 'completed', 'createdAt': GOOD, 'conclusion': None}]]
-        cases += [[{'status': 'completed', 'createdAt': s}] for s in INVALID]
+        cases += [[{'status': 'completed', 'conclusion': 'success', 'createdAt': s}] for s in INVALID]
         for case in cases:
             with self.subTest(case=case):
                 self.assertEqual(g.decidir_kt002(case, GOOD, NOW)['accion'], 'alerta')
@@ -27,7 +27,7 @@ class InvalidInputs(unittest.TestCase):
             self.assertEqual(g.decidir_kt002([], stamp, NOW)['accion'], 'alerta')
 
     def test_unordered_runs_cannot_trigger_dispatch(self):
-        runs = [{'status': 'completed', 'createdAt': '2026-11-01T12:00:00Z'},
+        runs = [{'status': 'completed', 'conclusion': 'success', 'createdAt': '2026-11-01T12:00:00Z'},
                 {'status': 'in_progress', 'createdAt': GOOD}]
         self.assertEqual(g.decidir_kt002(runs, GOOD, NOW)['accion'], 'alerta')
 
