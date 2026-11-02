@@ -16,14 +16,17 @@ en cripto y no se deben mezclar signos, probabilidades y retornos sin
 calibración predefinida. El combinador permanece sin promoción.
 
 Primero Fase 0: cobertura real, huecos, frecuencia no solapada, distribución
-de clases, discordancias con baseline y potencia. No entrenar ni evaluar
+de clases y sensibilidad de potencia ante distintos niveles de dependencia y discordancia. No es posible medir discordancias reales del candidato sin generar predicciones; cualquier piloto exige autorización y muestra separadas, excluidas de confirmación. No entrenar ni evaluar
 predicciones hasta revisar ese diagnóstico. El tamaño final no se elige
 para obtener un resultado positivo. No abrir holdouts existentes.
 
 ## Candidato de diseño para decisión explícita
 
-- Predicción: signo del retorno cierre/cierre BTCUSDT cuatro horas después
-  de cada corte UTC 00/04/08/12/16/20; solo velas cerradas y disponibles.
+- Etiqueta continua del Regressor: retorno open/open BTCUSDT entre base UTC
+  00/04/08/12/16/20 y base+4h. Convertir pronóstico a signo con umbral cero.
+  Emisión propuesta base-5min: usar únicamente barras con cierre <=base-1h,
+  disponibles al emitir. Registrar recepción y emisión antes de la base; una
+  predicción tardía es fallo, nunca pronóstico a posteriori del mismo tramo.
 - Un modelo, hiperparámetros congelados antes de evaluación; ventana
   propuesta de 365 días y reentrenamiento semanal. Es una elección de
   diseño conservadora, no una optimización demostrada.
@@ -32,10 +35,18 @@ para obtener un resultado positivo. No abrir holdouts existentes.
 - Etiquetas de entrenamiento deben haber vencido estrictamente antes
   del corte; purga de al menos cuatro horas y control de disponibilidad.
 - Baseline primario: siempre sube; persistencia como secundario. La
-  muestra común se fija antes de comparar. No descartar silenciosamente
-  fallas del modelo: registrar abstenciones y cobertura.
+  muestra primaria usa todos los cortes programados con objetivo observable.
+  Abstención, pronóstico cero, fallo o emisión tardía cuentan como no acierto
+  del candidato, y reducen cobertura. Retorno objetivo exactamente cero: ambos
+  predictores direccionales no aciertan. Si falta el precio objetivo, registrar
+  dato faltante común, sin imputar y con análisis de sensibilidad explícito;
+  no declarar éxito si la cobertura de objetivos cae por debajo de 95 %.
 - Umbral propuesto para señal descriptiva: mejora >=2 puntos porcentuales
   frente al baseline y prueba pareada unilateral p<0,05 al cierre fijado;
+  sin solape no equivale a independencia. Antes del prerregistro deben
+  fijarse longitud de bloques, procedimiento de bootstrap temporal y
+  potencia compatible con dependencia serial usando una muestra externa.
+  No se eligen esos ajustes después de mirar la muestra confirmatoria;
   cobertura >=95 %. Sin búsquedas de umbral ni revisiones intermedias.
   Fase 0 debe determinar si es medible; si no, NO LISTO.
 - La frase falsable propuesta: «FreqAI con estas entradas y parámetros
@@ -80,3 +91,11 @@ Instalación, recuperación, entrega y auditoría global siguen pendientes.
 La documentación respalda controles técnicos, no garantiza rentabilidad
 ni recomienda estos hiperparámetros. Las decisiones de diseño anteriores
 son propuestas de Codex y requieren revisión metodológica independiente.
+
+## Revisión metodológica del borrador
+
+Segundo agente Codex identificó necesidad de separar potencia por sensibilidad
+de discordancias observadas, contemplar dependencia serial, y precisar etiqueta,
+faltantes y tiempos. Este borrador incorpora esas distinciones; aún NO LISTO
+para ejecución: faltan parámetros estadísticos finales de bloques y potencia,
+Fase 0 real, decisión explícita y revisión metodológica del prerregistro final.
