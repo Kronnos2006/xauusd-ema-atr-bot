@@ -8,8 +8,9 @@
   "census_lines": 74,
   "external_timestamp_utc": "2026-10-27T12:53:34Z",
   "freetsa_verification": "OK with artifact chain and CA fetched from official HTTPS",
-  "digicert_verification": "NOT_VERIFIED",
+  "digicert_verification": "OK, OpenSSL ts-verify with system Git CA bundle and signer chain extracted from original TSR",
   "immutable_custody_verified": false,
   "exhaustive_census_verified": false,
-  "promotion_permitted": false
+  "promotion_permitted": false,
+  "digicert_trust_bundle_sha256": "50d055ee716f373c901c34d80b275d7f599a582d36b6f1596bad92d61d61012d"
 }

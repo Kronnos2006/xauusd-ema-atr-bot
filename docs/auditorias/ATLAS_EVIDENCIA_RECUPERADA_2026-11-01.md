@@ -42,8 +42,10 @@ Huella CA: A6:37:9E:7C:EC:C0:5F:AA:3C:BF:07:60:13:D7:45:E3:27:BB:BA:A3:8C:0B:9A:
 
 Ambas respuestas TSR declaran Granted y genTime **2026-10-27 12:53:34 UTC**.
 FreeTSA: firma y vinculación de contenido verificadas como se describe.
-DigiCert: solo se inspeccionó respuesta/fecha; su firma y cadena NO se
-certifican aquí. No se comprobaron revocación ni política institucional
+DigiCert: también se verificó la firma y vinculación al manifiesto con
+OpenSSL ts-verify, cadena extraída del TSR y bundle de CA instalado con Git
+(C:/Program Files/Git/usr/ssl/certs/ca-bundle.crt): Verification OK. Hash
+del bundle guardado en provenance.json. No se comprobaron revocación ni política institucional
 independiente de selección de raíz. La coincidencia con CA HTTPS actual
 no sustituye una política de confianza fijada antes del experimento.
 
@@ -65,7 +67,7 @@ puede expirar o ser borrado: no se etiqueta custodia WORM. No se abre ni
 fusiona PR42, que sigue draft/bloqueado.
 
 Próximo trabajo: revisar completitud del censo entre fuentes autorizadas,
-verificar cadena DigiCert con raíz independiente, diseñar retención e
+mantener verificación de cadenas con política de confianza revisada, diseñar retención e
 identidades separadas y registrar nuevas pruebas antes de nuevos resultados.
 No se reescriben fechas históricas ni se acreditan los cuatro hitos F2.
 
@@ -74,3 +76,19 @@ No se reescriben fechas históricas ni se acreditan los cuatro hitos F2.
 Copia byte por byte en docs/evidencia/ATLAS-CENSO-20261027/artifact-original.zip;
 provenance.json conserva IDs, origen y SHA256. Es respaldo en Git, no WORM ni
 autorización de promoción. No contiene URL temporal de descarga ni credenciales.
+
+## Comandos de reproducción (en carpeta extraída del ZIP)
+
+Usar OpenSSL instalado y una CA de confianza obtenida por una vía independiente.
+ROOTS.pem representa el bundle de CA del sistema, no uno creado por el emisor.
+
+```sh
+openssl ts -verify -data MANIFIESTO.sha256 -in freetsa.tsr -CAfile freetsa_cacert.pem -untrusted freetsa_tsa.crt
+openssl ts -reply -in digicert.tsr -token_out -out digicert.p7s
+openssl pkcs7 -inform DER -in digicert.p7s -print_certs -out digicert_chain.pem
+openssl ts -verify -data MANIFIESTO.sha256 -in digicert.tsr -CAfile ROOTS.pem -untrusted digicert_chain.pem
+```
+
+La primera verificación se repitió con CA obtenida por HTTPS oficial. La
+segunda usó el bundle de Git del sistema, separado del artifact original.
+No se presenta este control actual de raíces como una política previa.
