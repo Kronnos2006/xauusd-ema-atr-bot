@@ -1,0 +1,15 @@
+{
+  "source_repository": "Kronnos2006/xauusd-ema-atr-bot",
+  "source_commit": "9b39ff94437655773efdaf39c4dcc714340cf100",
+  "run_id": 40507359902,
+  "artifact_id": 12734829078,
+  "artifact_name": "sello-censo-9b39ff94437655773efdaf39c4dcc714340cf100",
+  "zip_sha256": "0a098481008bf9c2595abfa1b54bdeabebac5a1bed2d8e84611184145ade19a8",
+  "census_lines": 74,
+  "external_timestamp_utc": "2026-10-27T12:53:34Z",
+  "freetsa_verification": "OK with artifact chain and CA fetched from official HTTPS",
+  "digicert_verification": "NOT_VERIFIED",
+  "immutable_custody_verified": false,
+  "exhaustive_census_verified": false,
+  "promotion_permitted": false
+}
