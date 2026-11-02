@@ -1,0 +1,232 @@
+{
+  "date_local": "2026-11-01",
+  "timezone": "America/Costa_Rica",
+  "goal_status": "paused",
+  "completed": 10,
+  "total": 32,
+  "percentage": 31.25,
+  "issue": {
+    "number": 88,
+    "url": "https://github.com/Kronnos2006/xauusd-ema-atr-bot/issues/88",
+    "updated_at": "2026-11-02T02:56:21Z",
+    "body": "# 📊 KRONNOS — Tablero de avance del plan acelerado\n**Inicio del seguimiento:** 2026-11-01 · **Fuente:** `ESTADO.md`, PR #42/#86, Issues #80/#87. **Porcentaje calculado automáticamente desde las casillas; cada acreditación exige evidencia.**\n\n## ✅ Progreso del PLAN DE CIERRE (no porcentaje de todo el proyecto histórico)\n**10 de 32 hitos acreditados = 31,25 %** (corte verificado; objetivo 10/32 = 31.25 %).\nEste porcentaje no es una medición de rentabilidad ni de todo el software ya construido. Es un indicador transparente del trabajo necesario para cerrar las 8 fases. Cada casilla representa 1/32 = 3.125 puntos porcentuales. **Una casilla se marca solo con PR, SHA, pruebas y evidencia.** GitHub actualizará automáticamente el contador de tareas cuando se marquen casillas, pero **esta cifra textual requiere actualización** hasta tener un generador automático.\n\n### Fase 1 — P0 Seguridad y estabilidad (1/4)\n- [x] Inventario de workflows, incidentes y estado real de CI documentado\n- [ ] Incidencias críticas reproducibles diagnosticadas, con pruebas negativas\n- [ ] Guardia y KT-002 auditados sin modificar datos ni relanzar corridas\n- [ ] Auditoría de estabilidad y control de permisos aprobados\n\n### Fase 2 — P0 ATLAS, H3/H4 y custodia (0/4)\n- [ ] Censo real N_total completo, histórico y con custodia externa previa e inmutable\n- [ ] Procedencia temporal de barras/prerregistros probada por evidencia independiente\n- [ ] Validación confirmatoria DSR ≥0.95, walk-forward y ≥30 operaciones/fold cuando aplique\n- [ ] Revisión independiente del PR #42 y autorización expresa para fusionar; si falta, permanece bloqueado\n\n### Fase 3 — P1 FreqAI y Binance (3/4)\n- [x] Código base de FreqAI integrado con entrenamiento histórico desde Binance Vision (evidencia: `ESTADO.md`, PR #61–#72)\n- [x] PR #86 revisado, CI aprobado e integrado por el propietario — run 41344261171 SUCCESS, merge `3fab91cf42fde385f49f0ced4004fce40daae89d`\n- [x] Checksums, cortes temporales y splits anti-lookahead verificados con pruebas — Binance CHECKSUM, PR #91, CI cuatro workflows SUCCESS, merge `44e5e64095e45cbb24249799a09fbf72598a1e13`\n- [ ] Protocolo prospectivo registrado y pipeline de inferencia reproducible en simulación\n\n### Fase 4 — P1 Motor financiero (3/4)\n- [x] Qlib integrado como infraestructura base (evidencia: `ESTADO.md`)\n- [x] QuantStats probado, con informes netos y benchmarks reproducibles — PR #93, CI success 41348880344, commit `fd35068ef3608c9d3741aaa6db63bdfedd24cd0f`\n- [x] VectorBT evaluado/adaptado con pruebas offline sin tocar holdouts — PR #94, CI success 41348933519, merge `0e57c70bbfe0cde8ab596de833a5bcd8ef9b44d3`\n- [ ] Riskfolio-Lib evaluado/adaptado con límites de riesgo y tests de simulación\n\n### Fase 5 — P1 Combinador y predicciones (0/4)\n- [ ] Protocolo de modelos, horizontes, pesos, costos y baseline preregistrado\n- [ ] Predicciones prospectivas de FreqAI/combinador verificadas sin fuga\n- [ ] Comparación neta vs «siempre sube» y otras referencias sin selección posterior\n- [ ] Informe de robustez, incertidumbre y veredicto sin declarar ventaja indebida\n\n### Fase 6 — P2 Panel ORION y reportes (3/4)\n- [x] Informes gerenciales sin LLM y `ESTADO.md` automático integrados (evidencia: `ESTADO.md`)\n- [x] Panel unificado solo lectura para ORION/ATLAS/FreqAI/KT-002 — PR #96, commit `a657055`, merge `9a9b05b3cb79ea1ffdc873a7c292c31d56c962e8`; CI ORION 41380132835 y auditoría 41380132821 SUCCESS; revisión independiente PASS y aprobación del propietario en chat (2026-11-01).\n- [x] Alertas de CI y fallas claramente etiquetadas NO VERIFICADO — PR #96, commit `a657055`, merge `9a9b05b3cb79ea1ffdc873a7c292c31d56c962e8`; CI ORION 41380132835 y auditoría 41380132821 SUCCESS; revisión independiente PASS y aprobación del propietario en chat (2026-11-01).\n- [ ] Panel e informes validados con pruebas y manual de uso móvil\n\n### Fase 7 — P1 Auditoría profesional (0/4)\n- [ ] Pruebas negativas de lookahead, fuga, sesgo y costos auditadas\n- [ ] Walk-forward temporal, N_total y métricas reproducibles por experimento\n- [ ] Auditoría independiente con resultado PASS/FAIL documentado\n- [ ] Evidencias (PR, SHA, CI, custodia) consolidadas por cada decisión\n\n### Fase 8 — P2 Entrega final en simulación (0/4)\n- [ ] Repositorio, dependencias, scripts y permisos mínimos documentados\n- [ ] Procedimiento reproducible de instalación y recuperación aprobado\n- [ ] Prueba de extremo a extremo en simulación sin órdenes ni dinero real\n- [ ] Acta de entrega final y lista de investigación prospectiva pendiente\n\n## Orden y responsable\nP0 F1 → P0 F2; en paralelo tras F1: F3/F4/F6; después F5 → F7 → F8. ChatGPT: infraestructura y coordinación. Claude: metodología y revisión cruzada según Issue #80. El propietario integra. **Sin ejecutar autónomamente fuera de workflows instalados.**\n\n## Reglas fijas\nNo tocar KT-002, archivos prospectivos ni holdouts; no cancelar/reiniciar workflows; sin claves de trading, órdenes ni dinero real. No cerrar ningún hito por intención, únicamente con evidencia. Si una prueba falla, se desmarca el hito y se registra el incidente.\n\n## Referencias\n- [Estado único](../blob/master/ESTADO.md)\n- [P0–P2 #80](../issues/80)\n- [Finanzas #87](../issues/87)\n- [ATLAS #42](../pull/42)\n- [FreqAI #86](../pull/86)\n"
+  },
+  "pull_requests": [
+    {
+      "number": 42,
+      "url": "https://github.com/Kronnos2006/xauusd-ema-atr-bot/pull/42",
+      "state": "open",
+      "merged": false,
+      "head": "research/atlas-barreras-estadisticas-20261024",
+      "head_sha": "3c943e96647b7bdc03abb06a913bb826bfdb9fe0",
+      "ci": []
+    },
+    {
+      "number": 96,
+      "url": "https://github.com/Kronnos2006/xauusd-ema-atr-bot/pull/96",
+      "state": "closed",
+      "merged": true,
+      "head": "codex/panel-unificado-avance-30",
+      "head_sha": "a657055d3ff6150a48681c953ef4e8f8aba1d0dc",
+      "ci": []
+    },
+    {
+      "number": 97,
+      "url": "https://github.com/Kronnos2006/xauusd-ema-atr-bot/pull/97",
+      "state": "open",
+      "merged": false,
+      "head": "codex/seguridad-guardia-auditoria",
+      "head_sha": "d3ab277c94c50ca3d45bb000a961868ad3c8f96c",
+      "ci": [
+        {
+          "id": 41380870785,
+          "name": "Kronnos - auditoria determinista de scripts",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 57,
+          "jobs_url": "https://api.github.com/repos/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41380870785/jobs",
+          "logs_url": "https://api.github.com/repos/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41380870785/logs",
+          "workflow_id": 399520978
+        },
+        {
+          "id": 41380870774,
+          "name": "Guardia - pruebas de publicacion segura",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 3,
+          "jobs_url": "https://api.github.com/repos/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41380870774/jobs",
+          "logs_url": "https://api.github.com/repos/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41380870774/logs",
+          "workflow_id": 403809574
+        }
+      ]
+    },
+    {
+      "number": 98,
+      "url": "https://github.com/Kronnos2006/xauusd-ema-atr-bot/pull/98",
+      "state": "open",
+      "merged": false,
+      "head": "docs/propuesta-freqai-btc",
+      "head_sha": "5c5911e590144090c55ddb4536ea40eb86057319",
+      "ci": []
+    },
+    {
+      "number": 99,
+      "url": "https://github.com/Kronnos2006/xauusd-ema-atr-bot/pull/99",
+      "state": "open",
+      "merged": false,
+      "head": "codex/panel-validacion-movil",
+      "head_sha": "9f3346b5068122ec9024c7fb7280ddde83c88ec2",
+      "ci": [
+        {
+          "id": 41381487672,
+          "name": "Kronnos - auditoria determinista de scripts",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 58,
+          "jobs_url": "https://api.github.com/repos/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41381487672/jobs",
+          "logs_url": "https://api.github.com/repos/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41381487672/logs",
+          "workflow_id": 399520978
+        },
+        {
+          "id": 41381487788,
+          "name": "ORION Centro de Control - pruebas (sin Claude)",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 15,
+          "jobs_url": "https://api.github.com/repos/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41381487788/jobs",
+          "logs_url": "https://api.github.com/repos/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41381487788/logs",
+          "workflow_id": 393068166
+        }
+      ]
+    },
+    {
+      "number": 100,
+      "url": "https://github.com/Kronnos2006/xauusd-ema-atr-bot/pull/100",
+      "state": "open",
+      "merged": false,
+      "head": "codex/riskfolio-limites",
+      "head_sha": "8e690cb666974d99aa9596b634a31fd190fa97f4",
+      "ci": [
+        {
+          "id": 41382513037,
+          "name": "Kronnos - auditoria determinista de scripts",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 59,
+          "jobs_url": "https://api.github.com/repos/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41382513037/jobs",
+          "logs_url": "https://api.github.com/repos/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41382513037/logs",
+          "workflow_id": 399520978
+        },
+        {
+          "id": 41382513168,
+          "name": "Riskfolio - evaluacion offline con limites de riesgo",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 1,
+          "jobs_url": "https://api.github.com/repos/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41382513168/jobs",
+          "logs_url": "https://api.github.com/repos/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41382513168/logs",
+          "workflow_id": 404084845
+        }
+      ]
+    },
+    {
+      "number": 101,
+      "url": "https://github.com/Kronnos2006/xauusd-ema-atr-bot/pull/101",
+      "state": "open",
+      "merged": false,
+      "head": "docs/atlas-evidencia-recuperada",
+      "head_sha": "590a4d53e451028862c7155523dc239970344054",
+      "ci": []
+    },
+    {
+      "number": 102,
+      "url": "https://github.com/Kronnos2006/xauusd-ema-atr-bot/pull/102",
+      "state": "open",
+      "merged": false,
+      "head": "codex/instalacion-recuperacion-smoke",
+      "head_sha": "1c2fb305656824320895b619a5ddddfeb7f5e09b",
+      "ci": [
+        {
+          "id": 41383420023,
+          "name": "Kronnos - auditoria determinista de scripts",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 60,
+          "jobs_url": "https://api.github.com/repos/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41383420023/jobs",
+          "logs_url": "https://api.github.com/repos/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41383420023/logs",
+          "workflow_id": 399520978
+        },
+        {
+          "id": 41383419981,
+          "name": "Instalacion y recuperacion sintetica sin red financiera",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 1,
+          "jobs_url": "https://api.github.com/repos/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41383419981/jobs",
+          "logs_url": "https://api.github.com/repos/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41383419981/logs",
+          "workflow_id": 404090806
+        }
+      ]
+    },
+    {
+      "number": 103,
+      "url": "https://github.com/Kronnos2006/xauusd-ema-atr-bot/pull/103",
+      "state": "open",
+      "merged": false,
+      "head": "codex/permisos-pr-solo-lectura",
+      "head_sha": "56d601e6dce2fcf7d1d65710052c1cde2217508b",
+      "ci": [
+        {
+          "id": 41384012754,
+          "name": "Estado - actualizar ESTADO.md (sin IA)",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 7,
+          "jobs_url": "https://api.github.com/repos/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41384012754/jobs",
+          "logs_url": "https://api.github.com/repos/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41384012754/logs",
+          "workflow_id": 402124337
+        },
+        {
+          "id": 41384012897,
+          "name": "KT-004 multiactivo (ETH, SOL, BNB, XRP)",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 5,
+          "jobs_url": "https://api.github.com/repos/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41384012897/jobs",
+          "logs_url": "https://api.github.com/repos/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41384012897/logs",
+          "workflow_id": 402146136
+        },
+        {
+          "id": 41384012698,
+          "name": "Kronnos - auditoria determinista de scripts",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 62,
+          "jobs_url": "https://api.github.com/repos/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41384012698/jobs",
+          "logs_url": "https://api.github.com/repos/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41384012698/logs",
+          "workflow_id": 399520978
+        },
+        {
+          "id": 41384012644,
+          "name": "Permisos PR - regresiones estaticas de tokens",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 2,
+          "jobs_url": "https://api.github.com/repos/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41384012644/jobs",
+          "logs_url": "https://api.github.com/repos/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41384012644/logs",
+          "workflow_id": 404093493
+        },
+        {
+          "id": 41384012679,
+          "name": "KRONNOS - progreso de 32 hitos sin IA",
+          "status": "completed",
+          "conclusion": "success",
+          "run_number": 3,
+          "jobs_url": "https://api.github.com/repos/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41384012679/jobs",
+          "logs_url": "https://api.github.com/repos/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41384012679/logs",
+          "workflow_id": 403853118
+        }
+      ]
+    }
+  ]
+}
