@@ -42,3 +42,19 @@ El head del PR consultado es 3c943e96647b7bdc03abb06a913bb826bfdb9fe0. En un wor
 Cobertura comprobada: rechazo de censos manipulados, duplicados y recortados; rechazo de inventario declarado sin autenticación; verificación de orden temporal del sello y vínculo con la señal; rechazo de barras alteradas y retornos inventados; mínimo de 30 operaciones por fold; reporte del fold dominante y varianza entre ensayos como diagnósticos. La prueba test_confirmatorio_sigue_cerrado confirma que la ruta confirmatoria permanece bloqueada.
 
 La entrada autenticado=True en fixtures prueba la conciliación después de un supuesto de confianza. La autenticación real del inventario requiere una fuente externa, su vínculo verificable con los intentos y una política de custodia. Los sellos del censo recuperado prueban contenido y fecha del manifiesto, mientras que el total estadístico exige la conciliación de los artefactos con ejecuciones. F2 sigue abierto hasta tener ambas piezas y validar los folds con el protocolo aprobado. PR #42 permanece en borrador.
+
+## Conciliación de las tres notas recuperadas
+
+| Nota | Evidencia localizada | Clasificación para conciliación |
+|---|---|---|
+| KT-002, acierto prospectivo BTC | El job pronosticar de la corrida 39440365971 registró la base 13:00 UTC a las 14:35:37 UTC del 20-oct. El primer commit del CSV es 6a7cf49, de ese mismo segundo. | La nota describe un protocolo y su monitor prospectivo. La corrida identifica una emisión. Falta definir la familia estadística aplicable y su relación con las repeticiones horarias antes de contar ensayos. |
+| KT-003, diagnóstico histórico BTC | El registro de ejecución de df45730 identifica modo completo, run 39450116803 y SHA 6971d03fd1e4d582b66de0b7de3934e4fa7f4c62. La API confirma que esa corrida del workflow kt003.yml terminó correctamente. | La nota apunta a una ejecución histórica identificada. El número de variantes evaluadas y su pertenencia a la familia confirmatoria requieren conciliación. |
+| TF_Basket_H1, Fase 0 | La nota describe tres rondas de diagnóstico. El censo original ya enumera diagnostico_frecuencia_tf_basket_h1.py, mde_trend_following_tf_basket_h1.py y calibracion_efecto_tf_basket_h1.py. El commit 30df13a documenta el cierre en triage. | La nota agrupa evidencia de artefactos ya registrados. No hay una ejecución adicional identificada por la nota ni logs autenticados para cada variante. |
+
+Fuentes remotas:
+- KT-002: https://github.com/Kronnos2006/xauusd-ema-atr-bot/actions/runs/39440365971
+- KT-003: https://github.com/Kronnos2006/xauusd-ema-atr-bot/actions/runs/39450116803
+- Registro KT-003: https://github.com/Kronnos2006/xauusd-ema-atr-bot/blob/df45730/data/kt003/ejecucion.txt
+- Cierre TF_Basket_H1: https://github.com/Kronnos2006/xauusd-ema-atr-bot/commit/30df13a
+
+La conciliación usa metadatos, el log de la primera emisión de KT-002 y las notas versionadas. La custodia independiente y el inventario exhaustivo siguen pendientes. Los 77 artefactos del diagnóstico Unicode conservan su carácter documental.
