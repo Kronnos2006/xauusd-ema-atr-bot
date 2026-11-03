@@ -15,6 +15,7 @@ Dueño: Kronnos (Kronnos2006). Hora local: Costa Rica (UTC−6).
 7. Decide solo el dueño: dinero, holdouts, borrar datos, cambiar reglas o un experimento en curso.
 
 ## Qué estamos haciendo (manual, 1 línea por cambio, lo más nuevo arriba)
+- **2026-11-02 · Codex:** incidente KT-002 base23UTC conciliado con Git/Actions: 145 min 36 s entre commits tras fin de bucle y hasta la siguiente corrida; guardia marcó fresco en ambos extremos. Evidencia en docs/gerencia/AUDITORIA_KT002_2026-11-02.md.
 - **2026-11-02 · Codex:** PR #105 en borrador corrige rutas Unicode en un diagnóstico separado. Reproducción exacta de 74 registros sellados, diagnóstico de 77 artefactos y 15 pruebas PASS. Conciliación estadística y revisión del disparador de sellado pendientes.
 - **2026-11-02 · Codex:** recuperado el código del ensayo 79f142b en clon local nuevo, checkout disperso y venv sin pip. Smoke y 4 pruebas PASS. Respaldo remoto y recuperación operacional pendientes. Evidencia en docs/gerencia/ENSAYO_INTEGRACION_2026-11-02.md.
 - **2026-11-02 · Codex:** ensayo local de PR #97 y #99–#103 sobre a76e664, resultado 79f142b. Cinco conflictos solo en ESTADO.md, 74 pruebas Python, 17 comprobaciones de alertas, 15 vistas y restauración sintética PASS. Evidencia en docs/gerencia/ENSAYO_INTEGRACION_2026-11-02.md.
