@@ -19,6 +19,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Descargar archivo mensual disponible con CHECKSUM
+        if: github.event_name != 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
@@ -35,9 +36,18 @@ jobs:
           echo "::error::No se halló un archivo mensual completo y verificable en los últimos 6 meses"
           exit 1
       - name: Execute native FreqAI LightGBM fit/predict with real historical bars
+        if: github.event_name != 'pull_request'
         run: |
           docker run --rm --network none -v "$PWD:/work:ro" --entrypoint python freqtradeorg/freqtrade:stable_freqai /work/tools/kronnos_freqai_native_fit.py --historical-csv /work/artifacts/binance-historical.csv | tee artifacts/freqai-historical-report.json
           python3 -c 'import json; r=json.load(open("artifacts/freqai-historical-report.json")); assert r["freqai_model_fit_executed"] and r["freqai_model_predict_executed"] and r["dataset"]=="BINANCE_SPOT_HISTORICAL" and not r["promotion_permitted"]'
+      - name: Verificar recuento de FreqAI con datos sintéticos
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          docker run --rm --network none -v "$PWD:/work:ro" --entrypoint python freqtradeorg/freqtrade:stable_freqai /work/tools/kronnos_freqai_native_fit.py | tee artifacts/freqai-synthetic-report.json
+          python3 -c 'import json; r=json.load(open("artifacts/freqai-synthetic-report.json")); assert r["dataset"]=="SYNTHETIC" and r["freqai_model_fit_executed"] and r["freqai_model_predict_executed"]; assert r["n_purged"]==1 and r["n_train"]+r["n_purged"]+r["n_test"]==180'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -45,4 +55,5 @@ jobs:
           path: |
             artifacts/binance-historical.manifest.json
             artifacts/freqai-historical-report.json
+            artifacts/freqai-synthetic-report.json
           retention-days: 14
