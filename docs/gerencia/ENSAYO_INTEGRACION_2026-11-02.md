@@ -27,3 +27,17 @@ Se creó un entorno virtual nuevo con Python 3.13.5 y --without-pip. Los comando
 En el primer intento usé python -I con el script directo. Ese modo excluye la carpeta del script de la ruta de importación y causó ModuleNotFoundError. La forma documentada funciona. En esta prueba se usó -E -s para ignorar las variables PYTHON y el directorio de paquetes del usuario mientras se conserva la resolución de módulos locales.
 
 La evidencia cubre recuperación del código fijado y ejecución de sus comprobaciones sintéticas en un entorno nuevo. La recuperación de servicios operativos, la aceptación del dueño y el acta final siguen pendientes.
+
+## Reversión de una integración del PR #108
+
+Ensayo local sobre la base a76e664c387095a5dfd7d4708bc27de4d7932a2e y el candidato 79f142bce65b884b5557e5365d5b69306441e7af. Se creó un merge commit con dos padres en ese orden. Su árbol coincidió con el del candidato.
+
+Después se añadió un archivo sintético en un commit posterior independiente. Se ejecutó git revert -m 1 sobre el merge de ensayo. El árbol final coincidió byte por byte con la base para todos los archivos, excepto el archivo sintético, cuyo blob se conservó. El worktree terminó limpio.
+
+- Merge de ensayo: a54f1a9618496520f81dcaf74b42b74a38745f5e.
+- Reversión de ensayo: 58bc5acafa8f74bdc65c31f021511a58e146a4cc.
+- Blob posterior conservado: 2cc09c680723eccca7a2ca1e51e945bc31f82736.
+
+Si el dueño autoriza integrar y luego se requiere revertir, identificar el merge real y verificar que su primer padre es el master anterior. Preparar git revert -m 1 MERGE_REAL en una rama desde el master vigente, revisar el diff y pasar CI antes de integrar la reversión. Si hubo cambios posteriores sobre las mismas líneas, resolverlos conservando las publicaciones nuevas y detenerse ante un conflicto fuera de alcance. GitHub Pages publicaría otra versión del panel al integrar una reversión que alcance sus rutas vigiladas.
+
+Este ensayo prueba la reversión Git con un cambio posterior independiente. La restauración de servicios en producción y la validación de Pages después del despliegue requieren una integración autorizada.
