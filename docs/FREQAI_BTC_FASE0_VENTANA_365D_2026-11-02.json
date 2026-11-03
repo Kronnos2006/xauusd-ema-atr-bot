@@ -1,0 +1,145 @@
+{
+  "start_utc": "2024-09-01T00:00:00Z",
+  "end_exclusive_utc": "2025-09-01T00:00:00Z",
+  "expected_hours": 8760,
+  "observed_hours": 8760,
+  "missing_hours": 0,
+  "duplicates": 0,
+  "out_of_range": 0,
+  "scheduled_cuts": 2190,
+  "eligible_cuts": 2182,
+  "sources": [
+    {
+      "archive_sha256": "123f402c6dbf19b9b72b4af7ad4d5325c73ba4833148cc398b803d7a34ac5c5f",
+      "csv_sha256": "70fb2d0d3c4c807209ee730f0439ade0e6112a29d402d880a3281832b2ebf712",
+      "dataset": "BINANCE_SPOT_HISTORICAL",
+      "external_preregistration_verified": false,
+      "predictions_prospective": false,
+      "promotion_permitted": false,
+      "rows": 720,
+      "source": "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-09.zip",
+      "trading_real": false
+    },
+    {
+      "archive_sha256": "393b18ad2634f0cd3b2fd54321c8286ea143419cf3129b4cc44e089681912b03",
+      "csv_sha256": "4a1b6f4614719866f4c8f38fe7b6400f362f1012dd28adedc0d6da349c5f8583",
+      "dataset": "BINANCE_SPOT_HISTORICAL",
+      "external_preregistration_verified": false,
+      "predictions_prospective": false,
+      "promotion_permitted": false,
+      "rows": 744,
+      "source": "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-10.zip",
+      "trading_real": false
+    },
+    {
+      "archive_sha256": "7a51fe8811c754ff43a2be0ba10e53a6d4218521e27ac765fbc9a1ca0fc15bac",
+      "csv_sha256": "84dd4eae7e571ded9863e51ce1e77c84d92949b9b09896ba4a1a6f8aa22485e7",
+      "dataset": "BINANCE_SPOT_HISTORICAL",
+      "external_preregistration_verified": false,
+      "predictions_prospective": false,
+      "promotion_permitted": false,
+      "rows": 720,
+      "source": "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-11.zip",
+      "trading_real": false
+    },
+    {
+      "archive_sha256": "dfec812f73a84257b195cbdaed34d020fa77e845625c061c13bd6a60e7ef9372",
+      "csv_sha256": "d6b39ca07ff29a881d4fa878cd347f1c5375d141285beb53df8e2c2f0d61409a",
+      "dataset": "BINANCE_SPOT_HISTORICAL",
+      "external_preregistration_verified": false,
+      "predictions_prospective": false,
+      "promotion_permitted": false,
+      "rows": 744,
+      "source": "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-12.zip",
+      "trading_real": false
+    },
+    {
+      "archive_sha256": "e7f2aaa5396a8062a57ab29ce9fab2d76b2c84ec58815d4ab7b3fe16f78c7118",
+      "csv_sha256": "8cf0b9563ec7fc228c44ac18f61eab089e6377bb3b41bf8d437e0fd7c2912083",
+      "dataset": "BINANCE_SPOT_HISTORICAL",
+      "external_preregistration_verified": false,
+      "predictions_prospective": false,
+      "promotion_permitted": false,
+      "rows": 744,
+      "source": "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-01.zip",
+      "trading_real": false
+    },
+    {
+      "archive_sha256": "7420f55c93f61d7e734fc9d2507c7f2fcb5eaf48112277cecd241d4e1dbf3bd5",
+      "csv_sha256": "34b03e051200aa39de940800211789f7dbe5d5d5b7954b7677d23b47ae316177",
+      "dataset": "BINANCE_SPOT_HISTORICAL",
+      "external_preregistration_verified": false,
+      "predictions_prospective": false,
+      "promotion_permitted": false,
+      "rows": 672,
+      "source": "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-02.zip",
+      "trading_real": false
+    },
+    {
+      "archive_sha256": "b5ae8bb57e5e526c2050c9f8229b723871a5af47d80c53453abf61847a5f3aa6",
+      "csv_sha256": "663c15283e074212cc406f8e8eb9071ba6c892b05ac06a6ff5c7be010b9d4a43",
+      "dataset": "BINANCE_SPOT_HISTORICAL",
+      "external_preregistration_verified": false,
+      "predictions_prospective": false,
+      "promotion_permitted": false,
+      "rows": 744,
+      "source": "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-03.zip",
+      "trading_real": false
+    },
+    {
+      "archive_sha256": "bbec48ed5f7b603bbceff943ad0dccd3c29cae6d14161bcd2eabc9f762ff0a35",
+      "csv_sha256": "2786405f31593ccd03683b8b0b204e4e5c596ca26d1081e486c418a3afd65666",
+      "dataset": "BINANCE_SPOT_HISTORICAL",
+      "external_preregistration_verified": false,
+      "predictions_prospective": false,
+      "promotion_permitted": false,
+      "rows": 720,
+      "source": "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-04.zip",
+      "trading_real": false
+    },
+    {
+      "archive_sha256": "da6213bf4c57ea60faed3ef1f6a0ecb87f22ca7a3a67614604cf44d2d6b265fe",
+      "csv_sha256": "b4c3dfc5f7d46f40394f81fbb6cf01bb017c7ff8ad4d4f6370e8c03d92141bb5",
+      "dataset": "BINANCE_SPOT_HISTORICAL",
+      "external_preregistration_verified": false,
+      "predictions_prospective": false,
+      "promotion_permitted": false,
+      "rows": 744,
+      "source": "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-05.zip",
+      "trading_real": false
+    },
+    {
+      "archive_sha256": "d0760943538f48032dd066401e53f46bbf4868e6545929678e23bcdee032a5e8",
+      "csv_sha256": "08039429722de8090d469f62fdf2791ee14004214d9252aa10aad5e7176618b3",
+      "dataset": "BINANCE_SPOT_HISTORICAL",
+      "external_preregistration_verified": false,
+      "predictions_prospective": false,
+      "promotion_permitted": false,
+      "rows": 720,
+      "source": "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-06.zip",
+      "trading_real": false
+    },
+    {
+      "archive_sha256": "487738ee596380eaad32a2a93c75d17e1ebdd165a9b544c0e44be36079f5c02e",
+      "csv_sha256": "c43a3965951d7541d51f872d2eeb5d3c117b547712a18316c4ea92c04ce29287",
+      "dataset": "BINANCE_SPOT_HISTORICAL",
+      "external_preregistration_verified": false,
+      "predictions_prospective": false,
+      "promotion_permitted": false,
+      "rows": 744,
+      "source": "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-07.zip",
+      "trading_real": false
+    },
+    {
+      "archive_sha256": "a99ec5bac64333fb521b2ab1bac5e8387eede6413cc7841656a02be95613c64f",
+      "csv_sha256": "0b8bdba9c50b9376ffec2e9f99eb15f7a3e95a835bdc07c1831d3217c53a4142",
+      "dataset": "BINANCE_SPOT_HISTORICAL",
+      "external_preregistration_verified": false,
+      "predictions_prospective": false,
+      "promotion_permitted": false,
+      "rows": 744,
+      "source": "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-08.zip",
+      "trading_real": false
+    }
+  ]
+}

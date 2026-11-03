@@ -28,3 +28,13 @@ Para una mejora propuesta de 2 puntos porcentuales, alfa unilateral 5% y potenci
 | 50% | 7729 | 1289 |
 
 Los supuestos de discordancia son escenarios. El horizonte sin solape todavía puede tener dependencia serial. La potencia definitiva requiere un método temporal preregistrado, calibración independiente de su muestra confirmatoria y ajuste por cobertura. El diagnóstico emplea etiquetas históricas del archivo público, sin generar pronósticos ni acceder a reservas. La decisión metodológica de Fase 1 permanece pendiente.
+
+## Ventana histórica de 365 días
+
+Se verificaron doce archivos mensuales públicos desde el 1 de septiembre de 2024, inclusive, hasta el 1 de septiembre de 2025, exclusivo. Los CHECKSUM de Binance coincidieron y se comprobó de nuevo el hash de cada CSV antes de contar las horas.
+
+- 8760 de 8760 horas, sin huecos, duplicados ni fechas fuera de rango.
+- 2190 cortes de 4 h, de los cuales 2182 tienen contexto y etiqueta dentro de la ventana. Siete cortes pierden contexto al comienzo y uno necesita la apertura posterior al final.
+- La ventana acredita cobertura de una reconstrucción histórica. El registro de disponibilidad y latencia en el momento de emitir se verificará en una evaluación prospectiva.
+
+El [manifiesto de la ventana](FREQAI_BTC_FASE0_VENTANA_365D_2026-11-02.json) contiene las doce URLs y los hashes SHA-256. Se utilizó tools/kronnos_binance_vision_archive.py para cada mes. El conteo compara time_open_ms con la rejilla horaria UTC y aplica las reglas de contexto y objetivo descritas arriba.
