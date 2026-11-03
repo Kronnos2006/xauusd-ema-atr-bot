@@ -16,7 +16,26 @@ concurrency:
   group: estado-md
   cancel-in-progress: false
 jobs:
+  validar_pr:
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+      issues: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 60
+          persist-credentials: false
+      - name: Generar sin permiso de publicar
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 tools/generar_estado.py
   estado:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
