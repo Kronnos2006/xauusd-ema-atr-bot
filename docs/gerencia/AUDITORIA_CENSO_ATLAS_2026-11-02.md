@@ -34,3 +34,11 @@ El PR #105 agrega el modo --rutas-completas sobre la rama que contiene el genera
 Sobre el mismo árbol, el modo histórico reprodujo los 74 registros byte por byte. El diagnóstico de rutas completas produjo 77 artefactos y recuperó las tres notas identificadas. Pasaron las 15 pruebas del censo y se verificó que el modo nuevo rechaza tanto la carpeta sellada como una salida ya existente.
 
 El PR permanece en borrador. Antes de integrarlo, revisar el disparador push de atlas-custodia.yml en la rama base, porque una integración allí puede iniciar solicitudes a las autoridades de sellado. El diagnóstico queda separado de la evidencia sellada y de cualquier N confirmatorio.
+
+## Verificación de barreras en el PR #42
+
+El head del PR consultado es 3c943e96647b7bdc03abb06a913bb826bfdb9fe0. En un worktree separado de ese commit se ejecutó python -B -m unittest tests.test_atlas_barreras tests.test_atlas_evidencia tests.test_atlas_censo -q. Pasaron 41 pruebas sintéticas en 0,131 segundos. Las pruebas construyen su evidencia en directorios temporales.
+
+Cobertura comprobada: rechazo de censos manipulados, duplicados y recortados; rechazo de inventario declarado sin autenticación; verificación de orden temporal del sello y vínculo con la señal; rechazo de barras alteradas y retornos inventados; mínimo de 30 operaciones por fold; reporte del fold dominante y varianza entre ensayos como diagnósticos. La prueba test_confirmatorio_sigue_cerrado confirma que la ruta confirmatoria permanece bloqueada.
+
+La entrada autenticado=True en fixtures prueba la conciliación después de un supuesto de confianza. La autenticación real del inventario requiere una fuente externa, su vínculo verificable con los intentos y una política de custodia. Los sellos del censo recuperado prueban contenido y fecha del manifiesto, mientras que el total estadístico exige la conciliación de los artefactos con ejecuciones. F2 sigue abierto hasta tener ambas piezas y validar los folds con el protocolo aprobado. PR #42 permanece en borrador.
