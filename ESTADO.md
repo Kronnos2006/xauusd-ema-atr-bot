@@ -15,6 +15,7 @@ Dueño: Kronnos (Kronnos2006). Hora local: Costa Rica (UTC−6).
 7. Decide solo el dueño: dinero, holdouts, borrar datos, cambiar reglas o un experimento en curso.
 
 ## Qué estamos haciendo (manual, 1 línea por cambio, lo más nuevo arriba)
+- **2026-11-02 · Codex:** conciliación ATLAS del commit 9b39ff9: 74 IDs de intento, 70 variantes y tres rutas Unicode elegibles omitidas. Conservado el censo sellado; N exhaustivo y F2 pendientes. Evidencia en docs/gerencia/AUDITORIA_CENSO_ATLAS_2026-11-02.md.
 - **2026-11-02 · Codex:** auditoría de lectura de KT-002 en a76e664: 312 versiones, 309 puntuadas, 13 horas omitidas, resumen reproducido y cero violaciones. Evidencia en docs/gerencia/AUDITORIA_KT002_2026-11-02.md. PR pendientes de integración, Issue #88 10/32.
 - **2026-11-01 · Codex:** a pedido del dueño, consolidado docs/gerencia/RESUMEN_INTEGRAL_2026-11-01.md y snapshot JSON de Issue88/PR/CI. Avance verificado10/32=31,25%; seisPR97/99/100/101/102/103 abiertos, PR98 propuesta y PR42 bloqueado. Trabajo general PAUSADO por orden del dueño; esta tarea solo documenta, sin integrar ni ejecutar desarrollo/experimentos.
 - **2026-11-01 · Codex:** propietario aprobó PR #96; integrado en 9a9b05b. F6.2/F6.3 acreditados en Issue #88: 10/32 = 31,25 %. CI ORION 41380132835 y auditoría 41380132821 SUCCESS; revisión independiente PASS. Copia local master sincronizada; PROGRESO.md regenerado desde casillas verificadas. Validación visual móvil sigue pendiente; sin operaciones ni cambios a KT-002.
