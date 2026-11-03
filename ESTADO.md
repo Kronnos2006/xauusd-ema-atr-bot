@@ -15,6 +15,11 @@ Dueño: Kronnos (Kronnos2006). Hora local: Costa Rica (UTC−6).
 7. Decide solo el dueño: dinero, holdouts, borrar datos, cambiar reglas o un experimento en curso.
 
 ## Qué estamos haciendo (manual, 1 línea por cambio, lo más nuevo arriba)
+- **2026-11-02 · Codex:** propuesta #98 actualizada con evidencia Fase 0 y piloto prospectivo separado de 180 cortes. Pendientes aceptación del dueño, productor y recibo verificable de emisión. #108 listo para decisión, tablero 10/32.
+- **2026-11-02 · Codex:** Fase 0 FreqAI, siempre sube 1119/2182 (51,28 %) en ventana de diseño y autocorrelación −0,08 a un corte. Sensibilidad Bartlett en PR #98. Potencia pareada y protocolo confirmatorio pendientes.
+- **2026-11-02 · Codex:** auditoría sintética del combinador: agrupa ventanas distintas por fin y renormaliza pesos cuando falta un miembro. Contrato prospectivo y registro de costos propuestos en docs/COMBINADOR_BTC_PROPUESTA_CONTRATO_2026-11-02.md.
+- **2026-11-02 · Codex:** auditada corrida histórica FreqAI 41511415903. Fit/predict nativo confirmado, informe sobrecuenta una fila purgada (515 ajustadas frente a 516 informadas); sin serie individual para comparación pareada. Evidencia en docs/FREQAI_AUDITORIA_CORRIDA_41511415903.md.
+- **2026-11-02 · Codex:** Fase 0 del PR #98, ventana pública BTCUSDT de 365 días con 8760/8760 horas y 2182 cortes elegibles de 2190. Manifiesto de doce archivos verificados. Pendientes aprobación metodológica y evidencia prospectiva.
 - **2026-11-01 · Codex:** propietario aprobó PR #96; integrado en 9a9b05b. F6.2/F6.3 acreditados en Issue #88: 10/32 = 31,25 %. CI ORION 41380132835 y auditoría 41380132821 SUCCESS; revisión independiente PASS. Copia local master sincronizada; PROGRESO.md regenerado desde casillas verificadas. Validación visual móvil sigue pendiente; sin operaciones ni cambios a KT-002.
 - **2026-11-01 · Codex:** objetivo >=30 %; Issue #88 remoto registra 8/32 (25 %). Rama codex/panel-unificado-avance-30 prepara F6.2/F6.3: fuentes y hashes de cuatro módulos, alertas fail-closed y pruebas offline. Sin acreditar hitos; CI, revisión independiente e integración del dueño pendientes.
 - **2026-11-01 · Codex:** consulta local de avance: PROGRESO.md registra 5/32 hitos (15,6 %), corte inicial del 1-nov; sin recalcular ni verificar Issue #88 en vivo. Sin cambios de código ni experimentos.
