@@ -11,6 +11,7 @@ chats ni otros repositorios. La exhaustividad sigue requiriendo conciliación
 con un inventario independiente (control A.2/A.5).
 
 Uso:  python tools/atlas_censo_desde_git.py [--salida research/atlas/censo]
+Diagnóstico nuevo: añadir --rutas-completas --salida DIRECTORIO_NUEVO.
 """
 from __future__ import annotations
 
@@ -45,7 +46,7 @@ TESIS = "research/atlas/registro/tesis.jsonl"
 
 def git(*args: str) -> str:
     return subprocess.run(["git", "-C", str(RAIZ), *args], check=True,
-                          capture_output=True, text=True).stdout
+                          capture_output=True, encoding="utf-8").stdout
 
 
 def utc(iso: str) -> str:
@@ -74,8 +75,12 @@ def preregistro_de(ruta: str, notas: list[str]) -> str:
     return "NO_PREREGISTRADO"
 
 
-def inventario() -> list[dict]:
-    rutas = git("ls-files").splitlines()
+def inventario(*, rutas_completas: bool = False) -> list[dict]:
+    if rutas_completas:
+        rutas = git("ls-files", "-z").removesuffix("\0").split("\0")
+    else:
+        # Mantener la representación usada para reproducir el censo sellado.
+        rutas = git("ls-files").splitlines()
     notas = [r for r in rutas if re.match(REGLAS[-1][1], r)]
     filas = []
     for ruta in rutas:
@@ -106,9 +111,11 @@ def inventario() -> list[dict]:
     return filas
 
 
-def construir(salida: Path) -> dict:
-    filas = inventario()
-    salida.mkdir(parents=True, exist_ok=True)
+def construir(salida: Path, *, rutas_completas: bool = False) -> dict:
+    if rutas_completas and salida.resolve().is_relative_to((RAIZ / "research/atlas/censo").resolve()):
+        raise ValueError("El diagnóstico debe quedar fuera del directorio del censo sellado")
+    filas = inventario(rutas_completas=rutas_completas)
+    salida.mkdir(parents=True, exist_ok=not rutas_completas)
     prev, lineas, fuentes = CERO, [], []
     for f in filas:
         ev = construir_evento(prev, f["intento_id"], f["variante_id"],
@@ -125,6 +132,9 @@ def construir(salida: Path) -> dict:
              "ultimo_hash": prev, "corte_utc": corte,
              "alcance": "cota inferior, solo artefactos versionados en este repo",
              "custodia": "PENDIENTE: sello RFC 3161 por workflow atlas-custodia"}
+    if rutas_completas:
+        ancla.update(alcance="diagnóstico de artefactos Git elegibles, sin N estadístico confirmado",
+                     custodia="NO SELLADO: inventario diagnóstico")
     (salida / "ANCLA_CENSO.json").write_text(
         json.dumps(ancla, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
     return ancla
@@ -132,5 +142,10 @@ def construir(salida: Path) -> dict:
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
-    p.add_argument("--salida", default="research/atlas/censo")
-    print(json.dumps(construir(RAIZ / p.parse_args().salida), indent=1, ensure_ascii=False))
+    p.add_argument("--salida")
+    p.add_argument("--rutas-completas", action="store_true")
+    args = p.parse_args()
+    if args.rutas_completas and not args.salida:
+        p.error("--rutas-completas requiere --salida con un directorio nuevo")
+    salida = RAIZ / (args.salida or "research/atlas/censo")
+    print(json.dumps(construir(salida, rutas_completas=args.rutas_completas), indent=1, ensure_ascii=False))
