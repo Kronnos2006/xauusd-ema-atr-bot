@@ -54,6 +54,7 @@ def main():
     print(json.dumps({"project":"Kronnos","engine":"FreqAI.LightGBMRegressor.fit",
         "freqai_model_fit_executed":True,"freqai_model_predict_executed":True,
         "freqai_full_pipeline_executed":False,"dataset":"BINANCE_SPOT_HISTORICAL" if a.historical_csv else "SYNTHETIC",
-        "n_train":split,"n_test":len(predictions),"directional_hits_exploratory":int(hits),"always_up_hits":int(sum(t>0 for t in y[split:])),
+        "n_train":len(dd["train_features"]),"n_purged":split-train_end,"n_test":len(predictions),
+        "directional_hits_exploratory":int(hits),"always_up_hits":int(sum(t>0 for t in y[split:])),
         "edge_demonstrated":False,"promotion_permitted":False,"trading_real":False}))
 if __name__=="__main__":main()
