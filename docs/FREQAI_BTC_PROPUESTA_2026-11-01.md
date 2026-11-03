@@ -97,5 +97,30 @@ son propuestas de Codex y requieren revisión metodológica independiente.
 Segundo agente Codex identificó necesidad de separar potencia por sensibilidad
 de discordancias observadas, contemplar dependencia serial, y precisar etiqueta,
 faltantes y tiempos. Este borrador incorpora esas distinciones; aún NO LISTO
-para ejecución: faltan parámetros estadísticos finales de bloques y potencia,
-Fase 0 real, decisión explícita y revisión metodológica del prerregistro final.
+para ejecución: falta estimar la discordancia pareada y la dependencia del candidato, fijar
+bloques y potencia, y obtener la decisión explícita y la revisión del
+prerregistro final. La cobertura y el diagnóstico de dependencia del
+baseline de Fase 0 están en FREQAI_BTC_FASE0_COBERTURA_2026-11-02.md.
+
+## Decisión para un piloto prospectivo separado
+
+Propuesta para el dueño: piloto de 30 días de FreqAI BTCUSDT Spot, seis
+cortes diarios de 4 h, usando el reloj de emisión y etiqueta de este
+documento. El objetivo del piloto es comprobar disponibilidad y
+reproducibilidad, y estimar discordancias para diseñar la confirmación.
+El intervalo comienza en el primer corte posterior a la aprobación y
+al registro de una versión ejecutable. Se conserva el calendario completo
+de 180 cortes y se registra cada fallo, retraso y abstención.
+
+Criterio operativo propuesto: al menos 171 de 180 cortes con emisión válida
+y anterior al inicio del objetivo. Cada emisión válida debe poder
+reproducirse a partir de sus entradas, imagen y modelo identificados.
+Registrar la publicación mediante un recibo verificable independiente
+del timestamp declarado por el productor. Antes de iniciar falta acordar
+ese mecanismo y congelar los parámetros del modelo.
+
+El piloto se excluye de la muestra confirmatoria. Sus etiquetas se unen
+solo una vez vencido el objetivo para estimar discordancias y dependencia.
+No fija el tamaño confirmatorio, declara ventaja ni inicia una comparación
+con costos. El plazo de 30 días y el criterio de cobertura son propuestas
+de Codex para la decisión del dueño.
