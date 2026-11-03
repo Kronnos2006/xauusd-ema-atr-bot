@@ -17,3 +17,13 @@ El primer PR se aplicó limpio. Los siguientes cinco entraron en conflicto únic
 La verificación del panel usó API 503 simulada en Playwright y servidor local. La restauración técnica utilizó datos sintéticos. El ensayo se ejecutó en Windows. Los PR conservan sus respectivas comprobaciones remotas en GitHub.
 
 Para integrar, verificar que los SHA de los PR coincidan con los probados y repetir el ensayo sobre master vigente. Si cambió la bitácora, conservar las entradas manuales concurrentes y la sección automática del master actual. Este resultado local queda listo para revisión del dueño. Las casillas del tablero se actualizan cuando se acepten los hitos y se integren los cambios correspondientes.
+
+## Recuperación desde un clon limpio
+
+Se clonó el repositorio local con git clone --no-checkout --no-local en una carpeta nueva. Se seleccionaron solo el smoke, sus dos módulos, las pruebas y la guía mediante sparse-checkout y se fijó HEAD en 79f142bce65b884b5557e5365d5b69306441e7af. El origen de este clon fue la rama local de ensayo. La disponibilidad de ese commit como respaldo remoto queda pendiente de integración.
+
+Se creó un entorno virtual nuevo con Python 3.13.5 y --without-pip. Los comandos python -E -s tools/installation_smoke.py y python -E -s -m unittest discover -s tests -p test_installation_smoke.py -v pasaron con un árbol limpio. El smoke verificó la restauración de 16 observaciones sintéticas, rechazó corrupción y reportó cero órdenes. Las cuatro pruebas de restauración aprobaron.
+
+En el primer intento usé python -I con el script directo. Ese modo excluye la carpeta del script de la ruta de importación y causó ModuleNotFoundError. La forma documentada funciona. En esta prueba se usó -E -s para ignorar las variables PYTHON y el directorio de paquetes del usuario mientras se conserva la resolución de módulos locales.
+
+La evidencia cubre recuperación del código fijado y ejecución de sus comprobaciones sintéticas en un entorno nuevo. La recuperación de servicios operativos, la aceptación del dueño y el acta final siguen pendientes.
