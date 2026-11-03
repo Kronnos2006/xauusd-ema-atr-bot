@@ -34,11 +34,36 @@ def _r(x: float):
 
 
 def minutos(desde: str, ahora: dt.datetime) -> float:
-    return (ahora - _t(desde)).total_seconds() / 60
+    fecha = _t(desde)
+    if fecha.tzinfo is None:
+        raise ValueError("Fecha sin zona horaria")
+    edad = (ahora - fecha).total_seconds() / 60
+    if edad < 0:
+        raise ValueError("Fecha futura")
+    return edad
 
 
 def decidir_kt002(corridas: list[dict], ultimo_registro: str | None, ahora: dt.datetime) -> dict:
     """corridas: de la más nueva a la más vieja, con status, conclusion, createdAt, databaseId."""
+    try:
+        if not isinstance(corridas, list):
+            raise ValueError("corridas no es lista")
+        edades = []
+        for c in corridas:
+            if not isinstance(c, dict) or c.get('status') not in VIVOS | {'completed'}:
+                raise ValueError("estado de corrida desconocido")
+            if c['status'] == 'completed' and c.get('conclusion') not in {
+                    'success', 'failure', 'timed_out', 'startup_failure', 'cancelled',
+                    'neutral', 'skipped', 'action_required', 'stale'}:
+                raise ValueError("conclusión desconocida")
+            edades.append(minutos(c['createdAt'], ahora))
+        if edades != sorted(edades):
+            raise ValueError("corridas fuera de orden temporal")
+        if ultimo_registro:
+            minutos(ultimo_registro, ahora)
+    except (ValueError, TypeError, KeyError, AttributeError):
+        return {"accion": "alerta", "motivo": "NO VERIFICADO: entrada o fecha inválida; no relanzar ni cancelar",
+                "edad_registro_min": None, "vivas": None, "en_curso": None, "en_cola": None}
     edad_reg = minutos(ultimo_registro, ahora) if ultimo_registro else float("inf")
     vivas = [c for c in corridas if c.get("status") in VIVOS]
     en_curso = [c for c in vivas if c.get("status") == "in_progress"]
@@ -74,14 +99,21 @@ def frescura(archivos: dict[str, str | None], limites_min: dict[str, float], aho
         if not f:
             problemas.append(f"{nombre}: falta")
             continue
-        edad = minutos(f, ahora)
+        try:
+            edad = minutos(f, ahora)
+        except (ValueError, TypeError, AttributeError):
+            problemas.append(f"{nombre}: NO VERIFICADO, fecha inválida o futura")
+            continue
         if edad > limite:
             problemas.append(f"{nombre}: {round(edad)} min sin actualizar (límite {round(limite)})")
     return problemas
 
 
 def tendencia_vieja(generado_utc: str | None, ahora: dt.datetime, horas: float = 20) -> bool:
-    return generado_utc is None or minutos(generado_utc, ahora) > horas * 60
+    try:
+        return generado_utc is None or minutos(generado_utc, ahora) > horas * 60
+    except (ValueError, TypeError, AttributeError):
+        return True
 
 
 DEDUPE_MIN = 40
@@ -94,7 +126,10 @@ def saltar_duplicada(ultimo_spread_publicado: str | None, origen: str, ahora: dt
     """Solo se salta la medición de spread (nunca la verificación de salud). Manual nunca se salta."""
     if origen == "manual" or not ultimo_spread_publicado:
         return False
-    return minutos(ultimo_spread_publicado, ahora) < DEDUPE_MIN
+    try:
+        return minutos(ultimo_spread_publicado, ahora) < DEDUPE_MIN
+    except (ValueError, TypeError, AttributeError):
+        return False
 
 
 def _filas_spread(csv_texto: str | None) -> list[str]:
@@ -107,7 +142,7 @@ def verificar_salud(spread_csv_remoto: str | None, tendencia_remota: dict | None
     """Todo se mide contra lo publicado en GitHub (no contra la copia local). Vacío = sano."""
     filas = _filas_spread(spread_csv_remoto)
     ult_spread = filas[-1].split(",")[0] if filas else None
-    gen = (tendencia_remota or {}).get("generado_utc")
+    gen = tendencia_remota.get("generado_utc") if isinstance(tendencia_remota, dict) else None
     probs = frescura({"tendencia.json": gen, "spread_btcusdt.csv": ult_spread, "registro KT-002": registro_kt002},
                      LIMITES_MIN, ahora)
     if esperado_spread_utc and not any(f.split(",")[0] == esperado_spread_utc for f in filas):
@@ -117,6 +152,8 @@ def verificar_salud(spread_csv_remoto: str | None, tendencia_remota: dict | None
     for paso, resultado in pasos.items():
         if resultado == "failure":
             probs.append(f"paso {paso} falló")
+        elif resultado != "success" and not (paso in {"spread", "velas"} and resultado == "skipped"):
+            probs.append(f"paso {paso}: NO VERIFICADO ({resultado})")
     if alerta:
         probs.append(alerta)
     return probs

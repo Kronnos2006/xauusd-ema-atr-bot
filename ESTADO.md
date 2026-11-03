@@ -15,6 +15,7 @@ Dueño: Kronnos (Kronnos2006). Hora local: Costa Rica (UTC−6).
 7. Decide solo el dueño: dinero, holdouts, borrar datos, cambiar reglas o un experimento en curso.
 
 ## Qué estamos haciendo (manual, 1 línea por cambio, lo más nuevo arriba)
+- **2026-11-02 · Claude:** el dueño me pasó el mando del trabajo de Codex. PR #104: conflicto de ESTADO.md resuelto conservando ambas listas; sin cambios de datos, KT-002 ni holdouts. Integración pendiente del dueño.
 - **2026-11-02 · Codex:** #108 autorizado e integrado cfff9ee con 9/9 checks. Pages 41569990894 y guardia posterior 41570303171 PASS. Riskfolio solo evaluación. Issue #88 10/32, hitos sujetos a aceptación explícita. #98 sigue como propuesta.
 - **2026-11-02 · Codex:** conciliadas tres notas Unicode con evidencia: KT002 run 39440365971, KT003 run 39450116803, TF_Basket_H1 vinculado a tres scripts ya inventariados. N estadístico pendiente.
 - **2026-11-02 · Codex:** verificación del PR #42 en 3c943e9: 41 pruebas sintéticas de barreras, evidencia y censo PASS. Confirmatorio cerrado y N exhaustivo pendiente. Evidencia en AUDITORIA_CENSO_ATLAS_2026-11-02.md.
@@ -26,6 +27,14 @@ Dueño: Kronnos (Kronnos2006). Hora local: Costa Rica (UTC−6).
 - **2026-11-02 · Codex:** conciliación ATLAS del commit 9b39ff9: 74 IDs de intento, 70 variantes y tres rutas Unicode elegibles omitidas. Conservado el censo sellado; N exhaustivo y F2 pendientes. Evidencia en docs/gerencia/AUDITORIA_CENSO_ATLAS_2026-11-02.md.
 - **2026-11-02 · Codex:** auditoría de lectura de KT-002 en a76e664: 312 versiones, 309 puntuadas, 13 horas omitidas, resumen reproducido y cero violaciones. Evidencia en docs/gerencia/AUDITORIA_KT002_2026-11-02.md. PR pendientes de integración, Issue #88 10/32.
 - **2026-11-01 · Codex:** a pedido del dueño, consolidado docs/gerencia/RESUMEN_INTEGRAL_2026-11-01.md y snapshot JSON de Issue88/PR/CI. Avance verificado10/32=31,25%; seisPR97/99/100/101/102/103 abiertos, PR98 propuesta y PR42 bloqueado. Trabajo general PAUSADO por orden del dueño; esta tarea solo documenta, sin integrar ni ejecutar desarrollo/experimentos.
+- **2026-11-01 · Codex:** consulta API de master devuelve protected=false y rulesets[]; no se observó protección técnica de revisión en esas respuestas. No se cambian ajustes: primero diseñar permisos/bypass de bots sin detener KT002/guardia. PR103 revisión técnica acotada PASS; cuatro CI SUCCESS, regresión KT004 aún en curso. No cerrar F1.4.
+- **2026-11-01 · Codex:** rama codex/permisos-pr-solo-lectura reduce privilegios de validaciónPR en estado/progreso/KT004; producción Estado/Progreso restringida a master fueraPR, KT004 solo jobpruebas. Chequeo estático3jobs/2guards y4 pruebas negativas PASS; CI y revisión pendientes. No altera datos/parámetros/ejecuciones ni KT002. No certifica permisos efectivos ni cierra F1.4. PR102 instalación sintética con CIWindows/Linux SUCCESS, revisión independiente PASS.
+- **2026-11-01 · Codex:** rama codex/instalacion-recuperacion-smoke agrega guía de instalación/dependencias/permisos y smoke stdlib: fixture sintético16 períodos -> métricas/costos -> manifiesto -> restauración -> rechazo de corrupción. Local PASS y4 pruebas negativas PASS; CIWindows/Linux y revisión pendientes. No sustituye entrega operacional completa ni autoriza F8.2/F8.3/F8.4; mantiene abiertos todos los frentes pendientes.
+- **2026-11-01 · Codex:** PR101 ampliado: DigiCert también ts-verify OK contra manifiesto usando cadenaTSR y CA bundle instalado de Git (hash en provenance). Ambos sellos originales27-oct recuperados; revisión independiente de ZIP/manifiesto/FreeTSA/DigiCert PASS. No certifica revocación, censo exhaustivo ni custodiaWORM.
+- **2026-11-01 · Codex:** recuperado artifact12734829078 de run40507359902 (27-oct, Claude): censo74 con hashes coincidentes al commit9b39ff9 y sello FreeTSA verificado contra manifiesto/CA HTTPS. DigiCert verificado también en la ampliación posterior (ver línea más reciente). Respaldo original y procedencia en docs/evidencia/ATLAS-CENSO-20261027. No acredita censo exhaustivo ni custodiaWORM; PR42 sigue bloqueado. PR97/99/100 con CI y revisión técnica PASS, pendientes aceptación/integración.
+- **2026-11-01 · Codex:** rama codex/riskfolio-limites reutiliza borrador ChatGPT (0675390/256231a); Riskfolio7.4.0 real aislado, 12 pruebas sintéticas PASS y pip check correcto. Límites25% posición/100% bruto/10%vol, correlación y Nef; sin optimización, stops/costos ni aprobación financiera. Dependencias fijadas, CI/revisión pendientes. Localizado censo ATLAS de Claude en rama research/atlas-bloqueo-a-custodia-20261027: 74 como cota inferior, custodio inmutable pendiente; no confundir con censo exhaustivo.
+- **2026-11-01 · Codex:** validación móvil en rama codex/panel-validacion-movil: corregido desbordamiento 767px en viewport360; 15 vistas (360/390/1280 x 5 pestañas) PASS con API503 simulada y captura360 inspeccionada. 11+2 pruebas Python PASS. CI/revisión y aceptación del manual por el dueño pendientes; sin acreditar F6.4. PR97 seguridad listo sin integrar; PR98 propuesta FreqAI pendiente de metodología y decisión.
+- **2026-11-01 · Codex:** nueva meta abarca los ocho frentes pendientes. Rama codex/seguridad-guardia-auditoria corrige falsos sanos por fechas inválidas/futuras y pasos obligatorios omitidos; entradas desconocidas alertan sin dispatch. 28+6+3 pruebas locales PASS. Auditoría acotada documentada; revisión y CI pendientes. Sin cambios a KT-002 ni holdouts. Usuario pide propuesta recomendada para BTC: diseño pendiente, sin evaluación nueva.
 - **2026-11-01 · Codex:** propietario aprobó PR #96; integrado en 9a9b05b. F6.2/F6.3 acreditados en Issue #88: 10/32 = 31,25 %. CI ORION 41380132835 y auditoría 41380132821 SUCCESS; revisión independiente PASS. Copia local master sincronizada; PROGRESO.md regenerado desde casillas verificadas. Validación visual móvil sigue pendiente; sin operaciones ni cambios a KT-002.
 - **2026-11-01 · Codex:** objetivo >=30 %; Issue #88 remoto registra 8/32 (25 %). Rama codex/panel-unificado-avance-30 prepara F6.2/F6.3: fuentes y hashes de cuatro módulos, alertas fail-closed y pruebas offline. Sin acreditar hitos; CI, revisión independiente e integración del dueño pendientes.
 - **2026-11-01 · Codex:** consulta local de avance: PROGRESO.md registra 5/32 hitos (15,6 %), corte inicial del 1-nov; sin recalcular ni verificar Issue #88 en vivo. Sin cambios de código ni experimentos.
@@ -54,26 +63,33 @@ Dueño: Kronnos (Kronnos2006). Hora local: Costa Rica (UTC−6).
 
 ## Estado automático
 <!-- AUTO:INICIO (lo escribe tools/generar_estado.py; no editar a mano) -->
-_Generado 2026-11-01 17:57 UTC · 0 llamadas a IA_
+_Generado 2026-11-02 21:45 UTC · 0 llamadas a IA_
 
 ### KT-002 (BTC, dirección a 4 h, prospectivo)
-- Pronósticos: 280 · vencidos: 276 · horas omitidas: 12 · actualizado: 2026-11-01T17:07 UTC
-- Último registro: 2026-11-01T17:07 UTC (hace 0.8 h)
-- **Sin solape (lo que cuenta), n = 68:**
-  - Siempre sube (referencia): 33/68 = 48.5 %
-  - Kronos: 35/68 = 51.5 % (IC95 39.8 %–62.9 %; p vs sube = 0.8679)
-  - TimesFM: 34/68 = 50.0 % (IC95 38.4 %–61.6 %; p vs sube = 1.0)
-  - KT-001 50/50: 31/68 = 45.6 % (IC95 34.3 %–57.3 %; p vs sube = 0.845)
+- Pronósticos: 308 · vencidos: 304 · horas omitidas: 12 · actualizado: 2026-11-02T21:07 UTC
+- Último registro: 2026-11-02T21:07 UTC (hace 0.6 h)
+- **Sin solape (lo que cuenta), n = 75:**
+  - Siempre sube (referencia): 35/75 = 46.7 %
+  - Kronos: 37/75 = 49.3 % (IC95 38.3 %–60.4 %; p vs sube = 0.8679)
+  - TimesFM: 35/75 = 46.7 % (IC95 35.8 %–57.8 %; p vs sube = 1.0)
+  - KT-001 50/50: 33/75 = 44.0 % (IC95 33.3 %–55.2 %; p vs sube = 0.845)
 - Veredicto automático: ningún modelo supera a «siempre sube». Sin ventaja demostrada.
 
 ### GitHub Actions y PR
-- kt002.yml: 7/8 verdes en las últimas 10 · última success 2026-11-01T09:08
-- guardia.yml: 10/10 verdes en las últimas 10 · última success 2026-11-01T17:07
-- informe-gerencia-sin-ia.yml: 5/5 verdes en las últimas 10 · última success 2026-10-31T17:19
+- kt002.yml: 8/9 verdes en las últimas 10 · última cancelled 2026-11-02T16:07
+- guardia.yml: 10/10 verdes en las últimas 10 · última success 2026-11-02T21:07
+- informe-gerencia-sin-ia.yml: 6/6 verdes en las últimas 10 · última success 2026-11-01T18:02
 - kronnos-ensemble.yml: 2/2 verdes en las últimas 10 · última success 2026-10-30T00:39
-- PR abiertos: #42 (borrador) ATLAS: barreras estadísticas DSR, ≥30 operaciones y sello re
+- PR abiertos: #104 Documentación integral del trabajo y avance oficial: 31,25 %, #103 Reduce permisos de prueba PR en Estado, Progreso y KT004, #102 Instalación y recuperación: guía y smoke sintético sin opera, #101 ATLAS: recupera sello externo original y preserva evidencia , #100 Riskfolio: evaluación offline real y controles de riesgo con, #99 ORION móvil: corrige desbordamiento y valida 15 vistas con f, #98 Propuesta FreqAI BTC: Fase 0 descriptiva, protocolo y costos, #97 Guardia: rechaza fechas futuras, pasos omitidos y entradas n, #42 (borrador) ATLAS: barreras estadísticas DSR, ≥30 operaciones y sello re
 - Avisos «guardia» abiertos: 0
 
 ### Últimos cambios no rutinarios
-- 2026-10-31 · estado-bot · Estado: ESTADO.md automático 2026-10-31T17:17Z
+- 2026-11-02 · guardia-bot · Mercado: datos conciliados (guardia)
+- 2026-11-02 · guardia-bot · Mercado: datos conciliados (guardia)
+- 2026-11-02 · guardia-bot · Mercado: datos conciliados (guardia)
+- 2026-11-02 · guardia-bot · Mercado: datos conciliados (guardia)
+- 2026-11-02 · guardia-bot · Mercado: datos conciliados (guardia)
+- 2026-11-02 · guardia-bot · Mercado: datos conciliados (guardia)
+- 2026-11-02 · guardia-bot · Mercado: datos conciliados (guardia)
+- 2026-11-02 · guardia-bot · Mercado: datos conciliados (guardia)
 <!-- AUTO:FIN -->

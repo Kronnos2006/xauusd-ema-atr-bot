@@ -1,0 +1,31 @@
+name: Instalacion y recuperacion sintetica sin red financiera
+on:
+  pull_request:
+    paths:
+      - tools/installation_smoke.py
+      - tools/kronnos_finance_offline.py
+      - tools/lineage_kronnos.py
+      - tests/test_installation_smoke.py
+      - docs/INSTALACION_RECUPERACION.md
+      - .github/workflows/installation-smoke.yml
+permissions:
+  contents: read
+jobs:
+  verify:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Sin dependencias adicionales
+        run: python tools/installation_smoke.py
+      - name: Pruebas negativas de recuperacion
+        run: python -m unittest discover -s tests -p test_installation_smoke.py -v
