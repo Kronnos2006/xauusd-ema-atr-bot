@@ -2,6 +2,7 @@
 import csv
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -62,15 +63,16 @@ class AuditTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             path = Path(td) / "data.csv"
             command = [sys.executable, str(MOD), "--csv", str(path)]
+            env = os.environ | {"PYTHONIOENCODING": "utf-8"}
             for omitted, expected in ((None, 0), (22, 1)):
                 with self.subTest(omitted=omitted):
                     with path.open("w", newline="", encoding="utf-8") as stream:
                         writer = csv.DictWriter(stream, fieldnames=COLUMNS)
                         writer.writeheader()
                         writer.writerows(row(hour) for hour in range(25) if hour != omitted)
-                    default = subprocess.run(command, capture_output=True, check=False)
+                    default = subprocess.run(command, capture_output=True, check=False, env=env)
                     gated = subprocess.run(command + ["--require-contiguous-last-24"],
-                                           capture_output=True, check=False)
+                                           capture_output=True, check=False, env=env)
                     self.assertEqual(default.returncode, 0)
                     self.assertEqual(gated.returncode, expected, gated.stderr)
                     self.assertEqual(json.loads(gated.stdout)["veredicto_cobertura_24_bases"],
