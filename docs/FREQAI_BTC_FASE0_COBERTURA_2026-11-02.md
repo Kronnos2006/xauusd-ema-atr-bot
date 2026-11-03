@@ -38,3 +38,22 @@ Se verificaron doce archivos mensuales públicos desde el 1 de septiembre de 202
 - La ventana acredita cobertura de una reconstrucción histórica. El registro de disponibilidad y latencia en el momento de emitir se verificará en una evaluación prospectiva.
 
 El [manifiesto de la ventana](FREQAI_BTC_FASE0_VENTANA_365D_2026-11-02.json) contiene las doce URLs y los hashes SHA-256. Se utilizó tools/kronnos_binance_vision_archive.py para cada mes. El conteo compara time_open_ms con la rejilla horaria UTC y aplica las reglas de contexto y objetivo descritas arriba.
+
+## Dependencia temporal de la referencia en la ventana anual
+
+Sobre las mismas doce fuentes verificadas por SHA-256, se calculó la serie binaria de acierto de «siempre sube» en los 2182 cortes elegibles. Cada valor es 1 si apertura(base+4 h) > apertura(base), y 0 en otro caso. Hubo 1119 subidas, 1063 bajadas y cero empates. El acierto descriptivo fue 51,28 %.
+
+| Diagnóstico | Resultado |
+|---|---:|
+| Autocorrelación de aciertos, desfase 1 corte | −0,08000 |
+| Autocorrelación, desfase 6 cortes | −0,01167 |
+| Autocorrelación, desfase 42 cortes | −0,03002 |
+| Autocorrelación, desfase 168 cortes | +0,01023 |
+| Error estándar descriptivo bajo independencia | 1,0700 puntos porcentuales |
+| Error estándar Bartlett, 6 cortes | 0,9502 puntos porcentuales |
+| Error estándar Bartlett, 42 cortes | 0,8711 puntos porcentuales |
+| Error estándar Bartlett, 168 cortes | 0,8450 puntos porcentuales |
+
+Método reproducible: ordenar los cortes, centrar la serie con su media y calcular gamma(k) como la suma de productos centrados a desfase k dividida por 2182. Para cada L en {6,42,168}, usar gamma(0) + 2 × suma de (1−k/(L+1)) × gamma(k) para k entre 1 y L. Dividir por 2182 y tomar raíz cuadrada para el error estándar. Los tres límites corresponden a un día, una semana y cuatro semanas, y se muestran juntos como sensibilidad.
+
+La autocorrelación observada ilustra que ventanas sin solape pueden tener estructura temporal. Estos errores son del baseline aislado y de una ventana de diseño. La potencia confirmatoria requiere la serie pareada de diferencias de acierto del candidato frente al baseline, con la dependencia y los faltantes contemplados. Los valores de la tabla no se aplican como descuento al tamaño de muestra calculado antes.
