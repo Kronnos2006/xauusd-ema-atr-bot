@@ -106,6 +106,8 @@ def main():
     parser.add_argument("--csv", default="data/kt002/predicciones.csv")
     parser.add_argument("--max-age-hours", type=float, default=None,
                         help="Opcional: marcar fallo si la ultima base esta demasiado atrasada")
+    parser.add_argument("--require-contiguous-last-24", action="store_true",
+                        help="Exigir 24 bases horarias completas hasta la última base publicada")
     args = parser.parse_args()
     result = inspect(args.csv)
     if args.max_age_hours is not None:
@@ -117,8 +119,14 @@ def main():
         if age_hours is None or age_hours > args.max_age_hours:
             result["veredicto_integridad_basica"] = "REVISAR"
             result["errores_estructura"].append("Ultima base fuera de umbral de frescura")
+    failed = result["veredicto_integridad_basica"] == "REVISAR"
+    if args.require_contiguous_last_24:
+        missing = result["horas_omitidas_ultimas_24_bases"]
+        coverage_ok = result["bases_unicas"] >= 24 and missing == 0
+        result["veredicto_cobertura_24_bases"] = "COMPLETA" if coverage_ok else "INCOMPLETA"
+        failed = failed or not coverage_ok
     print(json.dumps(result, ensure_ascii=False, indent=2))
-    raise SystemExit(1 if result["veredicto_integridad_basica"] == "REVISAR" else 0)
+    raise SystemExit(1 if failed else 0)
 
 
 if __name__ == "__main__":

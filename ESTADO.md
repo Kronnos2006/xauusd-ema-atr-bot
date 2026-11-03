@@ -15,6 +15,7 @@ Dueño: Kronnos (Kronnos2006). Hora local: Costa Rica (UTC−6).
 7. Decide solo el dueño: dinero, holdouts, borrar datos, cambiar reglas o un experimento en curso.
 
 ## Qué estamos haciendo (manual, 1 línea por cambio, lo más nuevo arriba)
+- **2026-11-02 · Codex:** control optativo de continuidad de 24 bases en el auditor KT-002. En a76e664 identifica la base omitida de las 23:00 UTC y devuelve 1 sin cambiar el veredicto estructural. Nueve pruebas PASS.
 - **2026-11-01 · Codex:** propietario aprobó PR #96; integrado en 9a9b05b. F6.2/F6.3 acreditados en Issue #88: 10/32 = 31,25 %. CI ORION 41380132835 y auditoría 41380132821 SUCCESS; revisión independiente PASS. Copia local master sincronizada; PROGRESO.md regenerado desde casillas verificadas. Validación visual móvil sigue pendiente; sin operaciones ni cambios a KT-002.
 - **2026-11-01 · Codex:** objetivo >=30 %; Issue #88 remoto registra 8/32 (25 %). Rama codex/panel-unificado-avance-30 prepara F6.2/F6.3: fuentes y hashes de cuatro módulos, alertas fail-closed y pruebas offline. Sin acreditar hitos; CI, revisión independiente e integración del dueño pendientes.
 - **2026-11-01 · Codex:** consulta local de avance: PROGRESO.md registra 5/32 hitos (15,6 %), corte inicial del 1-nov; sin recalcular ni verificar Issue #88 en vivo. Sin cambios de código ni experimentos.
