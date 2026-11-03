@@ -15,6 +15,7 @@ Dueño: Kronnos (Kronnos2006). Hora local: Costa Rica (UTC−6).
 7. Decide solo el dueño: dinero, holdouts, borrar datos, cambiar reglas o un experimento en curso.
 
 ## Qué estamos haciendo (manual, 1 línea por cambio, lo más nuevo arriba)
+- **2026-11-02 · Codex:** #108 autorizado e integrado cfff9ee con 9/9 checks. Pages 41569990894 y guardia posterior 41570303171 PASS. Riskfolio solo evaluación. Issue #88 10/32, hitos sujetos a aceptación explícita. #98 sigue como propuesta.
 - **2026-11-02 · Codex:** conciliadas tres notas Unicode con evidencia: KT002 run 39440365971, KT003 run 39450116803, TF_Basket_H1 vinculado a tres scripts ya inventariados. N estadístico pendiente.
 - **2026-11-02 · Codex:** verificación del PR #42 en 3c943e9: 41 pruebas sintéticas de barreras, evidencia y censo PASS. Confirmatorio cerrado y N exhaustivo pendiente. Evidencia en AUDITORIA_CENSO_ATLAS_2026-11-02.md.
 - **2026-11-02 · Codex:** ensayo de reversión del PR #108 PASS. Revertir el merge restableció el árbol base y conservó el blob posterior independiente. Procedimiento documentado en ENSAYO_INTEGRACION_2026-11-02.md; integración del dueño pendiente.

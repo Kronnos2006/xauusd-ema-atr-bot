@@ -41,3 +41,18 @@ Después se añadió un archivo sintético en un commit posterior independiente.
 Si el dueño autoriza integrar y luego se requiere revertir, identificar el merge real y verificar que su primer padre es el master anterior. Preparar git revert -m 1 MERGE_REAL en una rama desde el master vigente, revisar el diff y pasar CI antes de integrar la reversión. Si hubo cambios posteriores sobre las mismas líneas, resolverlos conservando las publicaciones nuevas y detenerse ante un conflicto fuera de alcance. GitHub Pages publicaría otra versión del panel al integrar una reversión que alcance sus rutas vigiladas.
 
 Este ensayo prueba la reversión Git con un cambio posterior independiente. La restauración de servicios en producción y la validación de Pages después del despliegue requieren una integración autorizada.
+
+## Integración autorizada y comprobaciones posteriores
+
+El dueño autorizó #108 con merge commit condicionado a conservar base y SHA, y nueve checks aprobados. Base a76e664 y candidato 79f142b comprobados inmediatamente antes del merge. Los nueve checks del candidato estaban en success. Merge cfff9ee2a2acd714efe6eba14ad01b506f5ceeaa, con padres a76e664 y 79f142b, el 2 de noviembre a las 21:04:38 de Costa Rica.
+
+- Pages 41569990894 terminó success sobre el SHA del merge. Se verificaron en producción la raíz, /orion/ y /visor/. El HTML coincide con sus blobs del merge, health.js coincide entre raíz y alias, y ambos JSON exponen solo lectura y omiten enlaces de oficina y descripciones. Playwright pasó 15 vistas del sitio publicado bajo un fallo de API 503 simulado.
+- Primera guardia posterior, 41570303171 a las 21:07:40 de Costa Rica, terminó success. Ejecutó 4c997cf, descendiente del merge con el mismo workflow y lógica de guardia. La revisión de KT-002 reportó accion=ok, edad_registro_min=0 y una corrida en curso. También pasó la verificación de salud contra GitHub.
+- El diff del merge en productor, workflow y datos de KT-002 está vacío. El registro posterior de las 21:07 procede de la acumulación habitual.
+- La única referencia a Riskfolio en workflows es kronnos-riskfolio-tests.yml. El código se conserva como evaluación aislada.
+- Issue #88 conserva 10/32. La autorización del merge no incluye aceptación de hitos. El dueño dejó el piloto FreqAI sin aprobar. PR #98 permanece como propuesta.
+
+Fuentes:
+- Merge: https://github.com/Kronnos2006/xauusd-ema-atr-bot/pull/108
+- Publicación: https://github.com/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41569990894
+- Guardia: https://github.com/Kronnos2006/xauusd-ema-atr-bot/actions/runs/41570303171
