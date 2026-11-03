@@ -26,3 +26,11 @@ El generador usa git ls-files en formato de líneas. Con la configuración prede
 La fecha que el generador llama ejecutado_utc viene de la fecha de committer del alta del artefacto. Sirve para trazar el historial, pero no establece cuándo se ejecutó un ensayo. Las asociaciones de prerregistro por nombre requieren verificación independiente.
 
 Conservar los 74 registros originales y sus sellos. La conciliación siguiente debe relacionar cada artefacto con evidencia de ejecución, ID de corrida, variante y versión, además de separar repeticiones de duplicados documentales. Los tres archivos omitidos son candidatos a conciliación. El resultado no autoriza aumentar el N de DSR de 74 a 77 ni cerrar F2.
+
+## Corrección preparada
+
+El PR #105 agrega el modo --rutas-completas sobre la rama que contiene el generador original. Requiere --salida con un directorio nuevo fuera de research/atlas/censo. El modo anterior sigue disponible para reproducir el sello.
+
+Sobre el mismo árbol, el modo histórico reprodujo los 74 registros byte por byte. El diagnóstico de rutas completas produjo 77 artefactos y recuperó las tres notas identificadas. Pasaron las 15 pruebas del censo y se verificó que el modo nuevo rechaza tanto la carpeta sellada como una salida ya existente.
+
+El PR permanece en borrador. Antes de integrarlo, revisar el disparador push de atlas-custodia.yml en la rama base, porque una integración allí puede iniciar solicitudes a las autoridades de sellado. El diagnóstico queda separado de la evidencia sellada y de cualquier N confirmatorio.
