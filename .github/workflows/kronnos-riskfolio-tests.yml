@@ -1,0 +1,27 @@
+name: Riskfolio - evaluacion offline con limites de riesgo
+on:
+  pull_request:
+    paths:
+      - tools/kronnos_riskfolio.py
+      - tests/test_kronnos_riskfolio.py
+      - research/requirements-riskfolio.txt
+      - .github/workflows/kronnos-riskfolio-tests.yml
+permissions:
+  contents: read
+jobs:
+  riskfolio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Dependencias aisladas de evaluacion
+        run: pip install -r research/requirements-riskfolio.txt
+      - name: Pruebas sinteticas y validacion de dependencias
+        run: |
+          pip check
+          python -m unittest discover -s tests -p test_kronnos_riskfolio.py -v
