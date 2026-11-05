@@ -21,7 +21,7 @@ ACCIONES = {"ok", "relanzar", "alerta"}  # "cancelar" no existe a propósito
 # Umbrales (minutos)
 REGISTRO_SANO = 130      # KT-002 escribe cada hora; >130 min sin registro con una corrida viva = falla silenciosa
 COLA_LARGA = 120         # en cola sin arrancar más de 2 h
-SOLAPE = 240             # encolar la siguiente corrida si la última se creó hace >4 h
+SOLAPE = 180             # pedir relevo desde las 3 h para absorber el retraso de la guardia
 PARADO = 75              # sin corridas vivas y sin registro hace >75 min = parado
 
 
@@ -75,8 +75,8 @@ def decidir_kt002(corridas: list[dict], ultimo_registro: str | None, ahora: dt.d
     if en_curso:
         if edad_reg > REGISTRO_SANO:
             r.update(accion="alerta", motivo=f"corrida viva sin registro hace {_r(edad_reg)} min: escalar al gerente, NO cancelar")
-        elif not en_cola and ult and minutos(ult["createdAt"], ahora) > SOLAPE:
-            r.update(accion="relanzar", motivo="solape 4 h: encolar la siguiente (espera en el grupo kt002)")
+        elif not en_cola and minutos(en_curso[0]["createdAt"], ahora) >= SOLAPE:
+            r.update(accion="relanzar", motivo="solape 3 h: encolar la siguiente (espera en el grupo kt002)")
         return r
     if en_cola:
         viejo = max(minutos(c["createdAt"], ahora) for c in en_cola)
