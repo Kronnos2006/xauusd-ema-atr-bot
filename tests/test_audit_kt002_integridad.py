@@ -1,6 +1,10 @@
 """Pruebas sintéticas: no descargan velas ni usan resultados de mercado."""
 import csv
 import importlib.util
+import json
+import os
+import subprocess
+import sys
 import tempfile
 import unittest
 from datetime import datetime, timedelta, timezone
@@ -54,6 +58,25 @@ class AuditTests(unittest.TestCase):
     def test_missing_hour(self):
         a = self.check([row(i) for i in range(24) if i != 10])
         self.assertEqual(a["horas_omitidas_ultimas_24_bases"], 1)
+
+    def test_coverage_gate_detects_gap_after_publication_resumes(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "data.csv"
+            command = [sys.executable, str(MOD), "--csv", str(path)]
+            env = os.environ | {"PYTHONIOENCODING": "utf-8"}
+            for omitted, expected in ((None, 0), (22, 1)):
+                with self.subTest(omitted=omitted):
+                    with path.open("w", newline="", encoding="utf-8") as stream:
+                        writer = csv.DictWriter(stream, fieldnames=COLUMNS)
+                        writer.writeheader()
+                        writer.writerows(row(hour) for hour in range(25) if hour != omitted)
+                    default = subprocess.run(command, capture_output=True, check=False, env=env)
+                    gated = subprocess.run(command + ["--require-contiguous-last-24"],
+                                           capture_output=True, check=False, env=env)
+                    self.assertEqual(default.returncode, 0)
+                    self.assertEqual(gated.returncode, expected, gated.stderr)
+                    self.assertEqual(json.loads(gated.stdout)["veredicto_cobertura_24_bases"],
+                                     "INCOMPLETA" if expected else "COMPLETA")
 
     def test_duplicate(self):
         a = self.check([row(0), row(0)])
