@@ -1,0 +1,26 @@
+name: Permisos PR - regresiones estaticas de tokens
+on:
+  pull_request:
+    paths:
+      - .github/workflows/estado.yml
+      - .github/workflows/progreso.yml
+      - .github/workflows/kt004.yml
+      - .github/workflows/workflow-permissions-tests.yml
+      - tools/workflow_permissions.py
+      - tests/test_workflow_permissions.py
+permissions:
+  contents: read
+jobs:
+  policy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: pip install PyYAML==6.0.3
+      - run: python tools/workflow_permissions.py
+      - run: python -m unittest discover -s tests -p test_workflow_permissions.py -v

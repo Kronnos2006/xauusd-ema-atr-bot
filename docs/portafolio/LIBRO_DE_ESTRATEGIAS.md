@@ -3,7 +3,7 @@
 Lleva: `jefe-portafolio`. Creado 2026-10-21. Sin dinero real ni órdenes.
 Estados: idea · en diseño · registrada · corriendo · descartada · aprobada. ("en auditoría" = en diseño con auditoría del desconfiado en curso.)
 
-**Hoy no hay ninguna estrategia aprobada.** Última revisión semanal: 2026-10-21 (miércoles; nuevas HP-004/005 caen en Fase 0).
+**Hoy no hay ninguna estrategia aprobada.** Última revisión semanal: 2026-11-04 (modo ahorro; sin hipótesis nuevas, sin cambios de estado; HP-003 a HP-007 y ES-001/002 siguen igual y esperan al desconfiado/Kensy).
 
 ## Activas
 

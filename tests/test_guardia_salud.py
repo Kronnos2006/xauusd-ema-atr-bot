@@ -42,6 +42,17 @@ class Kt002(unittest.TestCase):
         r = g.decidir_kt002([corrida("in_progress", creada_min=250)], iso(20), AHORA)
         self.assertEqual(r["accion"], "relanzar")
 
+    def test_solape_anticipa_relevo_a_las_tres_horas(self):
+        for edad, accion in ((179, "ok"), (180, "relanzar")):
+            with self.subTest(edad=edad):
+                r = g.decidir_kt002([corrida("in_progress", creada_min=edad)], iso(20), AHORA)
+                self.assertEqual(r["accion"], accion)
+
+    def test_solape_usa_la_corrida_activa_si_una_pendiente_fue_cancelada(self):
+        corridas = [corrida("completed", "cancelled", creada_min=5, id_=2),
+                    corrida("in_progress", creada_min=200)]
+        self.assertEqual(g.decidir_kt002(corridas, iso(20), AHORA)["accion"], "relanzar")
+
     def test_solape_no_duplica_si_ya_hay_en_cola(self):
         r = g.decidir_kt002([corrida("queued", creada_min=5, id_=2), corrida("in_progress", creada_min=250)], iso(20), AHORA)
         self.assertEqual(r["accion"], "ok")

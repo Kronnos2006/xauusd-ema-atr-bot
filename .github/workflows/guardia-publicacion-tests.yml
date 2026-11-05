@@ -3,6 +3,9 @@ on:
   pull_request:
     paths:
       - 'tools/publicar_mercado_seguro.py'
+      - 'tools/guardia_salud.py'
+      - 'tests/test_guardia_salud.py'
+      - 'tests/test_guardia_entradas_invalidas.py'
       - 'tests/test_publicar_mercado_seguro.py'
       - '.github/workflows/guardia.yml'
       - '.github/workflows/guardia-publicacion-tests.yml'
@@ -18,3 +21,7 @@ jobs:
         run: python3 -m py_compile tools/publicar_mercado_seguro.py tests/test_publicar_mercado_seguro.py
       - name: Pruebas adversariales de publicación
         run: python3 -m unittest discover -s tests -p 'test_publicar_mercado_seguro.py' -v
+      - name: Salud y entradas adversariales (sin red ni mutaciones)
+        run: |
+          python3 -m unittest discover -s tests -p 'test_guardia_salud.py' -v
+          python3 -m unittest discover -s tests -p 'test_guardia_entradas_invalidas.py' -v
