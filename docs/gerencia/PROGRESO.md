@@ -1,13 +1,13 @@
 # KRONNOS — avance verificado del plan de cierre
 
-## 31.2% — 10/32 hitos acreditados
+## 34.4% — 11/32 hitos acreditados
 
 > Este indicador mide hitos marcados en el plan de cierre, no el desarrollo histórico,
 > la calidad del sistema ni una rentabilidad demostrada. Cada hito necesita PR, SHA y CI.
 
 | Fase | Hitos | Avance |
 |---|---:|---:|
-| Fase 1 — P0 Seguridad y estabilidad (1/4) | 1/4 | 25% |
+| Fase 1 — P0 Seguridad y estabilidad (2/4) | 2/4 | 50% |
 | Fase 2 — P0 ATLAS, H3/H4 y custodia (0/4) | 0/4 | 0% |
 | Fase 3 — P1 FreqAI y Binance (3/4) | 3/4 | 75% |
 | Fase 4 — P1 Motor financiero (3/4) | 3/4 | 75% |
