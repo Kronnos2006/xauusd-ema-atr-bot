@@ -1,24 +1,24 @@
 {
- "generado_utc": "2026-11-07T17:07:44.500339+00:00",
+ "generado_utc": "2026-11-08T14:07:38.897098+00:00",
  "fuente": "Binance BTCUSDT spot (data-api.binance.vision), solo velas cerradas",
  "reglas": "ALCISTA: cierre>MA200 y MA50>MA200 y MA50 sube vs hace 10; BAJISTA: lo opuesto; LATERAL: otro caso (analista-tendencia.md)",
  "regimen_diario": "ALCISTA",
  "diario": {
-  "cierre": 75844.0,
-  "ma50": 82049.92,
-  "ma200": 73242.53,
-  "ma50_hace_10": 81885.68,
-  "ultima_vela": "2026-11-06T00:00:00+00:00",
-  "ret_7d": -0.0197,
-  "ret_30d": -0.0897,
-  "vol_30d_anual": 0.3559
+  "cierre": 75867.59,
+  "ma50": 81949.6,
+  "ma200": 73240.19,
+  "ma50_hace_10": 81943.44,
+  "ultima_vela": "2026-11-07T00:00:00+00:00",
+  "ret_7d": -0.0221,
+  "ret_30d": -0.072,
+  "vol_30d_anual": 0.3514
  },
  "regimen_4h": "BAJISTA",
  "h4": {
-  "cierre": 75758.01,
-  "ma50": 77490.97,
-  "ma200": 81002.75,
-  "ma50_hace_10": 78308.02,
-  "ultima_vela": "2026-11-07T12:00:00+00:00"
+  "cierre": 75981.09,
+  "ma50": 77352.2,
+  "ma200": 80758.02,
+  "ma50_hace_10": 77840.24,
+  "ultima_vela": "2026-11-08T08:00:00+00:00"
  }
 }
