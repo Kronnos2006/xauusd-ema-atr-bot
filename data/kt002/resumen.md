@@ -1,6 +1,6 @@
 # KT-002 — acierto direccional prospectivo (BTCUSDT 1h, 4h)
 
-Actualizado 2026-11-10 21:07 UTC. Pronósticos: 485, vencidos: 481.
+Actualizado 2026-11-10 22:07 UTC. Pronósticos: 486, vencidos: 482.
 
 Descriptivo. No mide rentabilidad ni costos. Interpretar solo **sin solape**.
 Horas omitidas desde el primer pronóstico: 27.
@@ -15,8 +15,8 @@ Horas omitidas desde el primer pronóstico: 27.
 
 ## Todos (ventanas solapadas, no independientes)
 
-- Kronos: 245/481 = 50.9 % (IC95 46.5–55.4)
-- TimesFM: 228/481 = 47.4 % (IC95 43.0–51.9)
-- KT-001 50/50: 232/481 = 48.2 % (IC95 43.8–52.7)
-- Referencia «siempre sube»: 223/481 = 46.4 % (IC95 41.9–50.8)
+- Kronos: 246/482 = 51.0 % (IC95 46.6–55.5)
+- TimesFM: 229/482 = 47.5 % (IC95 43.1–52.0)
+- KT-001 50/50: 233/482 = 48.3 % (IC95 43.9–52.8)
+- Referencia «siempre sube»: 224/482 = 46.5 % (IC95 42.1–50.9)
 - Prueba pareada vs «siempre sube» (McNemar exacto, p): Kronos 0.1152, TimesFM 0.6718, KT-001 0.5066
