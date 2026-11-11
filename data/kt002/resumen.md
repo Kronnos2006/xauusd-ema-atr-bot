@@ -1,22 +1,22 @@
 # KT-002 — acierto direccional prospectivo (BTCUSDT 1h, 4h)
 
-Actualizado 2026-11-11 00:07 UTC. Pronósticos: 488, vencidos: 484.
+Actualizado 2026-11-11 01:07 UTC. Pronósticos: 489, vencidos: 485.
 
 Descriptivo. No mide rentabilidad ni costos. Interpretar solo **sin solape**.
 Horas omitidas desde el primer pronóstico: 27.
 
 ## Sin solape (base cada 4 h)
 
-- Kronos: 57/120 = 47.5 % (IC95 38.8–56.4)
-- TimesFM: 51/120 = 42.5 % (IC95 34.0–51.4)
-- KT-001 50/50: 52/120 = 43.3 % (IC95 34.8–52.3)
-- Referencia «siempre sube»: 53/120 = 44.2 % (IC95 35.6–53.1)
-- Prueba pareada vs «siempre sube» (McNemar exacto, p): Kronos 0.6516, TimesFM 0.8318, KT-001 1.0
+- Kronos: 57/121 = 47.1 % (IC95 38.4–56.0)
+- TimesFM: 52/121 = 43.0 % (IC95 34.5–51.9)
+- KT-001 50/50: 52/121 = 43.0 % (IC95 34.5–51.9)
+- Referencia «siempre sube»: 53/121 = 43.8 % (IC95 35.3–52.7)
+- Prueba pareada vs «siempre sube» (McNemar exacto, p): Kronos 0.6516, TimesFM 1.0, KT-001 1.0
 
 ## Todos (ventanas solapadas, no independientes)
 
-- Kronos: 248/484 = 51.2 % (IC95 46.8–55.7)
-- TimesFM: 231/484 = 47.7 % (IC95 43.3–52.2)
-- KT-001 50/50: 235/484 = 48.5 % (IC95 44.1–53.0)
-- Referencia «siempre sube»: 226/484 = 46.7 % (IC95 42.3–51.1)
-- Prueba pareada vs «siempre sube» (McNemar exacto, p): Kronos 0.1152, TimesFM 0.6718, KT-001 0.5066
+- Kronos: 248/485 = 51.1 % (IC95 46.7–55.6)
+- TimesFM: 232/485 = 47.8 % (IC95 43.4–52.3)
+- KT-001 50/50: 235/485 = 48.4 % (IC95 44.0–52.9)
+- Referencia «siempre sube»: 226/485 = 46.6 % (IC95 42.2–51.0)
+- Prueba pareada vs «siempre sube» (McNemar exacto, p): Kronos 0.1152, TimesFM 0.5984, KT-001 0.5066
