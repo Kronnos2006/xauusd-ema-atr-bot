@@ -1,0 +1,43 @@
+name: Revisor de PR del bot Kronnos
+on:
+  pull_request:
+    branches: [master]
+    paths:
+      - MQL5/Experts/bot/**
+
+permissions:
+  contents: read
+
+jobs:
+  revisar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Revisar con el script y las reglas de la base
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -eu
+          revisor="$(mktemp -d)"
+          git show "${PR_BASE_SHA}:tools/revisor_pr/revisor_pr.py" > "$revisor/revisor_pr.py"
+          git show "${PR_BASE_SHA}:tools/revisor_pr/reglas_kronnos.json" > "$revisor/reglas_kronnos.json"
+          python3 "$revisor/revisor_pr.py" \
+            --repo . \
+            --base "$PR_BASE_SHA" \
+            --head "$PR_HEAD_SHA" \
+            --reglas "$revisor/reglas_kronnos.json" \
+            --aislar-pruebas \
+            --salida "$revisor/informe.md" > "$revisor/salida.log" || resultado=$?
+          if [ -f "$revisor/informe.md" ]; then
+            cat "$revisor/informe.md" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          exit "${resultado:-0}"
