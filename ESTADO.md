@@ -53,33 +53,33 @@ Dueño: Kronnos (Kronnos2006). Hora local: Costa Rica (UTC−6).
 
 ## Estado automático
 <!-- AUTO:INICIO (lo escribe tools/generar_estado.py; no editar a mano) -->
-_Generado 2026-11-17 21:02 UTC · 0 llamadas a IA_
+_Generado 2026-11-18 20:39 UTC · 0 llamadas a IA_
 
 ### KT-002 (BTC, dirección a 4 h, prospectivo)
-- Pronósticos: 651 · vencidos: 647 · horas omitidas: 28 · actualizado: 2026-11-17T20:07 UTC
-- Último registro: 2026-11-17T20:07 UTC (hace 0.9 h)
-- **Sin solape (lo que cuenta), n = 161:**
-  - Siempre sube (referencia): 68/161 = 42.2 %
-  - Kronos: 74/161 = 46.0 % (IC95 38.5 %–53.7 %; p vs sube = 0.4709)
-  - TimesFM: 74/161 = 46.0 % (IC95 38.5 %–53.7 %; p vs sube = 0.4799)
-  - KT-001 50/50: 70/161 = 43.5 % (IC95 36.1 %–51.2 %; p vs sube = 0.8714)
+- Pronósticos: 675 · vencidos: 671 · horas omitidas: 28 · actualizado: 2026-11-18T20:07 UTC
+- Último registro: 2026-11-18T20:07 UTC (hace 0.5 h)
+- **Sin solape (lo que cuenta), n = 167:**
+  - Siempre sube (referencia): 71/167 = 42.5 %
+  - Kronos: 77/167 = 46.1 % (IC95 38.7 %–53.7 %; p vs sube = 0.4709)
+  - TimesFM: 76/167 = 45.5 % (IC95 38.1 %–53.1 %; p vs sube = 0.5831)
+  - KT-001 50/50: 73/167 = 43.7 % (IC95 36.4 %–51.3 %; p vs sube = 0.8746)
 - Veredicto automático: ningún modelo supera a «siempre sube». Sin ventaja demostrada.
 
 ### GitHub Actions y PR
-- kt002.yml: 5/8 verdes en las últimas 10 · última success 2026-11-17T13:06
-- guardia.yml: 10/10 verdes en las últimas 10 · última success 2026-11-17T20:07
-- informe-gerencia-sin-ia.yml: 10/10 verdes en las últimas 10 · última success 2026-11-16T22:25
+- kt002.yml: 6/8 verdes en las últimas 10 · última success 2026-11-18T12:56
+- guardia.yml: 9/10 verdes en las últimas 10 · última success 2026-11-18T20:07
+- informe-gerencia-sin-ia.yml: 10/10 verdes en las últimas 10 · última success 2026-11-17T21:12
 - kronnos-ensemble.yml: 2/2 verdes en las últimas 10 · última success 2026-10-30T00:39
 - PR abiertos: #121 (borrador) Kronnos: revisor determinista para PR del bot, #118 MT5: permitir el envío de órdenes solo en cuentas demo, #107 (borrador) FreqAI: cuenta las filas ajustadas y prueba el informe con d, #105 (borrador) ATLAS: recupera rutas Unicode en el inventario diagnóstico, #104 Documentación integral del trabajo y avance oficial: 31,25 %, #98 Propuesta FreqAI BTC: Fase 0 descriptiva, protocolo y costos, #42 (borrador) ATLAS: barreras estadísticas DSR, ≥30 operaciones y sello re
 - Avisos «guardia» abiertos: 0
 
 ### Últimos cambios no rutinarios
-- 2026-11-17 · guardia-bot · Mercado: datos conciliados (guardia)
-- 2026-11-17 · guardia-bot · Mercado: datos conciliados (guardia)
-- 2026-11-17 · guardia-bot · Mercado: datos conciliados (guardia)
-- 2026-11-17 · guardia-bot · Mercado: datos conciliados (guardia)
-- 2026-11-17 · guardia-bot · Mercado: datos conciliados (guardia)
-- 2026-11-17 · guardia-bot · Mercado: datos conciliados (guardia)
-- 2026-11-17 · guardia-bot · Mercado: datos conciliados (guardia)
-- 2026-11-17 · guardia-bot · Mercado: datos conciliados (guardia)
+- 2026-11-18 · guardia-bot · Mercado: datos conciliados (guardia)
+- 2026-11-18 · guardia-bot · Mercado: datos conciliados (guardia)
+- 2026-11-18 · guardia-bot · Mercado: datos conciliados (guardia)
+- 2026-11-18 · guardia-bot · Mercado: datos conciliados (guardia)
+- 2026-11-18 · guardia-bot · Mercado: datos conciliados (guardia)
+- 2026-11-18 · guardia-bot · Mercado: datos conciliados (guardia)
+- 2026-11-18 · guardia-bot · Mercado: datos conciliados (guardia)
+- 2026-11-18 · guardia-bot · Mercado: datos conciliados (guardia)
 <!-- AUTO:FIN -->
