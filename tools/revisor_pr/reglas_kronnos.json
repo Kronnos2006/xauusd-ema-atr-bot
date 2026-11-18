@@ -1,0 +1,64 @@
+{
+  "descripcion": "Reglas de ESTADO.md de xauusd-ema-atr-bot: no tocar KT-002, workflows, datos ni holdouts; el adaptador MT5 solo opera en demo.",
+  "rutas_prohibidas": [
+    "tools/kt002_prospectivo.py",
+    ".github/workflows/*",
+    "data/*",
+    "*holdout*",
+    "*final_test*",
+    "registro_checksums.json"
+  ],
+  "rutas_permitidas": [
+    "MQL5/Experts/bot/*"
+  ],
+  "max_archivos": 6,
+  "archivo_envio_mt5": "MQL5/Experts/bot/broker/mt5.py",
+  "invariantes": [
+    {
+      "nombre": "MT5: solo demo antes de enviar",
+      "archivo": "MQL5/Experts/bot/broker/mt5.py",
+      "debe_contener": [
+        "ACCOUNT_TRADE_MODE_DEMO",
+        "raise PermissionError"
+      ],
+      "no_debe_contener": [
+        "(?i)(forzar|force|allow|permitir)_?real",
+        "(?i)skip_?demo",
+        "(?i)override"
+      ]
+    },
+    {
+      "nombre": "Bot: broker por defecto es paper",
+      "archivo": "MQL5/Experts/bot/runner.py",
+      "debe_contener": [
+        "default=\"paper\"|default='paper'"
+      ]
+    }
+  ],
+  "pruebas": [
+    {
+      "nombre": "test_mt5_broker",
+      "directorio": "MQL5/Experts/bot",
+      "comando": "python3 tests/test_mt5_broker.py",
+      "timeout_s": 300
+    },
+    {
+      "nombre": "test_contracts_signals",
+      "directorio": "MQL5/Experts/bot",
+      "comando": "python3 tests/test_contracts_signals.py",
+      "timeout_s": 300
+    },
+    {
+      "nombre": "test_risk",
+      "directorio": "MQL5/Experts/bot",
+      "comando": "python3 tests/test_risk.py",
+      "timeout_s": 300
+    },
+    {
+      "nombre": "test_state",
+      "directorio": "MQL5/Experts/bot",
+      "comando": "python3 tests/test_state.py",
+      "timeout_s": 300
+    }
+  ]
+}
