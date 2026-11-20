@@ -1,5 +1,5 @@
 """
-Bróker real de MetaTrader 5. Solo Windows con MT5 instalado.
+Adaptador de MetaTrader 5 para cuentas demo. Solo Windows con MT5 instalado.
 
 Cada retcode se trata explícitamente. Un ejecutor que solo mira
 'retcode == DONE' te va a mentir el día que el bróker devuelva REQUOTE
@@ -52,6 +52,26 @@ class Mt5Broker(Broker):
         ]
 
     def _enviar(self, req: dict) -> None:
+        try:
+            info = self.mt5.account_info()
+        except Exception as exc:
+            raise PermissionError(
+                "Orden MT5 bloqueada: account_info() falló; se requiere cuenta demo."
+            ) from exc
+        if info is None:
+            raise PermissionError(
+                "Orden MT5 bloqueada: account_info() no devolvió una cuenta; se requiere cuenta demo."
+            )
+        demo = getattr(self.mt5, "ACCOUNT_TRADE_MODE_DEMO", None)
+        if type(demo) is not int:
+            raise PermissionError("Orden MT5 bloqueada: falta un ACCOUNT_TRADE_MODE_DEMO válido.")
+        modo = getattr(info, "trade_mode", None)
+        if modo is None:
+            raise PermissionError("Orden MT5 bloqueada: la cuenta no informó trade_mode.")
+        if type(modo) is not int or modo != demo:
+            raise PermissionError(
+                f"Orden MT5 bloqueada: trade_mode={modo!r}; solo se permite ACCOUNT_TRADE_MODE_DEMO."
+            )
         r = self.mt5.order_send(req)
         if r is None:
             raise RuntimeError(f"order_send devolvió None: {self.mt5.last_error()}")
