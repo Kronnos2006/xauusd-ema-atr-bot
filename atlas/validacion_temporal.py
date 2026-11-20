@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from .laboratorio import Barra, Senal, instante, simular
+from .barreras_estadisticas import evaluar_folds_operaciones, MIN_OPERACIONES, UMBRAL_DSR
 
 
 @dataclass(frozen=True)
@@ -61,3 +62,22 @@ def evaluar_fuera_muestra(barras: list[Barra], senales: list[Senal],
             "superan_referencia": sum(x["retorno_neto"] > x["retorno_referencia"] for x in salidas),
             "metodologia": "evaluación fuera de muestra de señales fijas; sin entrenamiento automático ni estadística confirmatoria",
             "restriccion": "ninguna promoción automática, ni afirmación de rentabilidad"}
+
+
+def evaluar_confirmatorio(folds_operaciones: list[list[float]], n_total_real: int,
+                          n_total_declarado: int, senales: list[Senal],
+                          repo: str, referencias: dict[str,tuple[str,str]],
+                          obtener_anclas=None, leer_git=None) -> dict:
+    """Puerta estricta adicional. No usa los folds de barras retrospectivos como resultado confirmatorio.
+
+    Los retornos por operación deben provenir de una fuente pre-registrada y auditada;
+    este método no genera señales, variantes ni métricas de ningún experimento.
+    """
+    # FAIL-CLOSED: los retornos recibidos y N_total son parámetros arbitrarios.
+    # Un sello de señales NO demuestra procedencia de retornos ni censo exhaustivo.
+    # No se calculará DSR confirmatorio ni se autorizará promoción hasta que
+    # ambas entradas se deriven de artefactos inmutables auditables.
+    raise ValueError(
+        "confirmatorio bloqueado: falta vincular retornos a señales selladas "
+        "y derivar N_total de un censo independiente verificable"
+    )
