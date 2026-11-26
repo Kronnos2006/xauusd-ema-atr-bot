@@ -1,6 +1,6 @@
 # KT-002 — acierto direccional prospectivo (BTCUSDT 1h, 4h)
 
-Actualizado 2026-11-26 20:07 UTC. Pronósticos: 867, vencidos: 863.
+Actualizado 2026-11-26 20:08 UTC. Pronósticos: 867, vencidos: 863.
 
 Descriptivo. No mide rentabilidad ni costos. Interpretar solo **sin solape**.
 Horas omitidas desde el primer pronóstico: 28.
